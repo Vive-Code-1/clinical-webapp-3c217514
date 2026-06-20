@@ -191,6 +191,8 @@ function CalendarPage() {
                   if (topMin < 0 || topMin > (HOURS.length) * 60) return null;
                   const color = paletteColor(a.id);
                   const cancelled = a.status === "cancelled" || a.status === "no_show";
+                  const height = (heightMin / 60) * HOUR_PX;
+                  const compact = height < 44;
                   return (
                     <div
                       key={a.id}
@@ -199,24 +201,39 @@ function CalendarPage() {
                         setSelected(a);
                       }}
                       style={{
-                        top: (topMin / 60) * HOUR_PX,
-                        height: (heightMin / 60) * HOUR_PX,
+                        top: (topMin / 60) * HOUR_PX + 2,
+                        height: height - 4,
                         backgroundColor: cancelled ? "transparent" : color,
                         borderLeft: `3px solid ${color}`,
-                        opacity: cancelled ? 0.5 : 1,
+                        opacity: cancelled ? 0.65 : 1,
                         color: "#1a1a1a",
                       }}
-                      className="absolute left-1 right-1 rounded-lg px-2 py-1 overflow-hidden ring-1 ring-black/5 hover:ring-black/30 transition-all cursor-pointer"
+                      className="absolute left-1 right-1 rounded-md px-2 py-1 overflow-hidden ring-1 ring-black/5 hover:ring-black/40 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-center gap-0.5"
                     >
-                      <p className="text-[11px] font-bold leading-tight truncate">
-                        {a.service?.name || "Appointment"}
-                      </p>
-                      <p className="text-[10px] opacity-70 truncate">
-                        {a.client_name || a.guest_name || "Walk-in"}
-                      </p>
-                      <p className="text-[9px] font-mono opacity-60">
-                        {format(s, "HH:mm")}–{format(e, "HH:mm")}
-                      </p>
+                      {compact ? (
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="text-[10px] font-mono opacity-70 shrink-0">
+                            {format(s, "HH:mm")}
+                          </span>
+                          <span className="text-[11px] font-semibold leading-tight truncate">
+                            {a.service?.name || "Appointment"}
+                          </span>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-[11px] font-semibold leading-tight truncate">
+                            {a.service?.name || "Appointment"}
+                          </p>
+                          <p className="text-[10px] leading-tight opacity-75 truncate">
+                            {a.client_name || a.guest_name || "Walk-in"}
+                          </p>
+                          {height >= 64 && (
+                            <p className="text-[9px] font-mono opacity-60 leading-tight">
+                              {format(s, "HH:mm")}–{format(e, "HH:mm")}
+                            </p>
+                          )}
+                        </>
+                      )}
                     </div>
                   );
                 })}
