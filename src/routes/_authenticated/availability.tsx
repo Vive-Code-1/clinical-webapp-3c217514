@@ -20,6 +20,7 @@ const DAYS: { code: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"; label
 ];
 
 export const Route = createFileRoute("/_authenticated/availability")({
+  ssr: false,
   validateSearch: searchSchema,
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));

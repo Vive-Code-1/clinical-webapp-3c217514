@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  ssr: false,
   head: () => ({ meta: [{ title: "Setup your clinic — SANTÉ" }] }),
   component: OnboardingPage,
 });
