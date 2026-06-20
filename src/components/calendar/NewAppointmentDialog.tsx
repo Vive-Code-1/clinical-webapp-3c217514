@@ -98,7 +98,7 @@ export function NewAppointmentDialog({ clinicId, open, onOpenChange, initialStar
               <option value="">Choose practitioner…</option>
               {practitioners.data?.map((p) => (
                 <option key={p.user_id} value={p.user_id}>
-                  {p.profile?.full_name || "(unnamed)"}
+                  {p.full_name || "(unnamed)"}
                 </option>
               ))}
             </select>

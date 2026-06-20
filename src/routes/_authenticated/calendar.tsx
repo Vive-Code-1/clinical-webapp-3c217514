@@ -67,7 +67,12 @@ function CalendarPage() {
 
   const goWeek = (dir: -1 | 0 | 1) => {
     const target = dir === 0 ? new Date() : dir > 0 ? addWeeks(weekStart, 1) : subWeeks(weekStart, 1);
-    navigate({ search: (prev) => ({ ...prev, week: format(startOfWeek(target, { weekStartsOn: 1 }), "yyyy-MM-dd") }) });
+    navigate({
+      search: (prev: z.infer<typeof searchSchema>) => ({
+        ...prev,
+        week: format(startOfWeek(target, { weekStartsOn: 1 }), "yyyy-MM-dd"),
+      }),
+    });
   };
 
   const openNewAt = (day: Date, hour: number) => {
@@ -91,10 +96,14 @@ function CalendarPage() {
           {clinics.length > 1 && (
             <select
               value={activeClinicId}
-              onChange={(e) => navigate({ search: (p) => ({ ...p, clinic: e.target.value }) })}
+              onChange={(e) =>
+                navigate({
+                  search: (p: z.infer<typeof searchSchema>) => ({ ...p, clinic: e.target.value }),
+                })
+              }
               className="bg-background border border-input rounded-xl px-3 py-2 text-sm font-semibold"
             >
-              {clinics.map((c) => (
+              {clinics.map((c: (typeof clinics)[number]) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -184,7 +193,7 @@ function CalendarPage() {
                         {a.service?.name || "Appointment"}
                       </p>
                       <p className="text-[10px] text-muted-foreground truncate">
-                        {a.client_profile?.full_name || a.guest_name || "Walk-in"}
+                        {a.client_name || a.guest_name || "Walk-in"}
                       </p>
                       <p className="text-[9px] font-mono text-muted-foreground">
                         {format(s, "HH:mm")}–{format(e, "HH:mm")}

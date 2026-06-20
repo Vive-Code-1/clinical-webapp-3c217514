@@ -93,7 +93,7 @@ function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-bold truncate">{a.service?.name || "Appointment"}</p>
                     <p className="text-xs text-muted-foreground truncate">
-                      {a.client_profile?.full_name || a.guest_name || "Walk-in"}
+                      {a.client_name || a.guest_name || "Walk-in"}
                     </p>
                   </div>
                   <p className="text-sm font-mono text-muted-foreground">
