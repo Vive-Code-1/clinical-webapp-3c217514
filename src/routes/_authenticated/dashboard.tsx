@@ -7,6 +7,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  ssr: false,
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
     if (!clinics || clinics.length === 0) {
