@@ -1,7 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useState, type FormEvent } from "react";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth/sign-in")({
   head: () => ({
@@ -15,24 +17,59 @@ export const Route = createFileRoute("/auth/sign-in")({
 
 function SignInPage() {
   const { t } = useTranslation();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(t("auth.errors.backendMissing"));
+    setError(null);
+    setLoading(true);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (signInError) {
+      setError(signInError.message);
+      return;
+    }
+    router.navigate({ to: "/dashboard", replace: true });
   };
 
-  return <AuthShell mode="sign-in" onSubmit={onSubmit} error={error} setError={setError} />;
+  const onGoogle = async () => {
+    setError(null);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
+    });
+    if (result.error) {
+      setError(result.error.message ?? "Google sign-in failed.");
+      return;
+    }
+    if (result.redirected) return;
+    router.navigate({ to: "/dashboard", replace: true });
+  };
+
+  return (
+    <AuthShell
+      mode="sign-in"
+      onSubmit={onSubmit}
+      onGoogle={onGoogle}
+      error={error}
+      loading={loading}
+    />
+  );
 }
 
 type AuthShellProps = {
   mode: "sign-in" | "sign-up";
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  onGoogle: () => void;
   error: string | null;
-  setError: (msg: string | null) => void;
+  loading: boolean;
 };
 
-export function AuthShell({ mode, onSubmit, error, setError }: AuthShellProps) {
+export function AuthShell({ mode, onSubmit, onGoogle, error, loading }: AuthShellProps) {
   const { t } = useTranslation();
   const key = mode === "sign-in" ? "signIn" : "signUp";
 
@@ -55,8 +92,9 @@ export function AuthShell({ mode, onSubmit, error, setError }: AuthShellProps) {
           <div className="bg-card rounded-3xl p-8 ring-1 ring-border shadow-xl">
             <button
               type="button"
-              onClick={() => setError(t("auth.errors.backendMissing"))}
-              className="w-full bg-foreground text-background px-4 py-3 rounded-xl text-sm font-semibold hover:brightness-110 transition-all flex items-center justify-center gap-3"
+              onClick={onGoogle}
+              disabled={loading}
+              className="w-full bg-foreground text-background px-4 py-3 rounded-xl text-sm font-semibold hover:brightness-110 transition-all flex items-center justify-center gap-3 disabled:opacity-60"
             >
               <GoogleMark />
               {t(`auth.${key}.google`)}
@@ -75,7 +113,7 @@ export function AuthShell({ mode, onSubmit, error, setError }: AuthShellProps) {
                 <AuthField label={t("auth.signUp.name")} name="name" required />
               )}
               <AuthField label={t(`auth.${key}.email`)} name="email" type="email" required />
-              <AuthField label={t(`auth.${key}.password`)} name="password" type="password" required />
+              <AuthField label={t(`auth.${key}.password`)} name="password" type="password" required minLength={6} />
 
               {error && (
                 <div className="text-sm font-medium text-destructive bg-destructive/10 rounded-lg px-3 py-2">
@@ -85,9 +123,10 @@ export function AuthShell({ mode, onSubmit, error, setError }: AuthShellProps) {
 
               <button
                 type="submit"
-                className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 transition-all"
+                disabled={loading}
+                className="w-full bg-primary text-primary-foreground px-4 py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 transition-all disabled:opacity-60"
               >
-                {t(`auth.${key}.submit`)}
+                {loading ? "…" : t(`auth.${key}.submit`)}
               </button>
 
               {mode === "sign-in" && (
@@ -128,11 +167,13 @@ function AuthField({
   name,
   type = "text",
   required,
+  minLength,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
+  minLength?: number;
 }) {
   return (
     <label className="block">
@@ -143,6 +184,7 @@ function AuthField({
         name={name}
         type={type}
         required={required}
+        minLength={minLength}
         className="w-full bg-background border border-input rounded-xl px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all"
       />
     </label>
@@ -152,22 +194,10 @@ function AuthField({
 function GoogleMark() {
   return (
     <svg width="16" height="16" viewBox="0 0 48 48" aria-hidden="true">
-      <path
-        fill="#FFC107"
-        d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.5-4.5z"
-      />
-      <path
-        fill="#FF3D00"
-        d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4.5 24 4.5c-7.5 0-14 4.1-17.7 10.2z"
-      />
-      <path
-        fill="#4CAF50"
-        d="M24 45.5c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.4 36.2 26.8 37 24 37c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.7 41.2 16.3 45.5 24 45.5z"
-      />
-      <path
-        fill="#1976D2"
-        d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.5 5.5c-.5.4 7.2-5.3 7.2-15.5 0-1.5-.2-3-.4-3z"
-      />
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4.5 24 4.5 12.7 4.5 3.5 13.7 3.5 25S12.7 45.5 24 45.5 44.5 36.3 44.5 25c0-1.5-.2-3-.5-4.5z" />
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.5 29.6 4.5 24 4.5c-7.5 0-14 4.1-17.7 10.2z" />
+      <path fill="#4CAF50" d="M24 45.5c5.5 0 10.4-2.1 14.1-5.5l-6.5-5.5C29.4 36.2 26.8 37 24 37c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.7 41.2 16.3 45.5 24 45.5z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.1-4 5.5l6.5 5.5c-.5.4 7.2-5.3 7.2-15.5 0-1.5-.2-3-.4-3z" />
     </svg>
   );
 }

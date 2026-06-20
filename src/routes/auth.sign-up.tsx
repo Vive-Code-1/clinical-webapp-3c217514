@@ -1,7 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { AuthShell } from "./auth.sign-in";
+import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable/index";
 
 export const Route = createFileRoute("/auth/sign-up")({
   head: () => ({
@@ -14,13 +15,58 @@ export const Route = createFileRoute("/auth/sign-up")({
 });
 
 function SignUpPage() {
-  const { t } = useTranslation();
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(t("auth.errors.backendMissing"));
+    setError(null);
+    setLoading(true);
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") ?? "");
+    const password = String(form.get("password") ?? "");
+    const full_name = String(form.get("name") ?? "");
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+        data: { full_name },
+      },
+    });
+    setLoading(false);
+    if (signUpError) {
+      setError(signUpError.message);
+      return;
+    }
+    if (data.session) {
+      router.navigate({ to: "/dashboard", replace: true });
+    } else {
+      setError("Check your inbox to confirm your email, then sign in.");
+    }
   };
 
-  return <AuthShell mode="sign-up" onSubmit={onSubmit} error={error} setError={setError} />;
+  const onGoogle = async () => {
+    setError(null);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/dashboard",
+    });
+    if (result.error) {
+      setError(result.error.message ?? "Google sign-up failed.");
+      return;
+    }
+    if (result.redirected) return;
+    router.navigate({ to: "/dashboard", replace: true });
+  };
+
+  return (
+    <AuthShell
+      mode="sign-up"
+      onSubmit={onSubmit}
+      onGoogle={onGoogle}
+      error={error}
+      loading={loading}
+    />
+  );
 }
