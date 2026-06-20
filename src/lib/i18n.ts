@@ -27,7 +27,6 @@ if (!i18n.isInitialized) {
       lookupLocalStorage: "sante-lang",
     },
     react: { useSuspense: false },
-    initImmediate: false,
   });
 }
 
