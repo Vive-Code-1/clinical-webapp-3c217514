@@ -552,7 +552,7 @@ function NotesTab({ clinicId, clientId }: { clinicId: string; clientId: string }
         const { error } = await supabase.from("clinical_notes").update({
           kind: payload.kind,
           title: payload.title,
-          content: payload.content,
+          content: payload.content as never,
         }).eq("id", payload.id);
         if (error) throw error;
       } else {
