@@ -174,6 +174,7 @@ function CalendarPage() {
           <button onClick={() => goNav(1)} className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
             →
           </button>
+          <IcalButton userId={user.id} />
           <button
             onClick={() => {
               setDialogStart(new Date());
