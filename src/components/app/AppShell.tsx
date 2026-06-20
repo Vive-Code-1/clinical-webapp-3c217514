@@ -35,14 +35,15 @@ export function AppShell({ clinicId, children }: Props) {
   const navItems = [
     { to: "/dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
     { to: "/calendar" as const, label: "Appointment", icon: CalendarDays },
+    { to: "/clients" as const, label: "Clients", icon: Users },
     { to: "/services" as const, label: "Services", icon: Sparkles },
     { to: "/availability" as const, label: "Availability", icon: Clock },
   ];
 
   const secondary = [
-    { label: "Patient", icon: Users },
     { label: "Setting", icon: Settings },
     { label: "Help & Center", icon: HelpCircle },
+
   ];
 
   return (
