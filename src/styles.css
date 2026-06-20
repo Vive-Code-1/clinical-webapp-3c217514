@@ -48,6 +48,14 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-sidebar-deep: var(--sidebar-deep);
+  --color-sidebar-deep-foreground: var(--sidebar-deep-foreground);
+  --color-sidebar-deep-active: var(--sidebar-deep-active);
+  --color-stat-blue: var(--stat-blue);
+  --color-stat-pink: var(--stat-pink);
+  --color-stat-green: var(--stat-green);
+  --color-stat-peach: var(--stat-peach);
+  --color-pill-green: var(--pill-green);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
