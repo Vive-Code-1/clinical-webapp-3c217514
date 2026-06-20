@@ -632,6 +632,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ensure_self_client_record: {
+        Args: {
+          _clinic_id: string
+          _email?: string
+          _full_name?: string
+          _phone?: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
