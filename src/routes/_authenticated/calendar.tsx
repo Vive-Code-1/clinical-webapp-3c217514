@@ -1,6 +1,9 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Rss } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import {
   startOfWeek,
