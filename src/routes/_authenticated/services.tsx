@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 const searchSchema = z.object({ clinic: z.string().optional() });
 
 export const Route = createFileRoute("/_authenticated/services")({
+  ssr: false,
   validateSearch: searchSchema,
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));

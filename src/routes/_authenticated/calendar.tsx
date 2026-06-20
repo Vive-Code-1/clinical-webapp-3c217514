@@ -26,6 +26,7 @@ const searchSchema = z.object({
 });
 
 export const Route = createFileRoute("/_authenticated/calendar")({
+  ssr: false,
   validateSearch: searchSchema,
   loaderDeps: ({ search }) => ({ clinic: search.clinic, week: search.week }),
   beforeLoad: async ({ context }) => {
