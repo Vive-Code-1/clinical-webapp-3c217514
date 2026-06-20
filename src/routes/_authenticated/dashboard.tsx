@@ -1,28 +1,44 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LanguageToggle } from "@/components/site/LanguageToggle";
+import { useQuery } from "@tanstack/react-query";
+import { AppShell } from "@/components/app/AppShell";
+import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({
-    meta: [{ title: "Dashboard — SANTÉ" }],
-  }),
+  beforeLoad: async ({ context }) => {
+    const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
+    if (!clinics || clinics.length === 0) {
+      throw redirect({ to: "/onboarding" });
+    }
+    return { clinics };
+  },
+  head: () => ({ meta: [{ title: "Dashboard — SANTÉ" }] }),
   component: DashboardPage,
+  errorComponent: ({ error }) => <div className="p-8 text-sm text-destructive">{error.message}</div>,
+  notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
 
 function DashboardPage() {
-  const { t } = useTranslation();
-  const { user } = Route.useRouteContext();
-  const router = useRouter();
-  const queryClient = useQueryClient();
+  const { user, clinics } = Route.useRouteContext();
+  const activeClinic = clinics[0]!;
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(todayStart);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const todayAppts = useQuery(
+    clinicAppointmentsQuery(activeClinic.id, todayStart.toISOString(), tomorrow.toISOString()),
+  );
 
   const profile = useQuery({
     queryKey: ["profile", user.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("full_name, preferred_language")
+        .select("full_name")
         .eq("id", user.id)
         .maybeSingle();
       if (error) throw error;
@@ -30,80 +46,74 @@ function DashboardPage() {
     },
   });
 
-  const roles = useQuery({
-    queryKey: ["roles", user.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id);
-      if (error) throw error;
-      return data?.map((r) => r.role) ?? [];
-    },
-  });
-
-  const handleSignOut = async () => {
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    router.navigate({ to: "/auth/sign-in", replace: true });
-  };
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <Link to="/" className="text-lg font-extrabold tracking-tight uppercase">
-            {t("brand")}
-          </Link>
-          <div className="flex items-center gap-3">
-            <LanguageToggle />
-            <button
-              onClick={handleSignOut}
-              className="text-sm font-semibold px-4 py-2 rounded-xl border border-input hover:bg-accent transition-colors"
+    <AppShell clinicId={activeClinic.id}>
+      <div className="px-8 py-10 max-w-5xl">
+        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
+          {activeClinic.name}
+        </p>
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
+          Bonjour{profile.data?.full_name ? `, ${profile.data.full_name.split(" ")[0]}` : ""}.
+        </h1>
+        <p className="font-serif text-lg text-muted-foreground mb-10">
+          Here's your sanctuary for today.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-4 mb-10">
+          <Stat label="Appointments today" value={todayAppts.data?.length ?? "—"} />
+          <Stat
+            label="Confirmed"
+            value={todayAppts.data?.filter((a) => a.status === "confirmed" || a.status === "scheduled").length ?? "—"}
+          />
+          <Stat
+            label="Public booking URL"
+            value={`/book/${activeClinic.slug}`}
+            mono
+          />
+        </div>
+
+        <div className="bg-card rounded-3xl p-8 ring-1 ring-border">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-extrabold tracking-tight">Today's schedule</h2>
+            <Link
+              to="/calendar"
+              search={{ clinic: activeClinic.id }}
+              className="text-sm font-bold text-primary hover:underline"
             >
-              Sign out
-            </button>
+              Open calendar →
+            </Link>
           </div>
+          {todayAppts.data?.length === 0 ? (
+            <p className="font-serif text-muted-foreground text-sm">No appointments today. A calm day.</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {todayAppts.data?.map((a) => (
+                <li key={a.id} className="py-3 flex items-center gap-4">
+                  <div className="w-1 h-10 rounded-full" style={{ backgroundColor: a.color || a.service?.color || "#7A5C3A" }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold truncate">{a.service?.name || "Appointment"}</p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {a.client_profile?.full_name || a.guest_name || "Walk-in"}
+                    </p>
+                  </div>
+                  <p className="text-sm font-mono text-muted-foreground">
+                    {new Date(a.starts_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      </header>
+      </div>
+    </AppShell>
+  );
+}
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="animate-reveal">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3">
-            Phase 1 · Foundation
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3">
-            Welcome{profile.data?.full_name ? `, ${profile.data.full_name}` : ""}.
-          </h1>
-          <p className="font-serif text-lg text-muted-foreground mb-10">
-            Your sanctuary is ready. Scheduling, clinical records, billing, and the client portal arrive in the next phases.
-          </p>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-card rounded-3xl p-8 ring-1 ring-border">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Account</p>
-              <p className="text-sm font-mono break-all">{user.email}</p>
-            </div>
-            <div className="bg-card rounded-3xl p-8 ring-1 ring-border">
-              <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Roles</p>
-              <div className="flex flex-wrap gap-2">
-                {(roles.data ?? []).map((r) => (
-                  <span
-                    key={r}
-                    className="text-xs font-bold uppercase tracking-widest bg-primary/10 text-primary px-3 py-1 rounded-full"
-                  >
-                    {r}
-                  </span>
-                ))}
-                {roles.data?.length === 0 && (
-                  <span className="text-sm text-muted-foreground">No roles assigned.</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
+function Stat({ label, value, mono = false }: { label: string; value: string | number; mono?: boolean }) {
+  return (
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border">
+      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{label}</p>
+      <p className={`text-2xl font-extrabold ${mono ? "font-mono text-base break-all" : ""}`}>{value}</p>
     </div>
   );
 }
