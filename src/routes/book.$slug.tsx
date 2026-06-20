@@ -191,6 +191,14 @@ function BookingPage() {
         color: selectedService!.color,
       });
       if (error) throw error;
+      // Ensure a clinic_clients record exists so the clinic sees this booker in their list.
+      // Failure here is non-fatal — the booking itself succeeded.
+      await supabase.rpc("ensure_self_client_record", {
+        _clinic_id: clinicId!,
+        _full_name: null,
+        _email: null,
+        _phone: null,
+      });
     },
     onSuccess: () => {
       toast.success("Appointment booked. We'll see you soon.");
