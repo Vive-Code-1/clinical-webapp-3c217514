@@ -22,10 +22,12 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMyBookingsRouteImport } from './routes/_authenticated/my-bookings'
+import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAvailabilityRouteImport } from './routes/_authenticated/availability'
+import { Route as ApiPublicIcalTokenDoticsRouteImport } from './routes/api.public.ical.$token[.]ics'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -91,6 +93,11 @@ const AuthenticatedMyBookingsRoute = AuthenticatedMyBookingsRouteImport.update({
   path: '/my-bookings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -112,6 +119,12 @@ const AuthenticatedAvailabilityRoute =
     path: '/availability',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicIcalTokenDoticsRoute =
+  ApiPublicIcalTokenDoticsRouteImport.update({
+    id: '/api/public/ical/$token.ics',
+    path: '/api/public/ical/$token.ics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -123,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/locations': typeof AuthenticatedLocationsRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -130,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -141,6 +156,7 @@ export interface FileRoutesByTo {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/locations': typeof AuthenticatedLocationsRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -148,6 +164,7 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -161,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
@@ -168,6 +186,7 @@ export interface FileRoutesById {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +200,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/clients'
     | '/dashboard'
+    | '/locations'
     | '/my-bookings'
     | '/onboarding'
     | '/services'
@@ -188,6 +208,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -199,6 +220,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/clients'
     | '/dashboard'
+    | '/locations'
     | '/my-bookings'
     | '/onboarding'
     | '/services'
@@ -206,6 +228,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   id:
     | '__root__'
     | '/'
@@ -218,6 +241,7 @@ export interface FileRouteTypes {
     | '/_authenticated/calendar'
     | '/_authenticated/clients'
     | '/_authenticated/dashboard'
+    | '/_authenticated/locations'
     | '/_authenticated/my-bookings'
     | '/_authenticated/onboarding'
     | '/_authenticated/services'
@@ -225,6 +249,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -238,6 +263,7 @@ export interface RootRouteChildren {
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
   BookSlugRoute: typeof BookSlugRoute
+  ApiPublicIcalTokenDoticsRoute: typeof ApiPublicIcalTokenDoticsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -333,6 +359,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyBookingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/locations': {
+      id: '/_authenticated/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof AuthenticatedLocationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -361,6 +394,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAvailabilityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/ical/$token.ics': {
+      id: '/api/public/ical/$token.ics'
+      path: '/api/public/ical/$token.ics'
+      fullPath: '/api/public/ical/$token.ics'
+      preLoaderRoute: typeof ApiPublicIcalTokenDoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -369,6 +409,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedMyBookingsRoute: typeof AuthenticatedMyBookingsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
@@ -379,6 +420,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedMyBookingsRoute: AuthenticatedMyBookingsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
@@ -398,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
   BookSlugRoute: BookSlugRoute,
+  ApiPublicIcalTokenDoticsRoute: ApiPublicIcalTokenDoticsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
