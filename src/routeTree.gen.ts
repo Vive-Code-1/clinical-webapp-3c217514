@@ -22,6 +22,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAvailabilityRouteImport } from './routes/_authenticated/availability'
 
@@ -89,6 +90,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
+  id: '/clients',
+  path: '/clients',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCalendarRoute = AuthenticatedCalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/availability': typeof AuthenticatedAvailabilityRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/availability': typeof AuthenticatedAvailabilityRoute
   '/calendar': typeof AuthenticatedCalendarRoute
+  '/clients': typeof AuthenticatedClientsRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/_authenticated/availability': typeof AuthenticatedAvailabilityRoute
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
+  '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
@@ -161,6 +170,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/availability'
     | '/calendar'
+    | '/clients'
     | '/dashboard'
     | '/onboarding'
     | '/services'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/availability'
     | '/calendar'
+    | '/clients'
     | '/dashboard'
     | '/onboarding'
     | '/services'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/_authenticated/availability'
     | '/_authenticated/calendar'
+    | '/_authenticated/clients'
     | '/_authenticated/dashboard'
     | '/_authenticated/onboarding'
     | '/_authenticated/services'
@@ -309,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/clients': {
+      id: '/_authenticated/clients'
+      path: '/clients'
+      fullPath: '/clients'
+      preLoaderRoute: typeof AuthenticatedClientsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/calendar': {
       id: '/_authenticated/calendar'
       path: '/calendar'
@@ -329,6 +348,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAvailabilityRoute: typeof AuthenticatedAvailabilityRoute
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
+  AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
@@ -337,6 +357,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAvailabilityRoute: AuthenticatedAvailabilityRoute,
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
+  AuthenticatedClientsRoute: AuthenticatedClientsRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
