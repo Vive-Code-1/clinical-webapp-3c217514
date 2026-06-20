@@ -1,0 +1,553 @@
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState, type FormEvent } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { AppShell } from "@/components/app/AppShell";
+import { myClinicsQuery } from "@/lib/clinic-queries";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+
+const searchSchema = z.object({
+  clinic: z.string().optional(),
+  tab: z.enum(["intake", "templates"]).optional(),
+});
+
+export const Route = createFileRoute("/_authenticated/forms")({
+  ssr: false,
+  validateSearch: searchSchema,
+  beforeLoad: async ({ context }) => {
+    const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
+    if (!clinics || clinics.length === 0) throw redirect({ to: "/onboarding" });
+    return { clinics };
+  },
+  head: () => ({ meta: [{ title: "Forms & templates — Helanthus" }] }),
+  component: FormsPage,
+  errorComponent: ({ error }) => <div className="p-8 text-sm text-destructive">{error.message}</div>,
+  notFoundComponent: () => <div className="p-8">Not found.</div>,
+});
+
+type IntakeFormKind = "intake" | "consent" | "questionnaire";
+type FieldType = "text" | "textarea" | "select" | "checkbox" | "date";
+type FormField = { key: string; label: string; type: FieldType; required?: boolean; options?: string[] };
+type IntakeForm = {
+  id: string;
+  title: string;
+  description: string | null;
+  kind: IntakeFormKind;
+  schema: { fields: FormField[] };
+  is_active: boolean;
+};
+
+type NoteKind = "soap" | "follow_up" | "couple" | "family" | "general";
+type NoteTemplate = { id: string; title: string; kind: NoteKind; body: Record<string, string> };
+
+function FormsPage() {
+  const { clinics } = Route.useRouteContext();
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const activeClinicId = search.clinic ?? clinics[0]!.id;
+  const tab = search.tab ?? "intake";
+
+  return (
+    <AppShell clinicId={activeClinicId}>
+      <div className="px-6 py-6 max-w-[1200px] mx-auto">
+        <header className="mb-6">
+          <p className="text-sm text-muted-foreground">Clinical setup</p>
+          <h1 className="text-2xl font-bold tracking-tight">Forms & templates</h1>
+        </header>
+
+        <div className="bg-card rounded-2xl ring-1 ring-border overflow-hidden">
+          <div className="border-b border-border px-2 flex gap-1">
+            {[
+              { id: "intake" as const, label: "Intake & consent forms", icon: ClipboardList },
+              { id: "templates" as const, label: "Clinical note templates", icon: FileText },
+            ].map((t) => {
+              const Icon = t.icon;
+              const active = tab === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => navigate({ search: { clinic: activeClinicId, tab: t.id === "intake" ? undefined : t.id } })}
+                  className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+                    active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="p-6">
+            {tab === "intake" ? <IntakeFormsSection clinicId={activeClinicId} /> : <NoteTemplatesSection clinicId={activeClinicId} />}
+          </div>
+        </div>
+      </div>
+    </AppShell>
+  );
+}
+
+/* =============== INTAKE FORMS =============== */
+
+function IntakeFormsSection({ clinicId }: { clinicId: string }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<IntakeForm | null>(null);
+
+  const forms = useQuery({
+    queryKey: ["intake-forms", clinicId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("intake_forms")
+        .select("id, title, description, kind, schema, is_active")
+        .eq("clinic_id", clinicId)
+        .order("title");
+      if (error) throw error;
+      return (data ?? []) as IntakeForm[];
+    },
+  });
+
+  const save = useMutation({
+    mutationFn: async (payload: Partial<IntakeForm> & { title: string; kind: IntakeFormKind; schema: { fields: FormField[] } }) => {
+      if (payload.id) {
+        const { error } = await supabase.from("intake_forms").update({
+          title: payload.title,
+          description: payload.description ?? null,
+          kind: payload.kind,
+          schema: payload.schema as never,
+          is_active: payload.is_active ?? true,
+        }).eq("id", payload.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("intake_forms").insert({
+          clinic_id: clinicId,
+          title: payload.title,
+          description: payload.description ?? null,
+          kind: payload.kind,
+          schema: payload.schema as never,
+          is_active: payload.is_active ?? true,
+        });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      setOpen(false);
+      setEditing(null);
+      toast.success("Form saved");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("intake_forms").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success("Form deleted");
+    },
+  });
+
+  return (
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold">Forms</h2>
+        <button
+          onClick={() => { setEditing(null); setOpen(true); }}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
+        >
+          <Plus className="w-4 h-4" /> New form
+        </button>
+      </div>
+
+      {forms.isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : (forms.data ?? []).length === 0 ? (
+        <p className="text-sm text-muted-foreground">No forms yet. Create your first intake or consent form.</p>
+      ) : (
+        <ul className="grid sm:grid-cols-2 gap-3">
+          {(forms.data ?? []).map((f) => (
+            <li key={f.id} className="bg-muted/40 rounded-xl p-4">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-pill-green/10 text-pill-green">
+                    {f.kind}
+                  </span>
+                  <p className="font-semibold text-sm mt-1">{f.title}</p>
+                  {f.description && <p className="text-xs text-muted-foreground mt-1">{f.description}</p>}
+                  <p className="text-xs text-muted-foreground mt-2">{f.schema?.fields?.length ?? 0} field(s) · {f.is_active ? "Active" : "Inactive"}</p>
+                </div>
+                <div className="flex gap-1">
+                  <button onClick={() => { setEditing(f); setOpen(true); }} className="text-xs px-2 py-1 hover:bg-background rounded inline-flex items-center gap-1">
+                    <Pencil className="w-3 h-3" /> Edit
+                  </button>
+                  <button onClick={() => confirm(`Delete "${f.title}"?`) && remove.mutate(f.id)} className="text-xs px-2 py-1 hover:bg-destructive/10 text-destructive rounded">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {open && (
+        <IntakeFormBuilder
+          editing={editing}
+          onClose={() => { setOpen(false); setEditing(null); }}
+          onSubmit={(p) => save.mutate(p)}
+          pending={save.isPending}
+        />
+      )}
+    </>
+  );
+}
+
+function IntakeFormBuilder({
+  editing,
+  onClose,
+  onSubmit,
+  pending,
+}: {
+  editing: IntakeForm | null;
+  onClose: () => void;
+  onSubmit: (p: Partial<IntakeForm> & { title: string; kind: IntakeFormKind; schema: { fields: FormField[] } }) => void;
+  pending: boolean;
+}) {
+  const [title, setTitle] = useState(editing?.title ?? "");
+  const [description, setDescription] = useState(editing?.description ?? "");
+  const [kind, setKind] = useState<IntakeFormKind>(editing?.kind ?? "intake");
+  const [active, setActive] = useState(editing?.is_active ?? true);
+  const [fields, setFields] = useState<FormField[]>(editing?.schema?.fields ?? []);
+
+  const addField = () => {
+    const idx = fields.length + 1;
+    setFields([...fields, { key: `field_${idx}`, label: `Field ${idx}`, type: "text", required: false }]);
+  };
+  const updateField = (i: number, patch: Partial<FormField>) => {
+    setFields(fields.map((f, idx) => (idx === i ? { ...f, ...patch } : f)));
+  };
+  const removeField = (i: number) => setFields(fields.filter((_, idx) => idx !== i));
+  const moveField = (i: number, dir: -1 | 1) => {
+    const j = i + dir;
+    if (j < 0 || j >= fields.length) return;
+    const next = [...fields];
+    [next[i], next[j]] = [next[j]!, next[i]!];
+    setFields(next);
+  };
+
+  const handle = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!title.trim()) return toast.error("Title required");
+    if (fields.length === 0) return toast.error("Add at least one field");
+    onSubmit({
+      id: editing?.id,
+      title: title.trim(),
+      description: description.trim() || null,
+      kind,
+      is_active: active,
+      schema: { fields },
+    });
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{editing ? "Edit form" : "New form"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handle} className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block col-span-2">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Title</span>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" required />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Type</span>
+              <select value={kind} onChange={(e) => setKind(e.target.value as IntakeFormKind)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm">
+                <option value="intake">Intake</option>
+                <option value="consent">Consent (with signature)</option>
+                <option value="questionnaire">Questionnaire</option>
+              </select>
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Status</span>
+              <select value={active ? "1" : "0"} onChange={(e) => setActive(e.target.value === "1")} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+            </label>
+          </div>
+          <label className="block">
+            <span className="block text-xs font-semibold text-muted-foreground mb-1">Description (optional)</span>
+            <textarea value={description ?? ""} onChange={(e) => setDescription(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[50px]" />
+          </label>
+
+          <div className="border-t border-border pt-3">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="font-semibold text-sm">Fields</h4>
+              <button type="button" onClick={addField} className="text-xs font-semibold text-primary hover:underline inline-flex items-center gap-1">
+                <Plus className="w-3 h-3" /> Add field
+              </button>
+            </div>
+            {fields.length === 0 && <p className="text-xs text-muted-foreground">No fields yet.</p>}
+            <ul className="space-y-2">
+              {fields.map((f, i) => (
+                <li key={i} className="bg-muted/40 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <div className="flex flex-col gap-1 pt-1 text-muted-foreground">
+                      <button type="button" onClick={() => moveField(i, -1)} className="text-[10px] hover:text-foreground">▲</button>
+                      <GripVertical className="w-3 h-3" />
+                      <button type="button" onClick={() => moveField(i, 1)} className="text-[10px] hover:text-foreground">▼</button>
+                    </div>
+                    <div className="flex-1 grid grid-cols-1 sm:grid-cols-12 gap-2">
+                      <input
+                        value={f.label}
+                        onChange={(e) => updateField(i, { label: e.target.value })}
+                        placeholder="Label"
+                        className="sm:col-span-5 bg-background border border-border rounded px-2 py-1.5 text-sm"
+                      />
+                      <input
+                        value={f.key}
+                        onChange={(e) => updateField(i, { key: e.target.value.replace(/[^a-z0-9_]/gi, "_") })}
+                        placeholder="key"
+                        className="sm:col-span-3 bg-background border border-border rounded px-2 py-1.5 text-xs font-mono"
+                      />
+                      <select
+                        value={f.type}
+                        onChange={(e) => updateField(i, { type: e.target.value as FieldType })}
+                        className="sm:col-span-2 bg-background border border-border rounded px-2 py-1.5 text-sm"
+                      >
+                        <option value="text">Text</option>
+                        <option value="textarea">Long text</option>
+                        <option value="select">Dropdown</option>
+                        <option value="checkbox">Checkbox</option>
+                        <option value="date">Date</option>
+                      </select>
+                      <label className="sm:col-span-2 inline-flex items-center gap-1 text-xs">
+                        <input type="checkbox" checked={!!f.required} onChange={(e) => updateField(i, { required: e.target.checked })} />
+                        Required
+                      </label>
+                      {f.type === "select" && (
+                        <input
+                          value={(f.options ?? []).join(", ")}
+                          onChange={(e) => updateField(i, { options: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })}
+                          placeholder="Options (comma separated)"
+                          className="sm:col-span-12 bg-background border border-border rounded px-2 py-1.5 text-xs"
+                        />
+                      )}
+                    </div>
+                    <button type="button" onClick={() => removeField(i)} className="text-destructive hover:bg-destructive/10 rounded p-1">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <DialogFooter>
+            <button type="button" onClick={onClose} className="text-sm font-semibold text-muted-foreground hover:text-foreground px-3">Cancel</button>
+            <button type="submit" disabled={pending} className="bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110 disabled:opacity-50">
+              {pending ? "Saving…" : "Save form"}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+/* =============== NOTE TEMPLATES =============== */
+
+const NOTE_KIND_LABELS: Record<NoteKind, string> = {
+  soap: "SOAP",
+  follow_up: "Follow-up",
+  couple: "Couple",
+  family: "Family",
+  general: "General",
+};
+
+function NoteTemplatesSection({ clinicId }: { clinicId: string }) {
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<NoteTemplate | null>(null);
+
+  const templates = useQuery({
+    queryKey: ["note-templates", clinicId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("note_templates")
+        .select("id, title, kind, body")
+        .eq("clinic_id", clinicId)
+        .order("title");
+      if (error) throw error;
+      return (data ?? []) as NoteTemplate[];
+    },
+  });
+
+  const save = useMutation({
+    mutationFn: async (p: Partial<NoteTemplate> & { title: string; kind: NoteKind; body: Record<string, string> }) => {
+      if (p.id) {
+        const { error } = await supabase.from("note_templates").update({
+          title: p.title, kind: p.kind, body: p.body as never,
+        }).eq("id", p.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("note_templates").insert({
+          clinic_id: clinicId, title: p.title, kind: p.kind, body: p.body as never,
+        });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["note-templates", clinicId] });
+      setOpen(false);
+      setEditing(null);
+      toast.success("Template saved");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("note_templates").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["note-templates", clinicId] });
+      toast.success("Template deleted");
+    },
+  });
+
+  return (
+    <>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-semibold">Clinical note templates</h2>
+        <button
+          onClick={() => { setEditing(null); setOpen(true); }}
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
+        >
+          <Plus className="w-4 h-4" /> New template
+        </button>
+      </div>
+
+      {templates.isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : (templates.data ?? []).length === 0 ? (
+        <p className="text-sm text-muted-foreground">No templates yet.</p>
+      ) : (
+        <ul className="grid sm:grid-cols-2 gap-3">
+          {(templates.data ?? []).map((t) => (
+            <li key={t.id} className="bg-muted/40 rounded-xl p-4">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full bg-pill-green/10 text-pill-green">
+                    {NOTE_KIND_LABELS[t.kind]}
+                  </span>
+                  <p className="font-semibold text-sm mt-1">{t.title}</p>
+                </div>
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => { setEditing(t); setOpen(true); }} className="text-xs px-2 py-1 hover:bg-background rounded">Edit</button>
+                  <button onClick={() => confirm(`Delete "${t.title}"?`) && remove.mutate(t.id)} className="text-xs px-2 py-1 hover:bg-destructive/10 text-destructive rounded">
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {open && (
+        <NoteTemplateDialog
+          editing={editing}
+          onClose={() => { setOpen(false); setEditing(null); }}
+          onSubmit={(p) => save.mutate(p)}
+          pending={save.isPending}
+        />
+      )}
+    </>
+  );
+}
+
+function NoteTemplateDialog({
+  editing,
+  onClose,
+  onSubmit,
+  pending,
+}: {
+  editing: NoteTemplate | null;
+  onClose: () => void;
+  onSubmit: (p: Partial<NoteTemplate> & { title: string; kind: NoteKind; body: Record<string, string> }) => void;
+  pending: boolean;
+}) {
+  const [title, setTitle] = useState(editing?.title ?? "");
+  const [kind, setKind] = useState<NoteKind>(editing?.kind ?? "soap");
+  const [body, setBody] = useState<Record<string, string>>(editing?.body ?? {});
+
+  const handle = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!title.trim()) return toast.error("Title required");
+    onSubmit({ id: editing?.id, title: title.trim(), kind, body });
+  };
+
+  return (
+    <Dialog open onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{editing ? "Edit template" : "New template"}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handle} className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <label className="block">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Title</span>
+              <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm" required />
+            </label>
+            <label className="block">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Type</span>
+              <select value={kind} onChange={(e) => { setKind(e.target.value as NoteKind); setBody({}); }} className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm">
+                {Object.entries(NOTE_KIND_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+            </label>
+          </div>
+
+          {kind === "soap" ? (
+            (["subjective", "objective", "assessment", "plan"] as const).map((k) => (
+              <label key={k} className="block">
+                <span className="block text-xs font-semibold text-muted-foreground mb-1 capitalize">{k}</span>
+                <textarea
+                  value={body[k] ?? ""}
+                  onChange={(e) => setBody((b) => ({ ...b, [k]: e.target.value }))}
+                  placeholder={`Default ${k} prompt or text…`}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[60px]"
+                />
+              </label>
+            ))
+          ) : (
+            <label className="block">
+              <span className="block text-xs font-semibold text-muted-foreground mb-1">Body</span>
+              <textarea
+                value={body.body ?? ""}
+                onChange={(e) => setBody({ body: e.target.value })}
+                placeholder="Default body content…"
+                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[160px]"
+              />
+            </label>
+          )}
+
+          <DialogFooter>
+            <button type="button" onClick={onClose} className="text-sm font-semibold text-muted-foreground hover:text-foreground px-3">Cancel</button>
+            <button type="submit" disabled={pending} className="bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110 disabled:opacity-50">
+              {pending ? "Saving…" : "Save template"}
+            </button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
