@@ -14,6 +14,8 @@ import { Route as FeaturesRouteImport } from './routes/features'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
+import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -40,6 +42,16 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthSignUpRoute = AuthSignUpRouteImport.update({
+  id: '/auth/sign-up',
+  path: '/auth/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/auth/sign-in',
+  path: '/auth/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +59,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/features': typeof FeaturesRoute
   '/pricing': typeof PricingRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +68,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/features': typeof FeaturesRoute
   '/pricing': typeof PricingRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +78,37 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/features': typeof FeaturesRoute
   '/pricing': typeof PricingRoute
+  '/auth/sign-in': typeof AuthSignInRoute
+  '/auth/sign-up': typeof AuthSignUpRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/contact' | '/features' | '/pricing'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/features'
+    | '/pricing'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/contact' | '/features' | '/pricing'
-  id: '__root__' | '/' | '/about' | '/contact' | '/features' | '/pricing'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/features'
+    | '/pricing'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/features'
+    | '/pricing'
+    | '/auth/sign-in'
+    | '/auth/sign-up'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +117,8 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   FeaturesRoute: typeof FeaturesRoute
   PricingRoute: typeof PricingRoute
+  AuthSignInRoute: typeof AuthSignInRoute
+  AuthSignUpRoute: typeof AuthSignUpRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +158,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/sign-up': {
+      id: '/auth/sign-up'
+      path: '/auth/sign-up'
+      fullPath: '/auth/sign-up'
+      preLoaderRoute: typeof AuthSignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/sign-in': {
+      id: '/auth/sign-in'
+      path: '/auth/sign-in'
+      fullPath: '/auth/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +181,8 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   FeaturesRoute: FeaturesRoute,
   PricingRoute: PricingRoute,
+  AuthSignInRoute: AuthSignInRoute,
+  AuthSignUpRoute: AuthSignUpRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

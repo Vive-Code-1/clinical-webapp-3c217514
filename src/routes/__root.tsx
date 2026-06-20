@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import "../lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -118,10 +119,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  // Initialize i18n on the client; safe to import for side-effects.
-  if (typeof window !== "undefined") {
-    void import("../lib/i18n");
-  }
 
   return (
     <QueryClientProvider client={queryClient}>
