@@ -167,3 +167,15 @@
 @utility animate-reveal {
   animation: sanctuary-reveal 0.8s cubic-bezier(0.32, 0.72, 0, 1) both;
 }
+
+/* Hide Lovable badge on published site */
+#lovable-badge,
+[id^="lovable-badge"],
+a[href*="lovable.dev"][target="_blank"],
+a[aria-label*="Lovable" i],
+a[aria-label*="Edit with Lovable" i] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
