@@ -213,6 +213,193 @@ export type Database = {
           },
         ]
       }
+      client_contacts: {
+        Row: {
+          client_id: string
+          clinic_id: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string | null
+          relationship: string
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          clinic_id: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship?: string
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          clinic_id?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string | null
+          relationship?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_contacts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_contacts_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_documents: {
+        Row: {
+          appointment_id: string | null
+          category: string
+          client_id: string
+          clinic_id: string
+          created_at: string
+          description: string | null
+          file_name: string
+          id: string
+          mime_type: string | null
+          size_bytes: number | null
+          storage_path: string
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          appointment_id?: string | null
+          category?: string
+          client_id: string
+          clinic_id: string
+          created_at?: string
+          description?: string | null
+          file_name: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          appointment_id?: string | null
+          category?: string
+          client_id?: string
+          clinic_id?: string
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          id?: string
+          mime_type?: string | null
+          size_bytes?: number | null
+          storage_path?: string
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_documents_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_documents_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      client_medical_info: {
+        Row: {
+          allergies: string | null
+          blood_type: string | null
+          client_id: string
+          clinic_id: string
+          conditions: string | null
+          created_at: string
+          family_history: string | null
+          height_cm: number | null
+          id: string
+          lifestyle: string | null
+          medications: string | null
+          updated_at: string
+          weight_kg: number | null
+        }
+        Insert: {
+          allergies?: string | null
+          blood_type?: string | null
+          client_id: string
+          clinic_id: string
+          conditions?: string | null
+          created_at?: string
+          family_history?: string | null
+          height_cm?: number | null
+          id?: string
+          lifestyle?: string | null
+          medications?: string | null
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Update: {
+          allergies?: string | null
+          blood_type?: string | null
+          client_id?: string
+          clinic_id?: string
+          conditions?: string | null
+          created_at?: string
+          family_history?: string | null
+          height_cm?: number | null
+          id?: string
+          lifestyle?: string | null
+          medications?: string | null
+          updated_at?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_medical_info_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: true
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_medical_info_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinic_clients: {
         Row: {
           clinic_id: string
@@ -307,6 +494,73 @@ export type Database = {
           },
         ]
       }
+      clinical_notes: {
+        Row: {
+          appointment_id: string | null
+          client_id: string
+          clinic_id: string
+          content: Json
+          created_at: string
+          id: string
+          is_locked: boolean
+          kind: Database["public"]["Enums"]["clinical_note_kind"]
+          locked_at: string | null
+          practitioner_id: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          client_id: string
+          clinic_id: string
+          content?: Json
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          kind?: Database["public"]["Enums"]["clinical_note_kind"]
+          locked_at?: string | null
+          practitioner_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          client_id?: string
+          clinic_id?: string
+          content?: Json
+          created_at?: string
+          id?: string
+          is_locked?: boolean
+          kind?: Database["public"]["Enums"]["clinical_note_kind"]
+          locked_at?: string | null
+          practitioner_id?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinical_notes_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_notes_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinical_notes_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clinics: {
         Row: {
           brand_color: string
@@ -351,6 +605,124 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      intake_forms: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          kind: Database["public"]["Enums"]["intake_form_kind"]
+          schema: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["intake_form_kind"]
+          schema?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          kind?: Database["public"]["Enums"]["intake_form_kind"]
+          schema?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_forms_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_responses: {
+        Row: {
+          answers: Json
+          appointment_id: string | null
+          client_id: string
+          clinic_id: string
+          created_at: string
+          form_id: string
+          id: string
+          signature: string | null
+          signed_at: string | null
+          submitted_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          appointment_id?: string | null
+          client_id: string
+          clinic_id: string
+          created_at?: string
+          form_id: string
+          id?: string
+          signature?: string | null
+          signed_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          appointment_id?: string | null
+          client_id?: string
+          clinic_id?: string
+          created_at?: string
+          form_id?: string
+          id?: string
+          signature?: string | null
+          signed_at?: string | null
+          submitted_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_responses_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_responses_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_responses_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_responses_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "intake_forms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       locations: {
         Row: {
@@ -401,6 +773,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "locations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_templates: {
+        Row: {
+          body: Json
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: Database["public"]["Enums"]["clinical_note_kind"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: Json
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["clinical_note_kind"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: Json
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["clinical_note_kind"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_templates_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinics"
@@ -675,6 +1088,8 @@ export type Database = {
         | "cancelled"
       booking_source: "staff" | "client_portal" | "public"
       clinic_role: "owner" | "practitioner" | "receptionist"
+      clinical_note_kind: "soap" | "follow_up" | "couple" | "family" | "general"
+      intake_form_kind: "intake" | "consent" | "questionnaire"
       weekday: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"
     }
     CompositeTypes: {
@@ -814,6 +1229,8 @@ export const Constants = {
       ],
       booking_source: ["staff", "client_portal", "public"],
       clinic_role: ["owner", "practitioner", "receptionist"],
+      clinical_note_kind: ["soap", "follow_up", "couple", "family", "general"],
+      intake_form_kind: ["intake", "consent", "questionnaire"],
       weekday: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     },
   },
