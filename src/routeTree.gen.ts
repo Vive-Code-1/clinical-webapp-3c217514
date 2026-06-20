@@ -26,6 +26,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedAvailabilityRouteImport } from './routes/_authenticated/availability'
+import { Route as ApiPublicIcalTokenDoticsRouteImport } from './routes/api.public.ical.$token[.]ics'
 
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
@@ -112,6 +113,12 @@ const AuthenticatedAvailabilityRoute =
     path: '/availability',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const ApiPublicIcalTokenDoticsRoute =
+  ApiPublicIcalTokenDoticsRouteImport.update({
+    id: '/api/public/ical/$token.ics',
+    path: '/api/public/ical/$token.ics',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByFullPath {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -148,6 +156,7 @@ export interface FileRoutesByTo {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -168,6 +177,7 @@ export interface FileRoutesById {
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
   '/book/$slug': typeof BookSlugRoute
+  '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   id:
     | '__root__'
     | '/'
@@ -225,6 +237,7 @@ export interface FileRouteTypes {
     | '/auth/sign-in'
     | '/auth/sign-up'
     | '/book/$slug'
+    | '/api/public/ical/$token.ics'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -238,6 +251,7 @@ export interface RootRouteChildren {
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
   BookSlugRoute: typeof BookSlugRoute
+  ApiPublicIcalTokenDoticsRoute: typeof ApiPublicIcalTokenDoticsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -361,6 +375,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAvailabilityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/ical/$token.ics': {
+      id: '/api/public/ical/$token.ics'
+      path: '/api/public/ical/$token.ics'
+      fullPath: '/api/public/ical/$token.ics'
+      preLoaderRoute: typeof ApiPublicIcalTokenDoticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -398,6 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
   BookSlugRoute: BookSlugRoute,
+  ApiPublicIcalTokenDoticsRoute: ApiPublicIcalTokenDoticsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

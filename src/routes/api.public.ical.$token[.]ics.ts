@@ -13,25 +13,22 @@ function formatIcsDate(d: Date): string {
   return d.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "");
 }
 
-export const Route = createFileRoute("/api/public/ical/$token[.]ics")({
+export const Route = createFileRoute("/api/public/ical/$token.ics")({
   server: {
     handlers: {
       GET: async ({ params }) => {
-        const token = params.token;
+        const token = (params as Record<string, string>)["token.ics"] ?? (params as Record<string, string>).token;
 
         // UUID format check
-        if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
+        if (!token || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(token)) {
           return new Response("Invalid token", { status: 400 });
         }
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        // Look up profile by token
-        const { data: profile, error: pErr } = await supabaseAdmin
-          .from("profiles")
-          // @ts-expect-error ical_token column added via migration; types not regenerated yet
+        // Look up profile by token (ical_token column added via migration; types not yet regenerated)
+        const { data: profile, error: pErr } = await (supabaseAdmin.from("profiles") as any)
           .select("id, full_name, ical_token")
-          // @ts-expect-error
           .eq("ical_token", token)
           .maybeSingle();
 
