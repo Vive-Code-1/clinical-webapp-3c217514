@@ -15,9 +15,11 @@ import {
 } from "date-fns";
 import { AppShell } from "@/components/app/AppShell";
 import { NewAppointmentDialog } from "@/components/calendar/NewAppointmentDialog";
+import { AppointmentDetailDialog } from "@/components/calendar/AppointmentDetailDialog";
 import {
   myClinicsQuery,
   clinicAppointmentsQuery,
+  type CalendarAppointment,
 } from "@/lib/clinic-queries";
 
 const searchSchema = z.object({
