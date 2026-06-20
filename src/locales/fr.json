@@ -1,0 +1,227 @@
+{
+  "brand": "SANTÉ.",
+  "nav": {
+    "features": "Fonctions",
+    "pricing": "Tarifs",
+    "about": "À propos",
+    "contact": "Contact",
+    "signIn": "Se connecter",
+    "startTrial": "Essai gratuit"
+  },
+  "lang": {
+    "en": "EN",
+    "fr": "FR"
+  },
+  "home": {
+    "metaTitle": "SANTÉ — Le sanctuaire de votre flux clinique",
+    "metaDescription": "Gestion moderne de clinique pour praticiens solos, cliniques multidisciplinaires et un portail client sécurisé. Bilingue FR / EN.",
+    "hero": {
+      "titlePre": "Le sanctuaire de votre",
+      "titleHighlight": "flux clinique",
+      "titlePost": ".",
+      "subtitle": "Tout ce qu'il faut pour gérer une pratique moderne, conçu avec la chaleur d'un bureau bien organisé.",
+      "ctaPrimary": "Essai gratuit",
+      "ctaSecondary": "Réserver une démo",
+      "previewLabel": "Aperçu de l'interface"
+    },
+    "features": {
+      "scheduling": {
+        "title": "Horaires intelligents",
+        "body": "Réservation automatisée qui respecte vos limites. Synchronisation fluide du calendrier pour clinique solo ou multidisciplinaire."
+      },
+      "notes": {
+        "title": "Notes SOAP et cliniques",
+        "body": "Documentation de qualité médicale qui ressemble à l'écriture d'un journal. Sécurisée, chiffrée, parfaitement organisée."
+      },
+      "billing": {
+        "title": "Facturation intégrée",
+        "body": "Paiements et réclamations d'assurance directement intégrés au flux. Soyez payé plus vite, sans friction."
+      }
+    },
+    "scale": {
+      "eyebrow": "Évoluez sereinement",
+      "title": "De la pratique solo à la clinique multi-sites.",
+      "body": "Que vous débutiez ou gériez cinquante praticiens, notre plateforme s'adapte sans perdre la touche humaine.",
+      "items": {
+        "permissions": "Permissions personnalisées du personnel",
+        "reporting": "Rapports centralisés",
+        "portal": "Portail client multilingue"
+      },
+      "imageLabel": "Sanctuaire"
+    }
+  },
+  "features": {
+    "metaTitle": "Fonctions — SANTÉ",
+    "metaDescription": "Horaires, notes cliniques, facturation, téléconsultation et un magnifique portail client — conçus pour les pratiques modernes.",
+    "title": "Des outils pour chaque partie de votre pratique.",
+    "subtitle": "De la première réservation au reçu final — chaque interaction traitée avec soin.",
+    "groups": {
+      "scheduling": {
+        "title": "Horaires et calendrier",
+        "items": [
+          "Réservation en ligne par le client",
+          "Calendrier central avec couleurs, statut et notes",
+          "Synchronisation de calendrier personnel (Google / Apple)",
+          "Lieux, salles et ressources",
+          "Gestion de la disponibilité",
+          "Rappels SMS et courriel automatiques",
+          "Téléconsultation sécurisée intégrée"
+        ]
+      },
+      "billing": {
+        "title": "Facturation, paiements et assurance",
+        "items": [
+          "Facturation automatique, reçus, taxes et forfaits",
+          "Paiements rapides avec cartes enregistrées",
+          "Reçus envoyés automatiquement aux clients"
+        ]
+      },
+      "clinical": {
+        "title": "Dossiers cliniques",
+        "items": [
+          "Notes SOAP, suivi, couple et famille structurées",
+          "Modèles de notes illimités avec bibliothèque experte",
+          "Formulaires d'admission et de consentement",
+          "AI Scribe — capture automatique des notes (anglais, payant)",
+          "Téléversement de documents (PDF, images)"
+        ]
+      },
+      "client": {
+        "title": "Expérience client",
+        "items": [
+          "Application mobile dédiée pour les clients",
+          "Messagerie sécurisée de qualité médicale",
+          "Accès facile aux exercices et documents"
+        ]
+      },
+      "admin": {
+        "title": "Administration et gestion",
+        "items": [
+          "Rapports et statistiques — revenus, performance, tendances",
+          "Intégrations externes (Fullscript, votre site)",
+          "Conforme à la LPRPDE, données hébergées au Canada"
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "metaTitle": "Tarifs — SANTÉ",
+    "metaDescription": "Tarification simple et prévisible pour praticiens solos et cliniques multidisciplinaires.",
+    "title": "Tarification simple. Magnifiquement juste.",
+    "subtitle": "Une seule plateforme, facturation prévisible par praticien. Essai gratuit de 30 jours.",
+    "tiers": {
+      "solo": {
+        "name": "Solo",
+        "price": "59 $",
+        "period": "/ mois",
+        "description": "Pour les praticiens indépendants.",
+        "features": [
+          "1 praticien",
+          "Rendez-vous illimités",
+          "Notes SOAP et modèles",
+          "Portail client et rappels"
+        ],
+        "cta": "Essai gratuit"
+      },
+      "clinic": {
+        "name": "Clinique",
+        "price": "39 $",
+        "period": "/ praticien / mois",
+        "description": "Pour cliniques multidisciplinaires en croissance.",
+        "features": [
+          "2 praticiens ou plus",
+          "Salles, ressources et permissions",
+          "Rapports centralisés",
+          "Support prioritaire"
+        ],
+        "cta": "Essai gratuit",
+        "highlighted": "Le plus populaire"
+      },
+      "enterprise": {
+        "name": "Entreprise",
+        "price": "Sur mesure",
+        "period": "",
+        "description": "Pratiques multi-sites et groupes.",
+        "features": [
+          "Gestionnaire de succès dédié",
+          "Intégration sur mesure",
+          "Rapports avancés",
+          "SLA et revue de sécurité"
+        ],
+        "cta": "Contacter les ventes"
+      }
+    }
+  },
+  "about": {
+    "metaTitle": "À propos — SANTÉ",
+    "metaDescription": "Nous construisons la plateforme de clinique la plus calme et la plus chaleureuse — bilingue et canadienne.",
+    "title": "Conçu avec soin, pour ceux qui prennent soin.",
+    "body": "SANTÉ est une plateforme moderne de gestion de clinique, conçue pour les praticiens du Canada. Bilingue dès le premier jour, pensée pour ressembler moins à un logiciel et plus à un bureau bien organisé.",
+    "values": {
+      "trust": { "title": "Confiance", "body": "Sécurité de qualité médicale avec hébergement canadien conforme LPRPDE." },
+      "warmth": { "title": "Chaleur", "body": "Un logiciel qui semble humain — ni corporatif, ni froid." },
+      "scale": { "title": "Évolution", "body": "Du thérapeute solo à la clinique de cinquante praticiens, sans perdre la touche." }
+    }
+  },
+  "contact": {
+    "metaTitle": "Contact — SANTÉ",
+    "metaDescription": "Parlez à notre équipe de SANTÉ pour votre pratique ou clinique.",
+    "title": "Parlons de votre pratique.",
+    "subtitle": "Dites-nous un mot sur vos besoins, nous vous répondrons en un jour ouvré.",
+    "form": {
+      "name": "Votre nom",
+      "email": "Adresse courriel",
+      "clinic": "Nom de la clinique (facultatif)",
+      "message": "Comment pouvons-nous aider ?",
+      "submit": "Envoyer le message",
+      "success": "Merci — nous vous contacterons sous peu."
+    }
+  },
+  "footer": {
+    "tagline": "Gestion moderne pour le praticien attentif. Sécurisée, intuitive et centrée sur l'humain.",
+    "product": "Produit",
+    "practice": "Pratique",
+    "links": {
+      "scheduling": "Horaires",
+      "billing": "Facturation",
+      "telehealth": "Téléconsultation",
+      "solo": "Praticiens solos",
+      "clinics": "Cliniques",
+      "portal": "Portail patient",
+      "privacy": "Confidentialité",
+      "security": "Sécurité",
+      "hipaa": "Conformité LPRPDE"
+    },
+    "rights": "© {{year}} SANTÉ PLATFORM INC. TOUS DROITS RÉSERVÉS."
+  },
+  "auth": {
+    "signIn": {
+      "metaTitle": "Connexion — SANTÉ",
+      "title": "Bon retour.",
+      "subtitle": "Connectez-vous à votre espace clinique.",
+      "email": "Courriel",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "google": "Continuer avec Google",
+      "noAccount": "Nouveau sur SANTÉ ?",
+      "createAccount": "Créer un compte",
+      "forgot": "Mot de passe oublié ?"
+    },
+    "signUp": {
+      "metaTitle": "Créez votre espace — SANTÉ",
+      "title": "Créez votre espace de travail.",
+      "subtitle": "Commencez votre essai gratuit de 30 jours. Aucune carte requise.",
+      "name": "Votre nom complet",
+      "email": "Courriel",
+      "password": "Mot de passe",
+      "submit": "Créer l'espace",
+      "google": "Continuer avec Google",
+      "haveAccount": "Vous avez déjà un compte ?",
+      "signIn": "Se connecter",
+      "or": "ou"
+    },
+    "errors": {
+      "backendMissing": "L'authentification n'est pas encore connectée. Connectez Supabase pour activer la connexion."
+    }
+  }
+}
