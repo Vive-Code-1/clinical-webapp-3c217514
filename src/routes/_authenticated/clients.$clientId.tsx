@@ -562,7 +562,7 @@ function NotesTab({ clinicId, clientId }: { clinicId: string; clientId: string }
           practitioner_id: userData.user?.id ?? null,
           kind: payload.kind,
           title: payload.title,
-          content: payload.content,
+          content: payload.content as never,
         });
         if (error) throw error;
       }
