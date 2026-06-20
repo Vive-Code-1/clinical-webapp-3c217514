@@ -8,6 +8,7 @@ import {
   CalendarDays,
   Sparkles,
   Clock,
+  MapPin,
   Settings,
   HelpCircle,
   LogOut,
