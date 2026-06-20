@@ -195,9 +195,6 @@ function BookingPage() {
       // Failure here is non-fatal — the booking itself succeeded.
       await supabase.rpc("ensure_self_client_record", {
         _clinic_id: clinicId!,
-        _full_name: null,
-        _email: null,
-        _phone: null,
       });
     },
     onSuccess: () => {
