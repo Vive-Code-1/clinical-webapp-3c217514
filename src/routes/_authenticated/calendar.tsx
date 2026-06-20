@@ -15,9 +15,11 @@ import {
 } from "date-fns";
 import { AppShell } from "@/components/app/AppShell";
 import { NewAppointmentDialog } from "@/components/calendar/NewAppointmentDialog";
+import { AppointmentDetailDialog } from "@/components/calendar/AppointmentDetailDialog";
 import {
   myClinicsQuery,
   clinicAppointmentsQuery,
+  type CalendarAppointment,
 } from "@/lib/clinic-queries";
 
 const searchSchema = z.object({
@@ -63,6 +65,7 @@ function CalendarPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogStart, setDialogStart] = useState<Date | undefined>();
+  const [selected, setSelected] = useState<CalendarAppointment | null>(null);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
@@ -181,6 +184,10 @@ function CalendarPage() {
                   return (
                     <div
                       key={a.id}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        setSelected(a);
+                      }}
                       style={{
                         top: (topMin / 60) * HOUR_PX,
                         height: (heightMin / 60) * HOUR_PX,
@@ -214,6 +221,11 @@ function CalendarPage() {
         onOpenChange={setDialogOpen}
         initialStart={dialogStart}
         defaultPractitionerId={user.id}
+      />
+      <AppointmentDetailDialog
+        clinicId={activeClinicId}
+        appointment={selected}
+        onOpenChange={(o) => !o && setSelected(null)}
       />
     </AppShell>
   );
