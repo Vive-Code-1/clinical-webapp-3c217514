@@ -1,9 +1,18 @@
 import type { ReactNode } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LanguageToggle } from "@/components/site/LanguageToggle";
+import {
+  LayoutDashboard,
+  Users,
+  CalendarDays,
+  Sparkles,
+  Clock,
+  Settings,
+  HelpCircle,
+  LogOut,
+  Leaf,
+} from "lucide-react";
 
 type Props = {
   clinicId?: string;
@@ -11,7 +20,6 @@ type Props = {
 };
 
 export function AppShell({ clinicId, children }: Props) {
-  const { t } = useTranslation();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -25,40 +33,69 @@ export function AppShell({ clinicId, children }: Props) {
   const search = clinicId ? { clinic: clinicId } : undefined;
 
   const navItems = [
-    { to: "/dashboard" as const, label: "Overview" },
-    { to: "/calendar" as const, label: "Calendar" },
-    { to: "/services" as const, label: "Services" },
-    { to: "/availability" as const, label: "Availability" },
+    { to: "/dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
+    { to: "/calendar" as const, label: "Appointment", icon: CalendarDays },
+    { to: "/services" as const, label: "Services", icon: Sparkles },
+    { to: "/availability" as const, label: "Availability", icon: Clock },
+  ];
+
+  const secondary = [
+    { label: "Patient", icon: Users },
+    { label: "Setting", icon: Settings },
+    { label: "Help & Center", icon: HelpCircle },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
-      <aside className="hidden md:flex w-60 flex-col border-r border-border bg-card/40 px-5 py-6">
-        <Link to="/" className="text-lg font-extrabold tracking-tight uppercase mb-10">
-          {t("brand")}
+    <div className="min-h-screen bg-background text-foreground flex p-4 gap-4">
+      <aside className="hidden md:flex w-64 shrink-0 flex-col rounded-3xl bg-sidebar-deep text-sidebar-deep-foreground px-5 py-6">
+        <Link to="/" className="flex items-center gap-2 px-2 mb-10">
+          <span className="grid place-items-center w-9 h-9 rounded-xl bg-sidebar-deep-foreground/10">
+            <Leaf className="w-5 h-5" />
+          </span>
+          <span className="text-xl font-bold tracking-tight">Helanthus</span>
         </Link>
+
         <nav className="flex flex-col gap-1 flex-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.to}
-              to={item.to}
-              search={search}
-              className="px-3 py-2 rounded-lg text-sm font-semibold text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-              activeProps={{ className: "px-3 py-2 rounded-lg text-sm font-semibold bg-accent text-foreground" }}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                search={search}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-deep-foreground/70 hover:text-sidebar-deep-foreground hover:bg-sidebar-deep-foreground/5 transition-colors"
+                activeProps={{
+                  className:
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-sidebar-deep-active text-sidebar-deep-foreground",
+                }}
+              >
+                <Icon className="w-[18px] h-[18px]" />
+                {item.label}
+              </Link>
+            );
+          })}
+          <div className="h-px bg-sidebar-deep-foreground/10 my-3" />
+          {secondary.map((item) => {
+            const Icon = item.icon;
+            return (
+              <div
+                key={item.label}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-deep-foreground/60 cursor-default"
+              >
+                <Icon className="w-[18px] h-[18px]" />
+                {item.label}
+              </div>
+            );
+          })}
         </nav>
-        <div className="flex items-center justify-between gap-2 mt-4">
-          <LanguageToggle />
-          <button
-            onClick={handleSignOut}
-            className="text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
+
+        <button
+          onClick={handleSignOut}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-deep-foreground/70 hover:text-sidebar-deep-foreground hover:bg-sidebar-deep-foreground/5 transition-colors"
+        >
+          <LogOut className="w-[18px] h-[18px]" />
+          Logout
+        </button>
       </aside>
       <main className="flex-1 min-w-0">{children}</main>
     </div>
