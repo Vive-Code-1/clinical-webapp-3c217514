@@ -65,6 +65,7 @@ function CalendarPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogStart, setDialogStart] = useState<Date | undefined>();
+  const [selected, setSelected] = useState<CalendarAppointment | null>(null);
 
   const days = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
