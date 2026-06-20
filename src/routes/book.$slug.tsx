@@ -217,11 +217,21 @@ function BookingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="px-6 py-8 border-b border-border" style={{ borderTopColor: brand, borderTopWidth: 4 }}>
-        <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Book online</p>
-          <h1 className="text-4xl font-extrabold tracking-tight">{clinic.data.name}</h1>
-          {clinic.data.description && (
-            <p className="font-serif text-muted-foreground mt-3 max-w-prose">{clinic.data.description}</p>
+        <div className="max-w-3xl mx-auto flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Book online</p>
+            <h1 className="text-4xl font-extrabold tracking-tight">{clinic.data.name}</h1>
+            {clinic.data.description && (
+              <p className="font-serif text-muted-foreground mt-3 max-w-prose">{clinic.data.description}</p>
+            )}
+          </div>
+          {userId && (
+            <Link
+              to="/my-bookings"
+              className="text-xs font-bold uppercase tracking-widest text-primary hover:underline whitespace-nowrap"
+            >
+              My bookings →
+            </Link>
           )}
         </div>
       </header>
