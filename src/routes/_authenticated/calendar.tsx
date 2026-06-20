@@ -50,6 +50,16 @@ export const Route = createFileRoute("/_authenticated/calendar")({
 const HOURS = Array.from({ length: 12 }, (_, i) => i + 7); // 7am → 6pm
 const HOUR_PX = 56;
 
+const APPT_PALETTE = ["#CBEAFB", "#FFD7E3", "#C9EFD9", "#FEDEC4"] as const;
+function hashId(id: string): number {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+function paletteColor(id: string) {
+  return APPT_PALETTE[hashId(id) % APPT_PALETTE.length]!;
+}
+
 function CalendarPage() {
   const { user, clinics } = Route.useRouteContext();
   const search = Route.useSearch();
@@ -179,7 +189,7 @@ function CalendarPage() {
                   const topMin = differenceInMinutes(s, dayStart);
                   const heightMin = Math.max(20, differenceInMinutes(e, s));
                   if (topMin < 0 || topMin > (HOURS.length) * 60) return null;
-                  const color = a.color || a.service?.color || "#7A5C3A";
+                  const color = paletteColor(a.id);
                   const cancelled = a.status === "cancelled" || a.status === "no_show";
                   return (
                     <div
@@ -191,19 +201,20 @@ function CalendarPage() {
                       style={{
                         top: (topMin / 60) * HOUR_PX,
                         height: (heightMin / 60) * HOUR_PX,
-                        backgroundColor: cancelled ? "transparent" : `${color}26`,
+                        backgroundColor: cancelled ? "transparent" : color,
                         borderLeft: `3px solid ${color}`,
                         opacity: cancelled ? 0.5 : 1,
+                        color: "#1a1a1a",
                       }}
-                      className="absolute left-1 right-1 rounded-lg px-2 py-1 overflow-hidden ring-1 ring-border/60 hover:ring-foreground/30 transition-all cursor-pointer"
+                      className="absolute left-1 right-1 rounded-lg px-2 py-1 overflow-hidden ring-1 ring-black/5 hover:ring-black/30 transition-all cursor-pointer"
                     >
                       <p className="text-[11px] font-bold leading-tight truncate">
                         {a.service?.name || "Appointment"}
                       </p>
-                      <p className="text-[10px] text-muted-foreground truncate">
+                      <p className="text-[10px] opacity-70 truncate">
                         {a.client_name || a.guest_name || "Walk-in"}
                       </p>
-                      <p className="text-[9px] font-mono text-muted-foreground">
+                      <p className="text-[9px] font-mono opacity-60">
                         {format(s, "HH:mm")}–{format(e, "HH:mm")}
                       </p>
                     </div>
