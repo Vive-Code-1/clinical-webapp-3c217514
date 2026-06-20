@@ -41,6 +41,7 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/services" as const, label: "Services", icon: Sparkles },
     { to: "/availability" as const, label: "Availability", icon: Clock },
     { to: "/locations" as const, label: "Locations", icon: MapPin },
+    { to: "/forms" as const, label: "Forms", icon: ClipboardList },
   ];
 
   const secondary = [
