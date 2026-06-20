@@ -1,0 +1,227 @@
+{
+  "brand": "SANTÉ.",
+  "nav": {
+    "features": "Features",
+    "pricing": "Pricing",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign in",
+    "startTrial": "Start free trial"
+  },
+  "lang": {
+    "en": "EN",
+    "fr": "FR"
+  },
+  "home": {
+    "metaTitle": "SANTÉ — The sanctuary for your clinical flow",
+    "metaDescription": "Modern clinic management for solo practitioners, multi-practitioner clinics, and a beautifully secure client portal. Bilingual EN / FR.",
+    "hero": {
+      "titlePre": "The sanctuary for your",
+      "titleHighlight": "clinical flow",
+      "titlePost": ".",
+      "subtitle": "Everything you need to manage a modern practice, designed with the warmth of a well-organized office.",
+      "ctaPrimary": "Start free trial",
+      "ctaSecondary": "Book a demo",
+      "previewLabel": "Product Interface Preview"
+    },
+    "features": {
+      "scheduling": {
+        "title": "Smart Scheduling",
+        "body": "Automated booking that respects your boundaries. Seamless calendar sync for solo or multi-practitioner clinics."
+      },
+      "notes": {
+        "title": "SOAP & Clinical Notes",
+        "body": "Healthcare-grade charting that feels like writing in a journal. Secure, encrypted, and effortlessly organized."
+      },
+      "billing": {
+        "title": "Integrated Billing",
+        "body": "Payment processing and insurance claims built directly into the flow. Get paid faster without the friction."
+      }
+    },
+    "scale": {
+      "eyebrow": "Scale with ease",
+      "title": "From solo practice to multi-location clinic.",
+      "body": "Whether you're just starting out or managing fifty practitioners, our platform adapts to your scale without losing the human touch.",
+      "items": {
+        "permissions": "Custom staff permissions",
+        "reporting": "Centralized reporting",
+        "portal": "Multilingual client portal"
+      },
+      "imageLabel": "Sanctuary"
+    }
+  },
+  "features": {
+    "metaTitle": "Features — SANTÉ",
+    "metaDescription": "Scheduling, clinical notes, billing, telehealth, and a beautiful client portal — built for modern practices.",
+    "title": "Tools for every part of your practice.",
+    "subtitle": "From the first booking to the final receipt — every interaction handled with care.",
+    "groups": {
+      "scheduling": {
+        "title": "Scheduling & Calendar",
+        "items": [
+          "Online client self-booking",
+          "Central calendar with colour, status & notes",
+          "Personal calendar sync (Google / Apple)",
+          "Locations, rooms & resources",
+          "Availability management",
+          "Automatic SMS & email reminders",
+          "Secure built-in tele-consultation"
+        ]
+      },
+      "billing": {
+        "title": "Billing, Payments & Insurance",
+        "items": [
+          "Automated invoicing, receipts, tax & packages",
+          "Fast payments with saved cards",
+          "Auto-sent receipts to clients"
+        ]
+      },
+      "clinical": {
+        "title": "Clinical Records",
+        "items": [
+          "Structured SOAP, follow-up, couple & family notes",
+          "Unlimited note templates with expert library",
+          "Intake & consent forms",
+          "AI Scribe — automated note capture (English, paid add-on)",
+          "Document upload (PDF, images)"
+        ]
+      },
+      "client": {
+        "title": "Client Experience",
+        "items": [
+          "Dedicated mobile app for clients",
+          "Secure healthcare-grade messaging",
+          "Easy access to exercises and documents"
+        ]
+      },
+      "admin": {
+        "title": "Admin & Clinic Management",
+        "items": [
+          "Reports & insights — revenue, performance, trends",
+          "External integrations (Fullscript, your website)",
+          "PIPEDA-compliant, data stored in Canada"
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "metaTitle": "Pricing — SANTÉ",
+    "metaDescription": "Simple, predictable pricing for solo practitioners and multi-practitioner clinics.",
+    "title": "Simple pricing. Beautifully fair.",
+    "subtitle": "One platform, predictable per-practitioner billing. Try free for 30 days.",
+    "tiers": {
+      "solo": {
+        "name": "Solo",
+        "price": "$59",
+        "period": "/ month",
+        "description": "For independent practitioners.",
+        "features": [
+          "1 practitioner",
+          "Unlimited appointments",
+          "SOAP notes & templates",
+          "Client portal & reminders"
+        ],
+        "cta": "Start free trial"
+      },
+      "clinic": {
+        "name": "Clinic",
+        "price": "$39",
+        "period": "/ practitioner / month",
+        "description": "For growing multi-disciplinary clinics.",
+        "features": [
+          "2+ practitioners",
+          "Rooms, resources & permissions",
+          "Centralized reporting",
+          "Priority support"
+        ],
+        "cta": "Start free trial",
+        "highlighted": "Most popular"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "period": "",
+        "description": "Multi-location practices and groups.",
+        "features": [
+          "Dedicated success manager",
+          "Custom onboarding",
+          "Advanced reporting",
+          "SLA and security review"
+        ],
+        "cta": "Contact sales"
+      }
+    }
+  },
+  "about": {
+    "metaTitle": "About — SANTÉ",
+    "metaDescription": "We're building the calmest, warmest clinic platform — bilingual and Canadian.",
+    "title": "Built with care, for those who care.",
+    "body": "SANTÉ is a modern clinic management platform built for practitioners across Canada. Bilingual from day one, designed to feel less like software and more like a well-organized office.",
+    "values": {
+      "trust": { "title": "Trust", "body": "Healthcare-grade security with PIPEDA-compliant Canadian data residency." },
+      "warmth": { "title": "Warmth", "body": "Software that feels human — not corporate, not cold." },
+      "scale": { "title": "Scale", "body": "From solo therapists to fifty-practitioner clinics, without losing the touch." }
+    }
+  },
+  "contact": {
+    "metaTitle": "Contact — SANTÉ",
+    "metaDescription": "Talk to our team about SANTÉ for your practice or clinic.",
+    "title": "Let's talk about your practice.",
+    "subtitle": "Tell us a bit about your needs and we'll be in touch within one business day.",
+    "form": {
+      "name": "Your name",
+      "email": "Email address",
+      "clinic": "Clinic name (optional)",
+      "message": "How can we help?",
+      "submit": "Send message",
+      "success": "Thanks — we'll be in touch soon."
+    }
+  },
+  "footer": {
+    "tagline": "Modern management for the mindful practitioner. Secure, intuitive, and human-centric.",
+    "product": "Product",
+    "practice": "Practice",
+    "links": {
+      "scheduling": "Scheduling",
+      "billing": "Billing",
+      "telehealth": "Telehealth",
+      "solo": "Solo Practitioners",
+      "clinics": "Clinics",
+      "portal": "Patient Portal",
+      "privacy": "Privacy",
+      "security": "Security",
+      "hipaa": "PIPEDA Compliance"
+    },
+    "rights": "© {{year}} SANTÉ PLATFORM INC. ALL RIGHTS RESERVED."
+  },
+  "auth": {
+    "signIn": {
+      "metaTitle": "Sign in — SANTÉ",
+      "title": "Welcome back.",
+      "subtitle": "Sign in to your clinic workspace.",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "google": "Continue with Google",
+      "noAccount": "New to SANTÉ?",
+      "createAccount": "Create an account",
+      "forgot": "Forgot password?"
+    },
+    "signUp": {
+      "metaTitle": "Create your workspace — SANTÉ",
+      "title": "Create your workspace.",
+      "subtitle": "Start your 30-day free trial. No credit card required.",
+      "name": "Your full name",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Create workspace",
+      "google": "Continue with Google",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "or": "or"
+    },
+    "errors": {
+      "backendMissing": "Authentication is not yet connected. Connect Supabase to enable sign-in."
+    }
+  }
+}
