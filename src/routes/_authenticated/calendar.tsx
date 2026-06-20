@@ -222,6 +222,11 @@ function CalendarPage() {
         initialStart={dialogStart}
         defaultPractitionerId={user.id}
       />
+      <AppointmentDetailDialog
+        clinicId={activeClinicId}
+        appointment={selected}
+        onOpenChange={(o) => !o && setSelected(null)}
+      />
     </AppShell>
   );
 }
