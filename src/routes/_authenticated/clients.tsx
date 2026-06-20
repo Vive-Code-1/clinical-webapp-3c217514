@@ -376,11 +376,19 @@ function ClientDetail({
       )}
 
       <div className="flex gap-2 mb-5">
-        <button
-          onClick={onEdit}
+        <Link
+          to="/clients/$clientId"
+          params={{ clientId: client.id }}
+          search={{ clinic: clinicId }}
           className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground rounded-full h-9 text-sm font-semibold hover:brightness-110"
         >
-          <Pencil className="w-3.5 h-3.5" /> Edit
+          <ExternalLink className="w-3.5 h-3.5" /> Open profile
+        </Link>
+        <button
+          onClick={onEdit}
+          className="flex items-center justify-center gap-2 bg-accent text-foreground rounded-full h-9 px-4 text-sm font-semibold hover:bg-accent/80"
+        >
+          <Pencil className="w-3.5 h-3.5" />
         </button>
         <button
           onClick={() => {
