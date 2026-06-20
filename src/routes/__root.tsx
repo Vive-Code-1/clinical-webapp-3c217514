@@ -87,6 +87,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { property: "og:title", content: "SANTÉ — The sanctuary for your clinical flow" },
+      { name: "twitter:title", content: "SANTÉ — The sanctuary for your clinical flow" },
+      { name: "description", content: "Jane's Practice Hub is a comprehensive clinic management platform for appointment scheduling, billing, and patient records." },
+      { property: "og:description", content: "Jane's Practice Hub is a comprehensive clinic management platform for appointment scheduling, billing, and patient records." },
+      { name: "twitter:description", content: "Jane's Practice Hub is a comprehensive clinic management platform for appointment scheduling, billing, and patient records." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/a7uxPWDUuQTJL38PxBQzg0idiRd2/social-images/social-1781921301447-Fabook_cover-01.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/a7uxPWDUuQTJL38PxBQzg0idiRd2/social-images/social-1781921301447-Fabook_cover-01.webp" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
