@@ -9,6 +9,7 @@ import {
   Sparkles,
   Clock,
   MapPin,
+  ClipboardList,
   Settings,
   HelpCircle,
   LogOut,

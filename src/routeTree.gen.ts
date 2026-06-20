@@ -23,6 +23,7 @@ import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMyBookingsRouteImport } from './routes/_authenticated/my-bookings'
 import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
+import { Route as AuthenticatedFormsRouteImport } from './routes/_authenticated/forms'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
@@ -99,6 +100,11 @@ const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
   path: '/locations',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedFormsRoute = AuthenticatedFormsRouteImport.update({
+  id: '/forms',
+  path: '/forms',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -143,6 +149,7 @@ export interface FileRoutesByFullPath {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/forms': typeof AuthenticatedFormsRoute
   '/locations': typeof AuthenticatedLocationsRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -164,6 +171,7 @@ export interface FileRoutesByTo {
   '/calendar': typeof AuthenticatedCalendarRoute
   '/clients': typeof AuthenticatedClientsRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/forms': typeof AuthenticatedFormsRoute
   '/locations': typeof AuthenticatedLocationsRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   '/_authenticated/calendar': typeof AuthenticatedCalendarRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/forms': typeof AuthenticatedFormsRoute
   '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -210,6 +219,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/clients'
     | '/dashboard'
+    | '/forms'
     | '/locations'
     | '/my-bookings'
     | '/onboarding'
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/calendar'
     | '/clients'
     | '/dashboard'
+    | '/forms'
     | '/locations'
     | '/my-bookings'
     | '/onboarding'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/_authenticated/calendar'
     | '/_authenticated/clients'
     | '/_authenticated/dashboard'
+    | '/_authenticated/forms'
     | '/_authenticated/locations'
     | '/_authenticated/my-bookings'
     | '/_authenticated/onboarding'
@@ -379,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLocationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/forms': {
+      id: '/_authenticated/forms'
+      path: '/forms'
+      fullPath: '/forms'
+      preLoaderRoute: typeof AuthenticatedFormsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -440,6 +459,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCalendarRoute: typeof AuthenticatedCalendarRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedFormsRoute: typeof AuthenticatedFormsRoute
   AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedMyBookingsRoute: typeof AuthenticatedMyBookingsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -451,6 +471,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCalendarRoute: AuthenticatedCalendarRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedFormsRoute: AuthenticatedFormsRoute,
   AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedMyBookingsRoute: AuthenticatedMyBookingsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
