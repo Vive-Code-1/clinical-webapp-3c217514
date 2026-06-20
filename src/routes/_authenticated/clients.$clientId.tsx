@@ -75,7 +75,7 @@ function ClientProfilePage() {
   });
 
   const setTab = (t: Tab) =>
-    navigate({ search: (prev) => ({ ...prev, tab: t === "overview" ? undefined : t }) });
+    navigate({ search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, tab: t === "overview" ? undefined : t }) });
 
   const c = client.data;
 
