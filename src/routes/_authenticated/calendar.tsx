@@ -184,6 +184,10 @@ function CalendarPage() {
                   return (
                     <div
                       key={a.id}
+                      onClick={(ev) => {
+                        ev.stopPropagation();
+                        setSelected(a);
+                      }}
                       style={{
                         top: (topMin / 60) * HOUR_PX,
                         height: (heightMin / 60) * HOUR_PX,
