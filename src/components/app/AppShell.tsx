@@ -27,6 +27,8 @@ export function AppShell({ clinicId, children }: Props) {
   const navItems = [
     { to: "/dashboard" as const, label: "Overview" },
     { to: "/calendar" as const, label: "Calendar" },
+    { to: "/services" as const, label: "Services" },
+    { to: "/availability" as const, label: "Availability" },
   ];
 
   return (
