@@ -1040,7 +1040,7 @@ function IntakeTab({ clinicId, clientId }: { clinicId: string; clientId: string 
         clinic_id: clinicId,
         form_id: form.id,
         client_id: clientId,
-        answers,
+        answers: answers as never,
         signature: signature || null,
         signed_at: signature ? new Date().toISOString() : null,
         submitted_by: userData.user?.id ?? null,
