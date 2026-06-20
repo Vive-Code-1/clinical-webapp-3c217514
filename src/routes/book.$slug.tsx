@@ -187,7 +187,7 @@ function BookingPage() {
         starts_at: slot.toISOString(),
         ends_at: endsAt.toISOString(),
         status: "scheduled",
-        booking_source: "online",
+        booking_source: "client_portal",
         color: selectedService!.color,
       });
       if (error) throw error;
@@ -271,7 +271,7 @@ function BookingPage() {
                   <button
                     key={p.user_id}
                     onClick={() =>
-                      navigate({ search: (prev) => ({ ...prev, practitioner: p.user_id, date: undefined }) })
+                      navigate({ search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, practitioner: p.user_id, date: undefined }) })
                     }
                     className={`p-4 rounded-2xl ring-1 transition-all text-left ${
                       active ? "ring-primary bg-primary/5" : "ring-border bg-card hover:ring-foreground/30"
@@ -295,7 +295,7 @@ function BookingPage() {
           <Step n={3} title="Pick a date">
             <DatePicker
               selected={search.date ?? ""}
-              onChange={(d) => navigate({ search: (prev) => ({ ...prev, date: d }) })}
+              onChange={(d) => navigate({ search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, date: d }) })}
             />
           </Step>
         )}
