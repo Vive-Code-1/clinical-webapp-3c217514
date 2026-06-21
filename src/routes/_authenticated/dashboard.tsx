@@ -187,7 +187,7 @@ function DashboardPage() {
               <p className="text-xs text-muted-foreground mt-0.5 truncate">@{username}</p>
             )}
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap w-full sm:w-auto sm:shrink-0">
             <div className="hidden xl:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-60 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
@@ -195,7 +195,9 @@ function DashboardPage() {
                 className="bg-transparent text-sm outline-none flex-1 min-w-0"
               />
             </div>
-            <RangePicker current={range} />
+            <div className="flex-1 sm:flex-none min-w-0">
+              <RangePicker current={range} fill />
+            </div>
             <div className="hidden lg:block">
               <LanguageToggle />
             </div>
@@ -267,7 +269,7 @@ function DashboardPage() {
   );
 }
 
-function RangePicker({ current }: { current: Range }) {
+function RangePicker({ current, fill }: { current: Range; fill?: boolean }) {
   const { t } = useAppTranslation();
   const labels: Record<Range, string> = {
     today: t("app.dashboard.today"),
@@ -276,14 +278,14 @@ function RangePicker({ current }: { current: Range }) {
     year: t("app.dashboard.year"),
   };
   return (
-    <div className="inline-flex items-center gap-0.5 bg-card rounded-full p-1 ring-1 ring-border text-[10px] sm:text-xs font-medium">
+    <div className={`${fill ? "flex w-full sm:inline-flex sm:w-auto" : "inline-flex"} items-center gap-0.5 bg-card rounded-full p-1 ring-1 ring-border text-[10px] sm:text-xs font-medium`}>
       {RANGES.map((r) => (
         <Link
           key={r}
           to="/dashboard"
           search={{ range: r }}
           resetScroll={false}
-          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors whitespace-nowrap ${
+          className={`${fill ? "flex-1 sm:flex-none text-center" : ""} px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors whitespace-nowrap ${
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
