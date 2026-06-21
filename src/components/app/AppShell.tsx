@@ -37,7 +37,7 @@ export function AppShell({ clinicId, children }: Props) {
     enabled: !!clinicId,
   });
 
-  const [userId, setUserId] = useUserId();
+  const userId = useUserId();
   const profile = useQuery({
     ...myProfileQuery(userId ?? ""),
     enabled: !!userId,
