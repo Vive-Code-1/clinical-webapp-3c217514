@@ -131,6 +131,33 @@ function InvoiceDetailPage() {
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const queryClient = useQueryClient();
   const [payOpen, setPayOpen] = useState(false);
+  const navigate = Route.useNavigate();
+  const checkoutStripe = useServerFn(createInvoiceCheckout);
+  const [payingStripe, setPayingStripe] = useState(false);
+
+  useEffect(() => {
+    if (search.checkout === "success") {
+      toast.success("Payment received — refreshing invoice.");
+      queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
+      navigate({ search: (p) => ({ ...p, checkout: undefined }), replace: true });
+    } else if (search.checkout === "cancelled") {
+      toast.info("Checkout cancelled.");
+      navigate({ search: (p) => ({ ...p, checkout: undefined }), replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.checkout]);
+
+  const payWithStripe = async () => {
+    try {
+      setPayingStripe(true);
+      const res = await checkoutStripe({ data: { invoiceId } });
+      if (res?.url) window.location.href = res.url;
+    } catch (e: any) {
+      toast.error(e.message ?? "Could not start Stripe checkout");
+    } finally {
+      setPayingStripe(false);
+    }
+  };
 
   const inv = useQuery({
     queryKey: ["invoice", invoiceId],
