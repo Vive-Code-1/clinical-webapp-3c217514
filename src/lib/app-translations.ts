@@ -42,7 +42,7 @@ export function useAppTranslation() {
     const translated = translate(key, {
       ...options,
       defaultValue: typeof fallback === "string" ? fallback : undefined,
-    });
+    }) as TranslationValue;
 
     if (translated === key && fallback !== undefined) {
       return interpolate(fallback, options);
