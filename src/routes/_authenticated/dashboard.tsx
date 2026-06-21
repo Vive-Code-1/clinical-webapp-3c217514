@@ -334,29 +334,31 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 function Legend() {
+  const { t } = useAppTranslation();
   return (
     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
       <span className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-[var(--chart-1)]" /> Clinic
+        <span className="w-2 h-2 rounded-full bg-[var(--chart-1)]" /> {t("app.dashboard.clinic")}
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-[var(--chart-3)]" /> Online
+        <span className="w-2 h-2 rounded-full bg-[var(--chart-3)]" /> {t("app.dashboard.online")}
       </span>
     </div>
   );
 }
 
 function PatientOverview({ total }: { total: number }) {
+  const { t } = useAppTranslation();
   const data = [
-    { name: "Adult", value: 10, color: "var(--chart-1)" },
-    { name: "Child", value: 8, color: "var(--chart-4)" },
-    { name: "Teen", value: 40, color: "var(--chart-1)" },
-    { name: "Older", value: 12, color: "var(--chart-3)" },
+    { name: t("app.dashboard.adult"), value: 10, color: "var(--chart-1)" },
+    { name: t("app.dashboard.child"), value: 8, color: "var(--chart-4)" },
+    { name: t("app.dashboard.teen"), value: 40, color: "var(--chart-1)" },
+    { name: t("app.dashboard.older"), value: 12, color: "var(--chart-3)" },
   ];
   return (
     <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold">Patient Overview</h3>
+        <h3 className="font-semibold">{t("app.dashboard.patientOverview")}</h3>
         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
       </div>
       <div className="relative h-44">
@@ -372,7 +374,7 @@ function PatientOverview({ total }: { total: number }) {
         <div className="absolute inset-0 grid place-items-center pointer-events-none">
           <div className="text-center">
             <div className="text-2xl font-extrabold">{total}</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Total</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("app.dashboard.total")}</div>
           </div>
         </div>
       </div>
@@ -398,27 +400,28 @@ function PatientsTable({
   todayCount: number;
   currentRange: Range;
 }) {
+  const { t } = useAppTranslation();
   const tabs: { key: Range; label: string }[] = [
-    { key: "today", label: "Daily" },
-    { key: "week", label: "Weekly" },
-    { key: "month", label: "Monthly" },
-    { key: "year", label: "Yearly" },
+    { key: "today", label: t("app.dashboard.daily") },
+    { key: "week", label: t("app.dashboard.weekly") },
+    { key: "month", label: t("app.dashboard.monthly") },
+    { key: "year", label: t("app.dashboard.yearly") },
   ];
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive min-w-0">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Patients <span className="text-xs text-muted-foreground ml-2">{todayCount} today</span></h3>
+        <h3 className="font-semibold">{t("app.dashboard.patients")} <span className="text-xs text-muted-foreground ml-2">{t("app.dashboard.todayCount", { count: todayCount })}</span></h3>
         <div className="flex items-center gap-1 bg-muted rounded-full p-1 text-xs">
-          {tabs.map((t) => (
+          {tabs.map((tab) => (
             <Link
-              key={t.key}
+              key={tab.key}
               to="/dashboard"
-              search={{ range: t.key }}
+              search={{ range: tab.key }}
               className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                t.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {t.label}
+              {tab.label}
             </Link>
           ))}
         </div>
@@ -427,19 +430,19 @@ function PatientsTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="text-[11px] uppercase tracking-widest text-muted-foreground border-b border-border">
-              <th className="text-left font-medium py-2 pr-4">Name</th>
-              <th className="text-left font-medium py-2 pr-4">Age</th>
-              <th className="text-left font-medium py-2 pr-4">Date & Time</th>
-              <th className="text-left font-medium py-2 pr-4">Appointed For</th>
-              <th className="text-left font-medium py-2 pr-4">Report</th>
-              <th className="text-left font-medium py-2 pr-4">Action</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.name")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.age")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.dateTime")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.appointedFor")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.report")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.action")}</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">No patients in this range.</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">{t("app.dashboard.noPatients")}</td></tr>
             ) : rows.map((r) => {
-              const name = r.client_name || r.guest_name || "Walk-in";
+              const name = r.client_name || r.guest_name || t("app.dashboard.walkIn");
               const initial = name.charAt(0);
               const d = new Date(r.starts_at);
               return (
@@ -454,10 +457,10 @@ function PatientsTable({
                   <td className="py-3 pr-4 text-muted-foreground">
                     {d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} · {d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </td>
-                  <td className="py-3 pr-4 text-muted-foreground">{r.service?.name || "Consultation"}</td>
+                  <td className="py-3 pr-4 text-muted-foreground">{r.service?.name || t("app.dashboard.consultation")}</td>
                   <td className="py-3 pr-4 text-muted-foreground">📄</td>
                   <td className="py-3 pr-4">
-                    <Link to="/calendar" className="text-xs font-semibold text-primary hover:underline">View</Link>
+                    <Link to="/calendar" className="text-xs font-semibold text-primary hover:underline">{t("app.dashboard.view")}</Link>
                   </td>
                 </tr>
               );
