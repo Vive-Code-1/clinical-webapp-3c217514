@@ -238,8 +238,8 @@ function TimeGrid({
   onApptClick: (a: CalendarAppointment) => void;
 }) {
   const cols = days.length;
-  const gridTemplate = `60px repeat(${cols}, minmax(0, 1fr))`;
-  const minW = cols === 1 ? "min-w-[400px]" : "min-w-[900px]";
+  const gridTemplate = `48px repeat(${cols}, minmax(0, 1fr))`;
+  const minW = cols === 1 ? "min-w-[320px]" : "min-w-[640px] sm:min-w-[900px]";
 
   return (
     <div className="overflow-auto">
@@ -353,7 +353,7 @@ function MonthGrid({
 
   return (
     <div className="overflow-auto">
-      <div className="min-w-[900px] grid grid-cols-7 border-b border-border bg-card/40">
+      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 border-b border-border bg-card/40">
         {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d) => (
           <div
             key={d}
@@ -363,7 +363,7 @@ function MonthGrid({
           </div>
         ))}
       </div>
-      <div className="min-w-[900px] grid grid-cols-7 grid-rows-6">
+      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 grid-rows-6">
         {cells.map((d) => {
           const inMonth = isSameMonth(d, anchor);
           const isToday = isSameDay(d, today);

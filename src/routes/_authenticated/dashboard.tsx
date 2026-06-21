@@ -278,13 +278,13 @@ function RangePicker({ current }: { current: Range }) {
     year: t("app.dashboard.year"),
   };
   return (
-    <div className="flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
+    <div className="inline-flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
       {RANGES.map((r) => (
         <Link
           key={r}
           to="/dashboard"
           search={{ range: r }}
-          className={`px-3 py-1.5 rounded-full transition-colors ${
+          className={`px-3 py-1.5 rounded-full transition-colors whitespace-nowrap ${
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
@@ -414,21 +414,23 @@ function PatientsTable({
   ];
   return (
     <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive min-w-0">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
         <h3 className="font-semibold">{t("app.dashboard.patients")} <span className="text-xs text-muted-foreground ml-2">{t("app.dashboard.todayCount", { count: todayCount })}</span></h3>
-        <div className="flex items-center gap-1 bg-muted rounded-full p-1 text-xs">
-          {tabs.map((tab) => (
-            <Link
-              key={tab.key}
-              to="/dashboard"
-              search={{ range: tab.key }}
-              className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {tab.label}
-            </Link>
-          ))}
+        <div className="-mx-1 overflow-x-auto">
+          <div className="inline-flex items-center gap-1 bg-muted rounded-full p-1 text-xs">
+            {tabs.map((tab) => (
+              <Link
+                key={tab.key}
+                to="/dashboard"
+                search={{ range: tab.key }}
+                className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
+                  tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
       <div className="overflow-x-auto">
