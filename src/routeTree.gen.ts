@@ -19,6 +19,7 @@ import { Route as BookSlugRouteImport } from './routes/book.$slug'
 import { Route as AuthSignUpRouteImport } from './routes/auth.sign-up'
 import { Route as AuthSignInRouteImport } from './routes/auth.sign-in'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -87,6 +88,11 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedServicesRoute = AuthenticatedServicesRouteImport.update({
   id: '/services',
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/services': typeof AuthenticatedServicesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
@@ -241,6 +248,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/services': typeof AuthenticatedServicesRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/auth/sign-in': typeof AuthSignInRoute
   '/auth/sign-up': typeof AuthSignUpRoute
@@ -305,6 +314,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reports'
     | '/services'
+    | '/settings'
     | '/auth/callback'
     | '/auth/sign-in'
     | '/auth/sign-up'
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/reports'
     | '/services'
+    | '/settings'
     | '/auth/callback'
     | '/auth/sign-in'
     | '/auth/sign-up'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/reports'
     | '/_authenticated/services'
+    | '/_authenticated/settings'
     | '/auth/callback'
     | '/auth/sign-in'
     | '/auth/sign-up'
@@ -463,6 +475,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/callback'
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/services': {
       id: '/_authenticated/services'
@@ -639,6 +658,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedTelehealthAppointmentIdRoute: typeof AuthenticatedTelehealthAppointmentIdRoute
 }
 
@@ -657,6 +677,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedTelehealthAppointmentIdRoute:
     AuthenticatedTelehealthAppointmentIdRoute,
 }
