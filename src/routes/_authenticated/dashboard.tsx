@@ -187,7 +187,7 @@ function DashboardPage() {
               <p className="text-xs text-muted-foreground mt-0.5 truncate">@{username}</p>
             )}
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap w-full sm:w-auto justify-between sm:justify-end">
             <div className="hidden xl:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-60 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
