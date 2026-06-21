@@ -173,7 +173,7 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
 }
 
 // Tiny hook to lazily read auth user id without prop-drilling.
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 function useUserId(): string | null {
   const [id, setId] = useState<string | null>(null);
   useEffect(() => {
