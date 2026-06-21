@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   TrendingUp,
   CalendarCheck,
@@ -10,10 +10,12 @@ import {
   Wallet,
   Users,
   Sparkles,
+  Wand2,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { getClinicReport, type ReportRange } from "@/lib/reports.functions";
+import { buildDemoReport, isEmptyReport } from "@/lib/reports-demo";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
@@ -56,13 +58,22 @@ function ReportsPage() {
     queryFn: () => fetchReport({ data: { clinicId: activeClinicId, range } }),
   });
 
+  const liveEmpty = isEmptyReport(report.data);
+  const [demoOverride, setDemoOverride] = useState<null | boolean>(null);
+  const demoActive = demoOverride ?? liveEmpty;
+  const demoData = useMemo(
+    () => buildDemoReport(range, report.data?.currency ?? "USD"),
+    [range, report.data?.currency],
+  );
+  const view = demoActive ? demoData : report.data;
+
   const fmt = useMemo(
     () =>
       new Intl.NumberFormat(undefined, {
         style: "currency",
-        currency: report.data?.currency ?? "USD",
+        currency: view?.currency ?? "USD",
       }),
-    [report.data?.currency],
+    [view?.currency],
   );
   const money = (cents: number) => fmt.format((cents ?? 0) / 100);
 
