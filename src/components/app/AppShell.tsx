@@ -13,9 +13,9 @@ import {
   Receipt,
   MessageSquare,
   Settings,
-  HelpCircle,
   LogOut,
   Leaf,
+  BarChart3,
 } from "lucide-react";
 
 type Props = {
@@ -46,14 +46,13 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/forms" as const, label: "Forms", icon: ClipboardList },
     { to: "/invoices" as const, label: "Invoices", icon: Receipt },
     { to: "/messages" as const, label: "Messages", icon: MessageSquare },
-    { to: "/billing-settings" as const, label: "Billing", icon: Settings },
+    { to: "/reports" as const, label: "Reports", icon: BarChart3 },
+    { to: "/billing-settings" as const, label: "Billing", icon: Receipt },
     { to: "/integrations" as const, label: "Integrations", icon: Sparkles },
   ];
 
   const secondary = [
-    { label: "Setting", icon: Settings },
-    { label: "Help & Center", icon: HelpCircle },
-
+    { to: "/settings" as const, label: "Settings", icon: Settings },
   ];
 
   return (
@@ -89,13 +88,19 @@ export function AppShell({ clinicId, children }: Props) {
           {secondary.map((item) => {
             const Icon = item.icon;
             return (
-              <div
-                key={item.label}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-deep-foreground/60 cursor-default"
+              <Link
+                key={item.to}
+                to={item.to}
+                search={search}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-deep-foreground/70 hover:text-sidebar-deep-foreground hover:bg-sidebar-deep-foreground/5 transition-colors"
+                activeProps={{
+                  className:
+                    "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold bg-sidebar-deep-active text-sidebar-deep-foreground",
+                }}
               >
                 <Icon className="w-[18px] h-[18px]" />
                 {item.label}
-              </div>
+              </Link>
             );
           })}
         </nav>

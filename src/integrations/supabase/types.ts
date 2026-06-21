@@ -588,6 +588,7 @@ export type Database = {
       clinics: {
         Row: {
           brand_color: string
+          brand_font: string
           created_at: string
           currency: string
           description: string | null
@@ -602,6 +603,7 @@ export type Database = {
         }
         Insert: {
           brand_color?: string
+          brand_font?: string
           created_at?: string
           currency?: string
           description?: string | null
@@ -616,6 +618,7 @@ export type Database = {
         }
         Update: {
           brand_color?: string
+          brand_font?: string
           created_at?: string
           currency?: string
           description?: string | null
