@@ -1882,7 +1882,79 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_availability_overrides_v: {
+        Row: {
+          clinic_id: string | null
+          end_time: string | null
+          id: string | null
+          is_closed: boolean | null
+          override_date: string | null
+          practitioner_id: string | null
+          start_time: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          end_time?: string | null
+          id?: string | null
+          is_closed?: boolean | null
+          override_date?: string | null
+          practitioner_id?: string | null
+          start_time?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          end_time?: string | null
+          id?: string | null
+          is_closed?: boolean | null
+          override_date?: string | null
+          practitioner_id?: string | null
+          start_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "availability_overrides_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_clinic_members_v: {
+        Row: {
+          clinic_id: string | null
+          id: string | null
+          is_active: boolean | null
+          role: Database["public"]["Enums"]["clinic_role"] | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clinic_id?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          role?: Database["public"]["Enums"]["clinic_role"] | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clinic_id?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          role?: Database["public"]["Enums"]["clinic_role"] | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_members_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       _log_audit: {
