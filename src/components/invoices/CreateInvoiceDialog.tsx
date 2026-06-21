@@ -2,6 +2,8 @@ import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { fmtMoney, type ClientLite, type ServiceLite } from "./types";
+import { InvoiceLineItemRow, type LineItem } from "./InvoiceLineItemRow";
+
 
 /** Submit payload — kept identical to the existing route mutation contract. */
 export type CreateInvoicePayload = {
@@ -41,14 +43,18 @@ export function CreateInvoiceDialog({
   const [currency, setCurrency] = useState("CAD");
   const [dueAt, setDueAt] = useState("");
   const [notes, setNotes] = useState("");
-  const [items, setItems] = useState<
-    { description: string; quantity: number; unit_price: number; tax_pct: number; service_type_id: string }[]
-  >([{ description: "", quantity: 1, unit_price: 0, tax_pct: 0, service_type_id: "" }]);
+  const [items, setItems] = useState<LineItem[]>([
+    { description: "", quantity: 1, unit_price: 0, tax_pct: 0, service_type_id: "" },
+  ]);
+
 
   const handleAddItem = () =>
     setItems((s) => [...s, { description: "", quantity: 1, unit_price: 0, tax_pct: 0, service_type_id: "" }]);
 
   const handleRemove = (i: number) => setItems((s) => s.filter((_, idx) => idx !== i));
+
+  const handlePatch = (i: number, patch: Partial<LineItem>) =>
+    setItems((s) => s.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
 
   const handleServiceChange = (i: number, sid: string) => {
     const svc = services.find((s) => s.id === sid);
@@ -65,6 +71,7 @@ export function CreateInvoiceDialog({
       ),
     );
   };
+
 
   const subtotal = items.reduce((a, it) => a + it.quantity * it.unit_price * 100, 0);
   const tax = items.reduce((a, it) => a + (it.quantity * it.unit_price * 100 * it.tax_pct) / 100, 0);
@@ -145,74 +152,19 @@ export function CreateInvoiceDialog({
             </div>
             <div className="space-y-2">
               {items.map((it, i) => (
-                <div key={i} className="grid grid-cols-12 gap-2 items-end">
-                  <select
-                    value={it.service_type_id}
-                    onChange={(e) => handleServiceChange(i, e.target.value)}
-                    className="col-span-3 px-2 py-2 rounded-lg border border-input bg-background text-xs"
-                  >
-                    <option value="">Custom</option>
-                    {services.map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
-                  <input
-                    placeholder="Description"
-                    value={it.description}
-                    onChange={(e) =>
-                      setItems((s) => s.map((x, idx) => (idx === i ? { ...x, description: e.target.value } : x)))
-                    }
-                    className="col-span-4 px-2 py-2 rounded-lg border border-input bg-background text-sm"
-                  />
-                  <input
-                    type="number"
-                    step="0.5"
-                    min="0"
-                    value={it.quantity}
-                    onChange={(e) =>
-                      setItems((s) =>
-                        s.map((x, idx) => (idx === i ? { ...x, quantity: parseFloat(e.target.value) || 0 } : x)),
-                      )
-                    }
-                    className="col-span-1 px-2 py-2 rounded-lg border border-input bg-background text-sm text-right"
-                  />
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    placeholder="Price"
-                    value={it.unit_price}
-                    onChange={(e) =>
-                      setItems((s) =>
-                        s.map((x, idx) => (idx === i ? { ...x, unit_price: parseFloat(e.target.value) || 0 } : x)),
-                      )
-                    }
-                    className="col-span-2 px-2 py-2 rounded-lg border border-input bg-background text-sm text-right"
-                  />
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="0"
-                    placeholder="Tax %"
-                    value={it.tax_pct}
-                    onChange={(e) =>
-                      setItems((s) =>
-                        s.map((x, idx) => (idx === i ? { ...x, tax_pct: parseFloat(e.target.value) || 0 } : x)),
-                      )
-                    }
-                    className="col-span-1 px-2 py-2 rounded-lg border border-input bg-background text-sm text-right"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(i)}
-                    className="col-span-1 text-xs text-destructive"
-                  >
-                    ✕
-                  </button>
-                </div>
+                <InvoiceLineItemRow
+                  key={i}
+                  item={it}
+                  index={i}
+                  services={services}
+                  onServiceChange={handleServiceChange}
+                  onPatch={handlePatch}
+                  onRemove={handleRemove}
+                />
               ))}
             </div>
           </div>
+
 
           <div className="rounded-lg bg-muted/40 p-3 text-sm space-y-1">
             <div className="flex justify-between"><span>Subtotal</span><span>{fmtMoney(subtotal, currency)}</span></div>
