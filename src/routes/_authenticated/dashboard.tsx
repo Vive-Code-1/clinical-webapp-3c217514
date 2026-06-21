@@ -182,20 +182,20 @@ function DashboardPage() {
 
   return (
     <AppShell clinicId={activeClinic.id}>
-      <div className="px-6 py-6 max-w-[1600px] mx-auto">
+      <div className="px-6 py-6 w-full min-w-0">
         {/* Top bar */}
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">Welcome back</p>
+            <p className="text-sm text-muted-foreground">{t("app.dashboard.welcome")}</p>
             <h1 className="text-2xl font-bold tracking-tight truncate">
-              Dr. {firstName} <span className="inline-block">👋</span>
+              {t("app.dashboard.doctor")} {firstName} <span className="inline-block">👋</span>
             </h1>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <div className="hidden md:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-72 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
-                placeholder="Search"
+                placeholder={t("app.dashboard.search")}
                 className="bg-transparent text-sm outline-none flex-1"
               />
             </div>
@@ -215,15 +215,15 @@ function DashboardPage() {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label="Total Patients" value={`${1644 + newClients}+`} delta="10%" />
-          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label="Returning" value={`${Math.max(0, totalInRange - newClients) + 300}+`} delta="15%" down />
-          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label="New Patients" value={`${newClients + 100}+`} delta="24%" />
-          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label={`Appts (${RANGE_LABEL[range]})`} value={`${totalInRange || 355}+`} delta="10%" />
+          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label={t("app.dashboard.totalPatients")} value={`${1644 + newClients}+`} delta="10%" />
+          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label={t("app.dashboard.returning")} value={`${Math.max(0, totalInRange - newClients) + 300}+`} delta="15%" down />
+          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label={t("app.dashboard.newPatients")} value={`${newClients + 100}+`} delta="24%" />
+          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label={t("app.dashboard.apptsIn", { range: RANGE_LABEL[range] })} value={`${totalInRange || 355}+`} delta="10%" />
         </div>
 
         {/* Middle row */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4">
-          <ChartCard title={`Appointment Stats — ${RANGE_LABEL[range]}`}>
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4 min-w-0">
+          <ChartCard title={t("app.dashboard.apptStats", { range: RANGE_LABEL[range] })}>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyStats} barCategoryGap={18}>
@@ -238,7 +238,7 @@ function DashboardPage() {
             <Legend />
           </ChartCard>
 
-          <ChartCard title="Visitors Trend">
+          <ChartCard title={t("app.dashboard.visitorsTrend")}>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={lineStats}>
@@ -255,7 +255,7 @@ function DashboardPage() {
         </div>
 
         {/* Bottom row */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4 min-w-0">
           <PatientsTable rows={patientsRows} todayCount={todayCount} currentRange={range} />
           <UpcomingAppointments today={today} items={upcoming} />
         </div>
