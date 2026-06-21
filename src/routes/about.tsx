@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAppTranslation } from "@/lib/app-translations";
 import sanctuaryOffice from "@/assets/sanctuary-office.jpg";
 
 const VALUES = ["trust", "warmth", "scale"] as const;
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/about")({
 });
 
 function AboutPage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   return (
     <SiteLayout>
       <section className="pt-24 pb-12 px-6">

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAppTranslation } from "@/lib/app-translations";
 import sanctuaryOffice from "@/assets/sanctuary-office.jpg";
 import dashboardPreview from "@/assets/dashboard-preview.jpg";
 
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
 });
 
 function HomePage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
 
   return (
     <SiteLayout>

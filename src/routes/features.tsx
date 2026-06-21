@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAppTranslation } from "@/lib/app-translations";
 
 const GROUPS = ["scheduling", "billing", "clinical", "client", "admin"] as const;
 
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/features")({
 });
 
 function FeaturesPage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
 
   return (
     <SiteLayout>

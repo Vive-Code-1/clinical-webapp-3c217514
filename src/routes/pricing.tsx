@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAppTranslation } from "@/lib/app-translations";
 
 const TIERS = ["solo", "clinic", "enterprise"] as const;
 
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/pricing")({
 });
 
 function PricingPage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
 
   return (
     <SiteLayout>
