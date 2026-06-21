@@ -98,19 +98,10 @@ function DashboardPage() {
     clinicAppointmentsQuery(activeClinic.id, from.toISOString(), to.toISOString()),
   );
 
-  const profile = useQuery({
-    queryKey: ["profile", user.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-      return data;
-    },
-  });
+  const profile = useQuery(myProfileQuery(user.id));
 
   const firstName = profile.data?.full_name?.split(" ")[0] ?? "Doctor";
+  const username = profile.data?.full_name ?? user.email?.split("@")[0] ?? "";
 
   // Build a bar chart appropriate to the range
   const dailyStats = useMemo(() => {
