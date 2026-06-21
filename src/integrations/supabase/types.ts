@@ -1496,6 +1496,36 @@ export type Database = {
         }
         Relationships: []
       }
+      public_availability_rules: {
+        Row: {
+          clinic_id: string
+          day_of_week: Database["public"]["Enums"]["weekday"]
+          end_time: string
+          id: string
+          is_active: boolean
+          practitioner_id: string
+          start_time: string
+        }
+        Insert: {
+          clinic_id: string
+          day_of_week: Database["public"]["Enums"]["weekday"]
+          end_time: string
+          id: string
+          is_active?: boolean
+          practitioner_id: string
+          start_time: string
+        }
+        Update: {
+          clinic_id?: string
+          day_of_week?: Database["public"]["Enums"]["weekday"]
+          end_time?: string
+          id?: string
+          is_active?: boolean
+          practitioner_id?: string
+          start_time?: string
+        }
+        Relationships: []
+      }
       public_clinic_members: {
         Row: {
           clinic_id: string
@@ -1550,6 +1580,45 @@ export type Database = {
           is_active?: boolean
           name?: string
           region?: string | null
+        }
+        Relationships: []
+      }
+      public_service_types: {
+        Row: {
+          clinic_id: string
+          color: string
+          currency: string
+          duration_minutes: number
+          id: string
+          is_active: boolean
+          is_telehealth: boolean
+          name: string
+          online_bookable: boolean
+          price_cents: number
+        }
+        Insert: {
+          clinic_id: string
+          color?: string
+          currency?: string
+          duration_minutes: number
+          id: string
+          is_active?: boolean
+          is_telehealth?: boolean
+          name: string
+          online_bookable?: boolean
+          price_cents?: number
+        }
+        Update: {
+          clinic_id?: string
+          color?: string
+          currency?: string
+          duration_minutes?: number
+          id?: string
+          is_active?: boolean
+          is_telehealth?: boolean
+          name?: string
+          online_bookable?: boolean
+          price_cents?: number
         }
         Relationships: []
       }
