@@ -144,9 +144,9 @@ function DayRow({
   };
 
   return (
-    <div className="p-5 flex flex-wrap items-center gap-4">
-      <p className="w-28 font-bold">{label}</p>
-      <div className="flex-1 flex flex-wrap gap-2 min-w-[200px]">
+    <div className="p-5 flex flex-wrap items-center gap-3">
+      <p className="w-full sm:w-28 font-bold">{label}</p>
+      <div className="flex-1 flex flex-wrap gap-2 min-w-0 w-full sm:w-auto">
         {rules.length === 0 && <p className="text-sm font-serif text-muted-foreground italic">Closed</p>}
         {rules.map((r) => (
           <span
@@ -160,23 +160,23 @@ function DayRow({
           </span>
         ))}
       </div>
-      <form onSubmit={submit} className="flex items-center gap-2">
+      <form onSubmit={submit} className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
         <input
           type="time"
           value={start}
           onChange={(e) => setStart(e.target.value)}
-          className="bg-background border border-input rounded-lg px-2 py-1.5 text-sm font-mono"
+          className="bg-background border border-input rounded-lg px-2 py-1.5 text-sm font-mono min-w-0 flex-1 sm:flex-none sm:w-auto"
         />
         <span className="text-muted-foreground">–</span>
         <input
           type="time"
           value={end}
           onChange={(e) => setEnd(e.target.value)}
-          className="bg-background border border-input rounded-lg px-2 py-1.5 text-sm font-mono"
+          className="bg-background border border-input rounded-lg px-2 py-1.5 text-sm font-mono min-w-0 flex-1 sm:flex-none sm:w-auto"
         />
         <button
           type="submit"
-          className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:brightness-110"
+          className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold hover:brightness-110 shrink-0"
         >
           Add
         </button>
