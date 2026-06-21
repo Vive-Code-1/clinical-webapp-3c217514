@@ -681,6 +681,66 @@ export type Database = {
           },
         ]
       }
+      home_analytics_events: {
+        Row: {
+          created_at: string
+          event: string
+          id: string
+          locale: string
+          metadata: Json
+          path: string | null
+        }
+        Insert: {
+          created_at?: string
+          event: string
+          id?: string
+          locale?: string
+          metadata?: Json
+          path?: string | null
+        }
+        Update: {
+          created_at?: string
+          event?: string
+          id?: string
+          locale?: string
+          metadata?: Json
+          path?: string | null
+        }
+        Relationships: []
+      }
+      home_leads: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          locale: string
+          phone: string | null
+          service: string | null
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          locale?: string
+          phone?: string | null
+          service?: string | null
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          locale?: string
+          phone?: string | null
+          service?: string | null
+          source?: string | null
+        }
+        Relationships: []
+      }
       intake_forms: {
         Row: {
           clinic_id: string
