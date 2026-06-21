@@ -16,6 +16,7 @@ import {
   LogOut,
   Leaf,
   BarChart3,
+  Dumbbell,
   Menu,
 } from "lucide-react";
 import { useAppTranslation } from "@/lib/app-translations";
