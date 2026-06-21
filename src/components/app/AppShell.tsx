@@ -23,7 +23,7 @@ import { clinicBrandingQuery, myProfileQuery } from "@/lib/me-queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
 
 type Props = {
   clinicId?: string;
