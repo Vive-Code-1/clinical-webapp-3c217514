@@ -231,6 +231,47 @@ function InvoicesPage() {
           </button>
         </div>
 
+        {selected.size > 0 && (
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card px-4 py-3 shadow-sm">
+            <span className="text-sm font-medium">{selected.size} selected</span>
+            <span className="text-muted-foreground text-xs">·</span>
+            <label className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+              Set status
+              <select
+                onChange={(e) => {
+                  const v = e.target.value;
+                  if (!v) return;
+                  bulkSetStatus.mutate(v);
+                  e.currentTarget.value = "";
+                }}
+                disabled={bulkSetStatus.isPending}
+                defaultValue=""
+                className="px-3 py-1.5 rounded-lg border border-input bg-background text-sm capitalize"
+              >
+                <option value="" disabled>Choose…</option>
+                <option value="draft">Draft</option>
+                <option value="sent">Sent</option>
+                <option value="paid">Paid</option>
+                <option value="partially_paid">Partially paid</option>
+                <option value="overdue">Overdue</option>
+                <option value="void">Void</option>
+              </select>
+            </label>
+            <button
+              onClick={bulkEmail}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-sm hover:bg-muted"
+            >
+              <Mail className="w-4 h-4" /> Email to clients
+            </button>
+            <button
+              onClick={clearSelection}
+              className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-3 h-3" /> Clear
+            </button>
+          </div>
+        )}
+
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
           {invoices.isLoading ? (
             <div className="p-8 text-center text-muted-foreground">Loading…</div>
@@ -243,6 +284,18 @@ function InvoicesPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
                 <tr>
+                  <th className="w-10 px-4 py-3">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all"
+                      checked={selected.size > 0 && selected.size === invoices.data.length}
+                      ref={(el) => {
+                        if (el) el.indeterminate = selected.size > 0 && selected.size < invoices.data!.length;
+                      }}
+                      onChange={toggleAll}
+                      className="cursor-pointer"
+                    />
+                  </th>
                   <th className="text-left px-5 py-3 font-medium">Number</th>
                   <th className="text-left px-5 py-3 font-medium">Client</th>
                   <th className="text-left px-5 py-3 font-medium">Status</th>
@@ -255,14 +308,24 @@ function InvoicesPage() {
               <tbody>
                 {invoices.data.map((inv) => {
                   const Icon = STATUS_ICON[inv.status] ?? FileText;
+                  const isSel = selected.has(inv.id);
                   const open = () =>
                     navigate({ to: "/invoices/$invoiceId", params: { invoiceId: inv.id }, search: { clinic: activeClinicId } });
                   return (
                     <tr
                       key={inv.id}
                       onClick={open}
-                      className="border-t border-border hover:bg-muted/30 cursor-pointer"
+                      className={`border-t border-border hover:bg-muted/30 cursor-pointer ${isSel ? "bg-primary/5" : ""}`}
                     >
+                      <td className="w-10 px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${inv.invoice_number}`}
+                          checked={isSel}
+                          onChange={() => toggleOne(inv.id)}
+                          className="cursor-pointer"
+                        />
+                      </td>
                       <td className="px-5 py-3 font-mono text-xs">{inv.invoice_number}</td>
                       <td className="px-5 py-3">{inv.client?.full_name ?? "—"}</td>
                       <td className="px-5 py-3">
