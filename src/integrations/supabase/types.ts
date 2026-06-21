@@ -724,6 +724,171 @@ export type Database = {
           },
         ]
       }
+      invoice_counters: {
+        Row: {
+          clinic_id: string
+          next_number: number
+        }
+        Insert: {
+          clinic_id: string
+          next_number?: number
+        }
+        Update: {
+          clinic_id?: string
+          next_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_counters_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_items: {
+        Row: {
+          description: string
+          id: string
+          invoice_id: string
+          line_total_cents: number
+          position: number
+          quantity: number
+          service_type_id: string | null
+          tax_rate_bps: number
+          unit_price_cents: number
+        }
+        Insert: {
+          description: string
+          id?: string
+          invoice_id: string
+          line_total_cents?: number
+          position?: number
+          quantity?: number
+          service_type_id?: string | null
+          tax_rate_bps?: number
+          unit_price_cents?: number
+        }
+        Update: {
+          description?: string
+          id?: string
+          invoice_id?: string
+          line_total_cents?: number
+          position?: number
+          quantity?: number
+          service_type_id?: string | null
+          tax_rate_bps?: number
+          unit_price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_items_service_type_id_fkey"
+            columns: ["service_type_id"]
+            isOneToOne: false
+            referencedRelation: "service_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          amount_paid_cents: number
+          appointment_id: string | null
+          client_id: string | null
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          currency: string
+          due_at: string | null
+          id: string
+          invoice_number: string
+          issued_at: string | null
+          notes: string | null
+          paid_at: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          subtotal_cents: number
+          tax_cents: number
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          amount_paid_cents?: number
+          appointment_id?: string | null
+          client_id?: string | null
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          due_at?: string | null
+          id?: string
+          invoice_number: string
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal_cents?: number
+          tax_cents?: number
+          total_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_paid_cents?: number
+          appointment_id?: string | null
+          client_id?: string | null
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          due_at?: string | null
+          id?: string
+          invoice_number?: string
+          issued_at?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal_cents?: number
+          tax_cents?: number
+          total_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       locations: {
         Row: {
           address_line1: string | null
@@ -821,6 +986,60 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount_cents: number
+          clinic_id: string
+          created_at: string
+          id: string
+          invoice_id: string
+          method: Database["public"]["Enums"]["payment_method"]
+          received_at: string
+          recorded_by: string | null
+          reference: string | null
+          stripe_charge_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          clinic_id: string
+          created_at?: string
+          id?: string
+          invoice_id: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          received_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+          stripe_charge_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          invoice_id?: string
+          method?: Database["public"]["Enums"]["payment_method"]
+          received_at?: string
+          recorded_by?: string | null
+          reference?: string | null
+          stripe_charge_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       practitioner_services: {
         Row: {
           clinic_id: string
@@ -892,6 +1111,89 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      reminder_log: {
+        Row: {
+          appointment_id: string
+          channel: string
+          clinic_id: string
+          error: string | null
+          id: string
+          sent_at: string
+          status: string
+        }
+        Insert: {
+          appointment_id: string
+          channel: string
+          clinic_id: string
+          error?: string | null
+          id?: string
+          sent_at?: string
+          status: string
+        }
+        Update: {
+          appointment_id?: string
+          channel?: string
+          clinic_id?: string
+          error?: string | null
+          id?: string
+          sent_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_log_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reminder_log_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reminder_settings: {
+        Row: {
+          clinic_id: string
+          email_enabled: boolean
+          hours_before: number
+          send_confirmations: boolean
+          sms_enabled: boolean
+          twilio_from: string | null
+          updated_at: string
+        }
+        Insert: {
+          clinic_id: string
+          email_enabled?: boolean
+          hours_before?: number
+          send_confirmations?: boolean
+          sms_enabled?: boolean
+          twilio_from?: string | null
+          updated_at?: string
+        }
+        Update: {
+          clinic_id?: string
+          email_enabled?: boolean
+          hours_before?: number
+          send_confirmations?: boolean
+          sms_enabled?: boolean
+          twilio_from?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reminder_settings_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: true
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resources: {
         Row: {
@@ -1022,6 +1324,41 @@ export type Database = {
           },
         ]
       }
+      tax_rates: {
+        Row: {
+          clinic_id: string
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          rate_bps: number
+        }
+        Insert: {
+          clinic_id: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          rate_bps: number
+        }
+        Update: {
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          rate_bps?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_rates_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1076,6 +1413,11 @@ export type Database = {
         Args: { _clinic_id: string; _user_id: string }
         Returns: boolean
       }
+      next_invoice_number: { Args: { _clinic_id: string }; Returns: string }
+      recalc_invoice_totals: {
+        Args: { _invoice_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "owner" | "practitioner" | "receptionist" | "client"
@@ -1090,6 +1432,20 @@ export type Database = {
       clinic_role: "owner" | "practitioner" | "receptionist"
       clinical_note_kind: "soap" | "follow_up" | "couple" | "family" | "general"
       intake_form_kind: "intake" | "consent" | "questionnaire"
+      invoice_status:
+        | "draft"
+        | "sent"
+        | "paid"
+        | "partially_paid"
+        | "void"
+        | "overdue"
+      payment_method:
+        | "cash"
+        | "card"
+        | "etransfer"
+        | "stripe"
+        | "insurance"
+        | "other"
       weekday: "mon" | "tue" | "wed" | "thu" | "fri" | "sat" | "sun"
     }
     CompositeTypes: {
@@ -1231,6 +1587,22 @@ export const Constants = {
       clinic_role: ["owner", "practitioner", "receptionist"],
       clinical_note_kind: ["soap", "follow_up", "couple", "family", "general"],
       intake_form_kind: ["intake", "consent", "questionnaire"],
+      invoice_status: [
+        "draft",
+        "sent",
+        "paid",
+        "partially_paid",
+        "void",
+        "overdue",
+      ],
+      payment_method: [
+        "cash",
+        "card",
+        "etransfer",
+        "stripe",
+        "insurance",
+        "other",
+      ],
       weekday: ["mon", "tue", "wed", "thu", "fri", "sat", "sun"],
     },
   },
