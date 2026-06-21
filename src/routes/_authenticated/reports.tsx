@@ -82,8 +82,8 @@ function ReportsPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="p-6 md:p-8 space-y-6 min-w-0">
-        <div className="flex items-end justify-between gap-4 flex-wrap">
+      <div className="p-4 sm:p-6 md:p-8 space-y-6 min-w-0">
+        <div className="flex items-end justify-between gap-3 flex-wrap">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{t("app.reports.title")}</h1>
             <p className="text-sm text-muted-foreground mt-1">
