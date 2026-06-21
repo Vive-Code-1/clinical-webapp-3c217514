@@ -15,6 +15,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadClinicLogo, uploadUserAvatar } from "@/lib/storage-uploads";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { SupportedLanguage } from "@/lib/i18n";
+import { DENSITY_PRESETS, getDensity, setDensity, type DensityPreset, type LayoutDensity } from "@/lib/layout-density";
+import { Slider } from "@/components/ui/slider";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 
