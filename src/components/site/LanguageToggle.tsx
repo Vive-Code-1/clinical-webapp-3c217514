@@ -17,11 +17,13 @@ export function LanguageToggle() {
         document.documentElement.lang = lng.slice(0, 2);
       }
     };
+    if (typeof i18n?.on !== "function") return;
     i18n.on("languageChanged", onChanged);
     return () => {
-      i18n.off("languageChanged", onChanged);
+      if (typeof i18n?.off === "function") i18n.off("languageChanged", onChanged);
     };
   }, [i18n]);
+
 
   const handleChange = (lng: SupportedLanguage) => {
     if (lng === current) return;
