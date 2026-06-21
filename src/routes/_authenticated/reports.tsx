@@ -2,7 +2,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   TrendingUp,
   CalendarCheck,
@@ -10,10 +10,12 @@ import {
   Wallet,
   Users,
   Sparkles,
+  Wand2,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { getClinicReport, type ReportRange } from "@/lib/reports.functions";
+import { buildDemoReport, isEmptyReport } from "@/lib/reports-demo";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
@@ -56,13 +58,22 @@ function ReportsPage() {
     queryFn: () => fetchReport({ data: { clinicId: activeClinicId, range } }),
   });
 
+  const liveEmpty = isEmptyReport(report.data);
+  const [demoOverride, setDemoOverride] = useState<null | boolean>(null);
+  const demoActive = demoOverride ?? liveEmpty;
+  const demoData = useMemo(
+    () => buildDemoReport(range, report.data?.currency ?? "USD"),
+    [range, report.data?.currency],
+  );
+  const view = demoActive ? demoData : report.data;
+
   const fmt = useMemo(
     () =>
       new Intl.NumberFormat(undefined, {
         style: "currency",
-        currency: report.data?.currency ?? "USD",
+        currency: view?.currency ?? "USD",
       }),
-    [report.data?.currency],
+    [view?.currency],
   );
   const money = (cents: number) => fmt.format((cents ?? 0) / 100);
 
@@ -96,85 +107,107 @@ function ReportsPage() {
           </div>
         </div>
 
-        {report.isLoading && <div className="text-sm text-muted-foreground">Loading…</div>}
-        {report.isError && (
+        {report.isLoading && !view && <div className="text-sm text-muted-foreground">Loading…</div>}
+        {report.isError && !demoActive && (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
             {(report.error as Error).message}
           </div>
         )}
 
-        {report.data && (
+        {demoActive && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 flex items-center gap-3 flex-wrap">
+            <Wand2 className="w-4 h-4 text-primary shrink-0" />
+            <div className="flex-1 min-w-0 text-sm">
+              <span className="font-semibold text-foreground">Showing sample data.</span>{" "}
+              <span className="text-muted-foreground">
+                Book real appointments and record payments to see live reports here.
+              </span>
+            </div>
+            <button
+              onClick={() => setDemoOverride(demoActive ? false : true)}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors"
+            >
+              {liveEmpty && demoOverride !== false ? "View live (empty)" : "Show demo data"}
+            </button>
+          </div>
+        )}
+        {!demoActive && !liveEmpty && (
+          <div className="flex justify-end">
+            <button
+              onClick={() => setDemoOverride(true)}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors inline-flex items-center gap-1.5"
+            >
+              <Wand2 className="w-3.5 h-3.5" /> Preview sample data
+            </button>
+          </div>
+        )}
+
+        {view && (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <KpiCard
                 icon={Wallet}
                 label="Revenue collected"
-                value={money(report.data.revenue.totalCents)}
-                sub={`${report.data.revenue.paidInvoices} paid invoices`}
+                value={money(view.revenue.totalCents)}
+                sub={`${view.revenue.paidInvoices} paid invoices`}
                 tone="emerald"
               />
               <KpiCard
                 icon={AlertTriangle}
                 label="Outstanding"
-                value={money(report.data.revenue.outstandingCents)}
-                sub={`${money(report.data.revenue.overdueCents)} overdue`}
+                value={money(view.revenue.outstandingCents)}
+                sub={`${money(view.revenue.overdueCents)} overdue`}
                 tone="amber"
               />
               <KpiCard
                 icon={CalendarCheck}
                 label="Appointments"
-                value={String(report.data.appointments.total)}
-                sub={`${report.data.appointments.completed} completed · ${report.data.appointments.cancelled} cancelled`}
+                value={String(view.appointments.total)}
+                sub={`${view.appointments.completed} completed · ${view.appointments.cancelled} cancelled`}
                 tone="sky"
               />
               <KpiCard
                 icon={TrendingUp}
                 label="No-show rate"
                 value={
-                  report.data.appointments.total === 0
+                  view.appointments.total === 0
                     ? "—"
-                    : `${(
-                        (report.data.appointments.noShow / report.data.appointments.total) *
-                        100
-                      ).toFixed(1)}%`
+                    : `${((view.appointments.noShow / view.appointments.total) * 100).toFixed(1)}%`
                 }
-                sub={`${report.data.appointments.noShow} no-shows`}
+                sub={`${view.appointments.noShow} no-shows`}
                 tone="rose"
               />
             </div>
 
-            <section className="rounded-2xl border border-border bg-card p-5">
+            <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
               <h2 className="text-sm font-semibold mb-4">Daily revenue</h2>
               <BarChart
-                data={report.data.revenue.byDay.map((d) => ({ label: d.date, value: d.cents }))}
+                data={view.revenue.byDay.map((d) => ({ label: d.date, value: d.cents }))}
                 format={(v) => money(v)}
-                color="hsl(var(--primary))"
+                color="var(--primary)"
               />
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5">
+            <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
               <h2 className="text-sm font-semibold mb-4">Daily appointments</h2>
               <BarChart
-                data={report.data.appointments.byDay.map((d) => ({
-                  label: d.date,
-                  value: d.count,
-                }))}
+                data={view.appointments.byDay.map((d) => ({ label: d.date, value: d.count }))}
                 format={(v) => String(v)}
-                color="hsl(var(--primary))"
+                color="var(--chart-1)"
               />
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <section className="rounded-2xl border border-border bg-card p-5">
+              <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-4 h-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold">Top services</h2>
                 </div>
-                {report.data.topServices.length === 0 ? (
+                {view.topServices.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No data yet.</p>
                 ) : (
                   <ul className="divide-y divide-border">
-                    {report.data.topServices.map((s) => (
+                    {view.topServices.map((s) => (
                       <li key={s.name} className="py-2 flex items-center justify-between gap-3">
                         <span className="text-sm truncate">{s.name}</span>
                         <span className="text-xs text-muted-foreground tabular-nums">
@@ -186,16 +219,16 @@ function ReportsPage() {
                 )}
               </section>
 
-              <section className="rounded-2xl border border-border bg-card p-5">
+              <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Users className="w-4 h-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold">Top clients</h2>
                 </div>
-                {report.data.topClients.length === 0 ? (
+                {view.topClients.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No data yet.</p>
                 ) : (
                   <ul className="divide-y divide-border">
-                    {report.data.topClients.map((c) => (
+                    {view.topClients.map((c) => (
                       <li key={c.id} className="py-2 flex items-center justify-between gap-3">
                         <span className="text-sm truncate">{c.name}</span>
                         <span className="text-xs text-muted-foreground tabular-nums">
@@ -234,7 +267,7 @@ function KpiCard({
     rose: "bg-rose-100 text-rose-700",
   }[tone];
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card p-5 card-interactive">
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
           {label}
