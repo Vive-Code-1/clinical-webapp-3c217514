@@ -108,7 +108,7 @@ function ReportsPage() {
         </div>
 
 
-        {report.isLoading && !view && <div className="text-sm text-muted-foreground">Loading…</div>}
+        {report.isLoading && !view && <div className="text-sm text-muted-foreground">{t("app.reports.loading")}</div>}
         {report.isError && !demoActive && (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
             {(report.error as Error).message}
@@ -119,16 +119,16 @@ function ReportsPage() {
           <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 flex items-center gap-3 flex-wrap">
             <Wand2 className="w-4 h-4 text-primary shrink-0" />
             <div className="flex-1 min-w-0 text-sm">
-              <span className="font-semibold text-foreground">Showing sample data.</span>{" "}
+              <span className="font-semibold text-foreground">{t("app.reports.sampleBanner")}</span>{" "}
               <span className="text-muted-foreground">
-                Book real appointments and record payments to see live reports here.
+                {t("app.reports.sampleBody")}
               </span>
             </div>
             <button
               onClick={() => setDemoOverride(demoActive ? false : true)}
               className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors"
             >
-              {liveEmpty && demoOverride !== false ? "View live (empty)" : "Show demo data"}
+              {liveEmpty && demoOverride !== false ? t("app.reports.viewLive") : t("app.reports.showDemo")}
             </button>
           </div>
         )}
@@ -138,7 +138,7 @@ function ReportsPage() {
               onClick={() => setDemoOverride(true)}
               className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors inline-flex items-center gap-1.5"
             >
-              <Wand2 className="w-3.5 h-3.5" /> Preview sample data
+              <Wand2 className="w-3.5 h-3.5" /> {t("app.reports.previewSample")}
             </button>
           </div>
         )}
@@ -148,40 +148,40 @@ function ReportsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <KpiCard
                 icon={Wallet}
-                label="Revenue collected"
+                label={t("app.reports.revenue")}
                 value={money(view.revenue.totalCents)}
-                sub={`${view.revenue.paidInvoices} paid invoices`}
+                sub={t("app.reports.paidInvoices", { count: view.revenue.paidInvoices })}
                 tone="emerald"
               />
               <KpiCard
                 icon={AlertTriangle}
-                label="Outstanding"
+                label={t("app.reports.outstanding")}
                 value={money(view.revenue.outstandingCents)}
-                sub={`${money(view.revenue.overdueCents)} overdue`}
+                sub={t("app.reports.overdue", { amount: money(view.revenue.overdueCents) })}
                 tone="amber"
               />
               <KpiCard
                 icon={CalendarCheck}
-                label="Appointments"
+                label={t("app.reports.appointments")}
                 value={String(view.appointments.total)}
-                sub={`${view.appointments.completed} completed · ${view.appointments.cancelled} cancelled`}
+                sub={t("app.reports.completedCancelled", { c: view.appointments.completed, x: view.appointments.cancelled })}
                 tone="sky"
               />
               <KpiCard
                 icon={TrendingUp}
-                label="No-show rate"
+                label={t("app.reports.noShowRate")}
                 value={
                   view.appointments.total === 0
                     ? "—"
                     : `${((view.appointments.noShow / view.appointments.total) * 100).toFixed(1)}%`
                 }
-                sub={`${view.appointments.noShow} no-shows`}
+                sub={t("app.reports.noShows", { count: view.appointments.noShow })}
                 tone="rose"
               />
             </div>
 
-            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
-              <h2 className="text-sm font-semibold mb-4">Daily revenue</h2>
+            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive min-w-0 overflow-hidden">
+              <h2 className="text-sm font-semibold mb-4">{t("app.reports.dailyRevenue")}</h2>
               <BarChart
                 data={view.revenue.byDay.map((d) => ({ label: d.date, value: d.cents }))}
                 format={(v) => money(v)}
@@ -189,8 +189,8 @@ function ReportsPage() {
               />
             </section>
 
-            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
-              <h2 className="text-sm font-semibold mb-4">Daily appointments</h2>
+            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive min-w-0 overflow-hidden">
+              <h2 className="text-sm font-semibold mb-4">{t("app.reports.dailyAppointments")}</h2>
               <BarChart
                 data={view.appointments.byDay.map((d) => ({ label: d.date, value: d.count }))}
                 format={(v) => String(v)}
@@ -202,10 +202,10 @@ function ReportsPage() {
               <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-4 h-4 text-muted-foreground" />
-                  <h2 className="text-sm font-semibold">Top services</h2>
+                  <h2 className="text-sm font-semibold">{t("app.reports.topServices")}</h2>
                 </div>
                 {view.topServices.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No data yet.</p>
+                  <p className="text-sm text-muted-foreground">{t("app.reports.noData")}</p>
                 ) : (
                   <ul className="divide-y divide-border">
                     {view.topServices.map((s) => (
@@ -223,17 +223,17 @@ function ReportsPage() {
               <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Users className="w-4 h-4 text-muted-foreground" />
-                  <h2 className="text-sm font-semibold">Top clients</h2>
+                  <h2 className="text-sm font-semibold">{t("app.reports.topClients")}</h2>
                 </div>
                 {view.topClients.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No data yet.</p>
+                  <p className="text-sm text-muted-foreground">{t("app.reports.noData")}</p>
                 ) : (
                   <ul className="divide-y divide-border">
                     {view.topClients.map((c) => (
                       <li key={c.id} className="py-2 flex items-center justify-between gap-3">
                         <span className="text-sm truncate">{c.name}</span>
                         <span className="text-xs text-muted-foreground tabular-nums">
-                          {c.appointments} appts · {money(c.spentCents)}
+                          {c.appointments} {t("app.reports.appts")} · {money(c.spentCents)}
                         </span>
                       </li>
                     ))}
