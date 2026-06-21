@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Download, Plus, Send } from "lucide-react";
+import { ArrowLeft, Download, Plus, Send, Mail } from "lucide-react";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 
