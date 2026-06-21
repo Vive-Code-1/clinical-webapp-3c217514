@@ -214,10 +214,11 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
             </Link>
           </div>
         )}
-        <div className="w-full min-w-0 flex-1">
+        <div className="w-full min-w-0 flex-1 pb-24 lg:pb-0">
           {children}
         </div>
       </main>
+      <BottomNav clinicId={clinicId} />
     </div>
   );
 }
