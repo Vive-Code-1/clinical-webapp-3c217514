@@ -93,7 +93,7 @@ function MessagesPage() {
   }, [queryClient]);
 
   const setConv = (id: string | null) =>
-    navigate({ search: (p) => ({ ...p, c: id ?? undefined }) });
+    navigate({ search: (p: z.infer<typeof searchSchema>) => ({ ...p, c: id ?? undefined }) });
 
   return (
     <AppShell clinicId={activeClinicId}>

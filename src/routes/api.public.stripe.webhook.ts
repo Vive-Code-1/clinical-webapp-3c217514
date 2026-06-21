@@ -18,9 +18,9 @@ export const Route = createFileRoute("/api/public/stripe/webhook")({
         const rawBody = await request.text();
 
         const { default: Stripe } = await import("stripe");
-        const stripe = new Stripe(stripeKey, { apiVersion: "2024-06-20" as Stripe.LatestApiVersion });
+        const stripe = new Stripe(stripeKey);
 
-        let event: import("stripe").Stripe.Event;
+        let event: Awaited<ReturnType<typeof stripe.webhooks.constructEventAsync>>;
         try {
           event = await stripe.webhooks.constructEventAsync(rawBody, sig, webhookSecret);
         } catch (err) {
@@ -32,10 +32,12 @@ export const Route = createFileRoute("/api/public/stripe/webhook")({
           return new Response("ignored", { status: 200 });
         }
 
-        const session = event.data.object as import("stripe").Stripe.Checkout.Session;
-        const invoiceId = session.metadata?.invoice_id;
-        const clinicId = session.metadata?.clinic_id;
-        const amount = session.amount_total ?? 0;
+        const session = event.data.object as {
+          id: string;
+          amount_total: number | null;
+          payment_intent: string | { id: string } | null;
+          metadata: Record<string, string> | null;
+        };
         if (!invoiceId || !clinicId || !amount) {
           return new Response("Missing metadata", { status: 400 });
         }
