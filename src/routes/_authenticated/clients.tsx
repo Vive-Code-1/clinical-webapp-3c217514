@@ -137,20 +137,20 @@ function ClientsPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="px-6 py-6 max-w-[1600px] mx-auto">
-        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1600px] mx-auto">
+        <header className="flex flex-col gap-4 mb-6 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">Patients & Clients</p>
-            <h1 className="text-2xl font-bold tracking-tight truncate">Clients</h1>
+            <p className="text-sm text-muted-foreground">Patients &amp; Clients</p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">Clients</h1>
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="hidden md:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-72 ring-1 ring-border">
-              <Search className="w-4 h-4 text-muted-foreground" />
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 w-full sm:w-auto">
+            <div className="flex items-center gap-2 bg-card rounded-full px-4 h-10 flex-1 sm:w-72 sm:flex-initial ring-1 ring-border min-w-0">
+              <Search className="w-4 h-4 text-muted-foreground shrink-0" />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search name, email, phone, tag"
-                className="bg-transparent text-sm outline-none flex-1"
+                className="bg-transparent text-sm outline-none flex-1 min-w-0"
               />
             </div>
             <button
@@ -158,12 +158,13 @@ function ClientsPage() {
                 setEditing(null);
                 setOpen(true);
               }}
-              className="flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-10 px-4 text-sm font-semibold hover:brightness-110"
+              className="flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-10 px-4 text-sm font-semibold hover:brightness-110 shrink-0 whitespace-nowrap"
             >
-              <Plus className="w-4 h-4" /> New client
+              <Plus className="w-4 h-4" /> <span className="hidden sm:inline">New client</span><span className="sm:hidden">New</span>
             </button>
           </div>
         </header>
+
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
           <div className="bg-card rounded-2xl ring-1 ring-border card-pop overflow-hidden">
