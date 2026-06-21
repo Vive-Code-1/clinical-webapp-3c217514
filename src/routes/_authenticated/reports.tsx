@@ -293,12 +293,12 @@ function BarChart({
 }) {
   const max = Math.max(1, ...data.map((d) => d.value));
   return (
-    <div className="space-y-1">
-      <div className="flex items-end gap-[2px] h-40">
+    <div className="space-y-1 w-full min-w-0">
+      <div className="flex items-end gap-px h-40 w-full min-w-0 overflow-hidden">
         {data.map((d) => (
           <div
             key={d.label}
-            className="flex-1 min-w-[3px] rounded-t group relative"
+            className="flex-1 min-w-0 rounded-t group relative"
             style={{
               height: `${(d.value / max) * 100}%`,
               background: color,
