@@ -47,6 +47,7 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/invoices" as const, label: "Invoices", icon: Receipt },
     { to: "/messages" as const, label: "Messages", icon: MessageSquare },
     { to: "/billing-settings" as const, label: "Billing", icon: Settings },
+    { to: "/integrations" as const, label: "Integrations", icon: Sparkles },
   ];
 
   const secondary = [
