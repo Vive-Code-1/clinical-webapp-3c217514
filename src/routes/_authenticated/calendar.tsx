@@ -1,9 +1,6 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Rss } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 import {
   startOfWeek,
@@ -16,14 +13,14 @@ import {
   endOfMonth,
   format,
   addDays,
-  isSameDay,
-  isSameMonth,
-  differenceInMinutes,
   startOfDay,
 } from "date-fns";
 import { AppShell } from "@/components/app/AppShell";
 import { NewAppointmentDialog } from "@/components/calendar/NewAppointmentDialog";
 import { AppointmentDetailDialog } from "@/components/calendar/AppointmentDetailDialog";
+import { TimeGrid } from "@/components/calendar/TimeGrid";
+import { MonthGrid } from "@/components/calendar/MonthGrid";
+import { IcalButton } from "@/components/calendar/IcalButton";
 import {
   myClinicsQuery,
   clinicAppointmentsQuery,
@@ -56,19 +53,6 @@ export const Route = createFileRoute("/_authenticated/calendar")({
   ),
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
-
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 7); // 7am → 6pm
-const HOUR_PX = 56;
-
-const APPT_PALETTE = ["#CBEAFB", "#FFD7E3", "#C9EFD9", "#FEDEC4"] as const;
-function hashId(id: string): number {
-  let h = 0;
-  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
-  return Math.abs(h);
-}
-function paletteColor(id: string) {
-  return APPT_PALETTE[hashId(id) % APPT_PALETTE.length]!;
-}
 
 function CalendarPage() {
   const { user, clinics } = Route.useRouteContext();
@@ -122,7 +106,6 @@ function CalendarPage() {
     setDialogOpen(true);
   };
 
-  // Header title
   const headerTitle =
     view === "day"
       ? format(anchor, "EEEE, MMM d, yyyy")
@@ -153,7 +136,6 @@ function CalendarPage() {
             </select>
           )}
 
-          {/* View switcher */}
           <div className="inline-flex rounded-xl border border-input p-0.5 bg-card">
             {(["day", "week", "month"] as const).map((v) => (
               <button
@@ -225,298 +207,5 @@ function CalendarPage() {
         onOpenChange={(o) => !o && setSelected(null)}
       />
     </AppShell>
-  );
-}
-
-function TimeGrid({
-  days,
-  appointments,
-  onSlotClick,
-  onApptClick,
-}: {
-  days: Date[];
-  appointments: CalendarAppointment[];
-  onSlotClick: (day: Date, hour: number) => void;
-  onApptClick: (a: CalendarAppointment) => void;
-}) {
-  const cols = days.length;
-  const gridTemplate = `48px repeat(${cols}, minmax(0, 1fr))`;
-  const minW = cols === 1 ? "min-w-[320px]" : "min-w-[640px] sm:min-w-[900px]";
-
-  return (
-    <div className="overflow-auto">
-      <div
-        className={`${minW} grid border-b border-border bg-card/40`}
-        style={{ gridTemplateColumns: gridTemplate }}
-      >
-        <div />
-        {days.map((d) => (
-          <div key={d.toISOString()} className="px-3 py-3 text-center border-l border-border">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {format(d, "EEE")}
-            </p>
-            <p className={`text-lg font-extrabold ${isSameDay(d, new Date()) ? "text-primary" : ""}`}>
-              {format(d, "d")}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      <div
-        className={`${minW} grid relative`}
-        style={{ gridTemplateColumns: gridTemplate }}
-      >
-        <div>
-          {HOURS.map((h) => (
-            <div
-              key={h}
-              style={{ height: HOUR_PX }}
-              className="text-[10px] font-mono text-muted-foreground text-right pr-2 pt-1 border-t border-border"
-            >
-              {h.toString().padStart(2, "0")}:00
-            </div>
-          ))}
-        </div>
-
-        {days.map((day) => {
-          const dayAppts = appointments.filter((a) => isSameDay(new Date(a.starts_at), day));
-          return (
-            <div key={day.toISOString()} className="relative border-l border-border">
-              {HOURS.map((h) => (
-                <div
-                  key={h}
-                  style={{ height: HOUR_PX }}
-                  onClick={() => onSlotClick(day, h)}
-                  className="border-t border-border hover:bg-accent/40 cursor-pointer transition-colors"
-                />
-              ))}
-              {dayAppts.map((a) => {
-                const s = new Date(a.starts_at);
-                const e = new Date(a.ends_at);
-                const dayStart = startOfDay(day);
-                dayStart.setHours(HOURS[0]!, 0, 0, 0);
-                const topMin = differenceInMinutes(s, dayStart);
-                if (topMin < 0 || topMin > HOURS.length * 60) return null;
-                const color = paletteColor(a.id);
-                const cancelled = a.status === "cancelled" || a.status === "no_show";
-                return (
-                  <div
-                    key={a.id}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      onApptClick(a);
-                    }}
-                    style={{
-                      top: (topMin / 60) * HOUR_PX + 2,
-                      height: HOUR_PX - 4,
-                      backgroundColor: cancelled ? "transparent" : color,
-                      borderLeft: `3px solid ${color}`,
-                      opacity: cancelled ? 0.65 : 1,
-                      color: "#1a1a1a",
-                    }}
-                    className="absolute left-1 right-1 rounded-md px-2 py-1.5 overflow-hidden ring-1 ring-black/5 hover:ring-black/40 hover:shadow-sm transition-all cursor-pointer flex flex-col justify-center gap-0.5"
-                  >
-                    <p className="text-[11px] font-semibold leading-tight truncate">
-                      {a.service?.name || "Appointment"}
-                    </p>
-                    <p className="text-[10px] leading-tight opacity-75 truncate">
-                      {a.client_name || a.guest_name || "Walk-in"}
-                    </p>
-                    <p className="text-[9px] font-mono opacity-60 leading-tight">
-                      {format(s, "HH:mm")}–{format(e, "HH:mm")}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function MonthGrid({
-  anchor,
-  rangeStart,
-  appointments,
-  onDayClick,
-  onApptClick,
-}: {
-  anchor: Date;
-  rangeStart: Date;
-  appointments: CalendarAppointment[];
-  onDayClick: (d: Date) => void;
-  onApptClick: (a: CalendarAppointment) => void;
-}) {
-  // 6 weeks × 7 days = 42 cells
-  const cells = Array.from({ length: 42 }, (_, i) => addDays(rangeStart, i));
-  const today = new Date();
-
-  return (
-    <div className="overflow-auto">
-      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 border-b border-border bg-card/40">
-        {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d) => (
-          <div
-            key={d}
-            className="px-3 py-2 text-center border-l border-border text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
-          >
-            {d}
-          </div>
-        ))}
-      </div>
-      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 grid-rows-6">
-        {cells.map((d) => {
-          const inMonth = isSameMonth(d, anchor);
-          const isToday = isSameDay(d, today);
-          const dayAppts = appointments.filter((a) => isSameDay(new Date(a.starts_at), d));
-          return (
-            <div
-              key={d.toISOString()}
-              onClick={() => onDayClick(d)}
-              className={`min-h-[110px] border-l border-t border-border p-1.5 cursor-pointer hover:bg-accent/40 transition-colors ${
-                inMonth ? "" : "bg-muted/30"
-              }`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <span
-                  className={`text-xs font-bold ${
-                    isToday
-                      ? "bg-primary text-primary-foreground rounded-full w-6 h-6 flex items-center justify-center"
-                      : inMonth
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                  }`}
-                >
-                  {format(d, "d")}
-                </span>
-                {dayAppts.length > 0 && (
-                  <span className="text-[9px] font-mono text-muted-foreground">{dayAppts.length}</span>
-                )}
-              </div>
-              <div className="space-y-0.5">
-                {dayAppts.slice(0, 3).map((a) => {
-                  const color = paletteColor(a.id);
-                  const cancelled = a.status === "cancelled" || a.status === "no_show";
-                  return (
-                    <div
-                      key={a.id}
-                      onClick={(ev) => {
-                        ev.stopPropagation();
-                        onApptClick(a);
-                      }}
-                      style={{
-                        backgroundColor: cancelled ? "transparent" : color,
-                        borderLeft: `2px solid ${color}`,
-                        color: "#1a1a1a",
-                        opacity: cancelled ? 0.6 : 1,
-                      }}
-                      className="rounded px-1.5 py-0.5 text-[10px] font-semibold truncate ring-1 ring-black/5 hover:ring-black/30"
-                    >
-                      {format(new Date(a.starts_at), "HH:mm")} {a.service?.name || "Appt"}
-                    </div>
-                  );
-                })}
-                {dayAppts.length > 3 && (
-                  <div className="text-[9px] text-muted-foreground font-semibold pl-1">
-                    +{dayAppts.length - 3} more
-                  </div>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function IcalButton({ userId }: { userId: string }) {
-  const [open, setOpen] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!open || token) return;
-    (async () => {
-      const { data, error } = await supabase
-        .from("profile_ical_tokens")
-        .select("token")
-        .eq("user_id", userId)
-        .maybeSingle();
-      if (error) return toast.error(error.message);
-      if (data?.token) {
-        setToken(data.token);
-        return;
-      }
-
-      const { data: created, error: createError } = await supabase
-        .from("profile_ical_tokens")
-        .insert({ user_id: userId })
-        .select("token")
-        .single();
-      if (createError) return toast.error(createError.message);
-      setToken(created.token);
-    })();
-  }, [open, token, userId]);
-
-  const url = token ? `${window.location.origin}/api/public/ical/${token}.ics` : "";
-
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold flex items-center gap-2"
-        title="Subscribe in Google/Apple Calendar"
-      >
-        <Rss className="w-4 h-4" />
-        <span className="hidden sm:inline">Subscribe</span>
-      </button>
-      {open && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 grid place-items-center p-4"
-          onClick={() => setOpen(false)}
-        >
-          <div
-            className="bg-card border border-border rounded-2xl card-pop p-6 w-full max-w-lg space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 className="text-lg font-bold">Subscribe to your calendar</h2>
-            <p className="text-sm text-muted-foreground">
-              Add this URL to Google Calendar, Apple Calendar, or Outlook to see your appointments
-              update automatically. Keep it private — anyone with the link can read your schedule.
-            </p>
-            <div className="flex gap-2">
-              <input
-                readOnly
-                value={url || "Loading…"}
-                onFocus={(e) => e.currentTarget.select()}
-                className="flex-1 bg-muted border border-input rounded-lg px-3 py-2 text-xs font-mono"
-              />
-              <button
-                disabled={!url}
-                onClick={() => {
-                  navigator.clipboard.writeText(url);
-                  toast.success("Copied");
-                }}
-                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-bold disabled:opacity-50"
-              >
-                Copy
-              </button>
-            </div>
-            <p className="text-[11px] text-muted-foreground">
-              Google: Other calendars → From URL · Apple: File → New Calendar Subscription
-            </p>
-            <div className="flex justify-end pt-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 rounded-xl border border-input text-sm font-semibold hover:bg-accent"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
   );
 }
