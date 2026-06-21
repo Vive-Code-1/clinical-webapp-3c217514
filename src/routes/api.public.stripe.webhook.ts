@@ -38,6 +38,9 @@ export const Route = createFileRoute("/api/public/stripe/webhook")({
           payment_intent: string | { id: string } | null;
           metadata: Record<string, string> | null;
         };
+        const invoiceId = session.metadata?.invoice_id;
+        const clinicId = session.metadata?.clinic_id;
+        const amount = session.amount_total ?? 0;
         if (!invoiceId || !clinicId || !amount) {
           return new Response("Missing metadata", { status: 400 });
         }
