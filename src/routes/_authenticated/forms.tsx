@@ -3,11 +3,12 @@ import { useState, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil } from "lucide-react";
+import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil, Copy, Sparkles, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { SAMPLE_INTAKE_FORMS, SAMPLE_NOTE_TEMPLATES } from "@/lib/forms-samples";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
@@ -152,16 +153,74 @@ function IntakeFormsSection({ clinicId }: { clinicId: string }) {
     },
   });
 
+  const toggleActive = useMutation({
+    mutationFn: async (f: IntakeForm) => {
+      const { error } = await supabase.from("intake_forms").update({ is_active: !f.is_active }).eq("id", f.id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] }),
+  });
+
+  const duplicate = useMutation({
+    mutationFn: async (f: IntakeForm) => {
+      const { error } = await supabase.from("intake_forms").insert({
+        clinic_id: clinicId,
+        title: `${f.title} (copy)`,
+        description: f.description,
+        kind: f.kind,
+        schema: f.schema as never,
+        is_active: false,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success("Form duplicated");
+    },
+  });
+
+  const seedSamples = useMutation({
+    mutationFn: async () => {
+      const existing = new Set((forms.data ?? []).map((f) => f.title));
+      const rows = SAMPLE_INTAKE_FORMS.filter((s) => !existing.has(s.title)).map((s) => ({
+        clinic_id: clinicId,
+        title: s.title,
+        description: s.description,
+        kind: s.kind,
+        schema: { fields: s.fields } as never,
+        is_active: true,
+      }));
+      if (rows.length === 0) return 0;
+      const { error } = await supabase.from("intake_forms").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (n) => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success(n ? `Loaded ${n} sample form(s)` : "All samples already present");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="font-semibold">Forms</h2>
-        <button
-          onClick={() => { setEditing(null); setOpen(true); }}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
-        >
-          <Plus className="w-4 h-4" /> New form
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => seedSamples.mutate()}
+            disabled={seedSamples.isPending}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-4 text-sm font-semibold hover:bg-muted/80 disabled:opacity-50"
+          >
+            <Sparkles className="w-4 h-4" /> Load sample library
+          </button>
+          <button
+            onClick={() => { setEditing(null); setOpen(true); }}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
+          >
+            <Plus className="w-4 h-4" /> New form
+          </button>
+        </div>
       </div>
 
       {forms.isLoading ? (
@@ -181,7 +240,13 @@ function IntakeFormsSection({ clinicId }: { clinicId: string }) {
                   {f.description && <p className="text-xs text-muted-foreground mt-1">{f.description}</p>}
                   <p className="text-xs text-muted-foreground mt-2">{f.schema?.fields?.length ?? 0} field(s) · {f.is_active ? "Active" : "Inactive"}</p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => toggleActive.mutate(f)} title={f.is_active ? "Deactivate" : "Activate"} className={`text-xs px-2 py-1 rounded inline-flex items-center gap-1 ${f.is_active ? "text-pill-green hover:bg-pill-green/10" : "text-muted-foreground hover:bg-background"}`}>
+                    <Power className="w-3 h-3" />
+                  </button>
+                  <button onClick={() => duplicate.mutate(f)} title="Duplicate" className="text-xs px-2 py-1 hover:bg-background rounded inline-flex items-center gap-1">
+                    <Copy className="w-3 h-3" />
+                  </button>
                   <button onClick={() => { setEditing(f); setOpen(true); }} className="text-xs px-2 py-1 hover:bg-background rounded inline-flex items-center gap-1">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
@@ -424,22 +489,62 @@ function NoteTemplatesSection({ clinicId }: { clinicId: string }) {
     },
   });
 
+  const duplicate = useMutation({
+    mutationFn: async (t: NoteTemplate) => {
+      const { error } = await supabase.from("note_templates").insert({
+        clinic_id: clinicId, title: `${t.title} (copy)`, kind: t.kind, body: t.body as never,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["note-templates", clinicId] });
+      toast.success("Template duplicated");
+    },
+  });
+
+  const seedSamples = useMutation({
+    mutationFn: async () => {
+      const existing = new Set((templates.data ?? []).map((t) => t.title));
+      const rows = SAMPLE_NOTE_TEMPLATES.filter((s) => !existing.has(s.title)).map((s) => ({
+        clinic_id: clinicId, title: s.title, kind: s.kind, body: s.body as never,
+      }));
+      if (rows.length === 0) return 0;
+      const { error } = await supabase.from("note_templates").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (n) => {
+      queryClient.invalidateQueries({ queryKey: ["note-templates", clinicId] });
+      toast.success(n ? `Loaded ${n} sample template(s)` : "All samples already present");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="font-semibold">Clinical note templates</h2>
-        <button
-          onClick={() => { setEditing(null); setOpen(true); }}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
-        >
-          <Plus className="w-4 h-4" /> New template
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => seedSamples.mutate()}
+            disabled={seedSamples.isPending}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-4 text-sm font-semibold hover:bg-muted/80 disabled:opacity-50"
+          >
+            <Sparkles className="w-4 h-4" /> Load sample library
+          </button>
+          <button
+            onClick={() => { setEditing(null); setOpen(true); }}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
+          >
+            <Plus className="w-4 h-4" /> New template
+          </button>
+        </div>
       </div>
 
       {templates.isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
       ) : (templates.data ?? []).length === 0 ? (
-        <p className="text-sm text-muted-foreground">No templates yet.</p>
+        <p className="text-sm text-muted-foreground">No templates yet. Click "Load sample library" for a starter set.</p>
       ) : (
         <ul className="grid sm:grid-cols-2 gap-3">
           {(templates.data ?? []).map((t) => (
@@ -452,6 +557,9 @@ function NoteTemplatesSection({ clinicId }: { clinicId: string }) {
                   <p className="font-semibold text-sm mt-1">{t.title}</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
+                  <button onClick={() => duplicate.mutate(t)} title="Duplicate" className="text-xs px-2 py-1 hover:bg-background rounded">
+                    <Copy className="w-3 h-3" />
+                  </button>
                   <button onClick={() => { setEditing(t); setOpen(true); }} className="text-xs px-2 py-1 hover:bg-background rounded">Edit</button>
                   <button onClick={() => confirm(`Delete "${t.title}"?`) && remove.mutate(t.id)} className="text-xs px-2 py-1 hover:bg-destructive/10 text-destructive rounded">
                     <Trash2 className="w-3 h-3" />
