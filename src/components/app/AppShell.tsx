@@ -24,6 +24,7 @@ import { clinicBrandingQuery, myProfileQuery } from "@/lib/me-queries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { BottomNav } from "@/components/app/BottomNav";
 
 
 type Props = {
