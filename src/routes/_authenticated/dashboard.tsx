@@ -282,6 +282,7 @@ function RangePicker({ current }: { current: Range }) {
           key={r}
           to="/dashboard"
           search={{ range: r }}
+          resetScroll={false}
           className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors whitespace-nowrap ${
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
