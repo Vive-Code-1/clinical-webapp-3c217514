@@ -24,6 +24,7 @@ import { LanguageToggle } from "@/components/site/LanguageToggle";
 
 type Props = {
   clinicId?: string;
+  hideHeader?: boolean;
   children: ReactNode;
 };
 
