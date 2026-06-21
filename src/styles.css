@@ -188,12 +188,12 @@
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0.6; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @utility animate-fade-in {
-  animation: fade-in 0.28s cubic-bezier(0.32, 0.72, 0, 1) both;
+  animation: fade-in 0.18s ease-out both;
 }
 
 @utility card-interactive {
