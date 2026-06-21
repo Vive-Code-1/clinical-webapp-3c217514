@@ -139,10 +139,10 @@ function InvoiceDetailPage() {
     if (search.checkout === "success") {
       toast.success("Payment received — refreshing invoice.");
       queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
-      navigate({ search: (p) => ({ ...p, checkout: undefined }), replace: true });
+      navigate({ search: (p: z.infer<typeof searchSchema>) => ({ ...p, checkout: undefined }), replace: true });
     } else if (search.checkout === "cancelled") {
       toast.info("Checkout cancelled.");
-      navigate({ search: (p) => ({ ...p, checkout: undefined }), replace: true });
+      navigate({ search: (p: z.infer<typeof searchSchema>) => ({ ...p, checkout: undefined }), replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search.checkout]);
