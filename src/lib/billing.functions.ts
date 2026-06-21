@@ -33,10 +33,11 @@ export const createInvoiceCheckout = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }) => {
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const { getAppSecret } = await import("@/lib/app-secrets.server");
+    const stripeKey = await getAppSecret("STRIPE_SECRET_KEY");
     if (!stripeKey) {
       throw new Error(
-        "Stripe is not configured yet. Add STRIPE_SECRET_KEY in project secrets to enable card payments.",
+        "Stripe is not configured yet. Add STRIPE_SECRET_KEY in Integrations to enable card payments.",
       );
     }
 
