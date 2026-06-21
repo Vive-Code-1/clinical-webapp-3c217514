@@ -89,7 +89,7 @@ function BookingPage() {
       const ids = (ps ?? []).map((p) => p.practitioner_id);
       if (ids.length === 0) return [];
       const { data: members, error } = await supabase
-        .from("clinic_members")
+        .from("public_clinic_members")
         .select("user_id, title, role")
         .eq("clinic_id", clinicId!)
         .eq("is_active", true)
@@ -120,7 +120,7 @@ function BookingPage() {
           .eq("day_of_week", dayCode)
           .eq("is_active", true),
         supabase
-          .from("availability_overrides")
+          .from("public_availability_overrides")
           .select("is_closed, start_time, end_time")
           .eq("practitioner_id", selectedPractitionerId!)
           .eq("clinic_id", clinicId!)
@@ -179,11 +179,16 @@ function BookingPage() {
     mutationFn: async (slot: Date) => {
       if (!userId) throw new Error("Please sign in to book.");
       const endsAt = addMinutes(slot, selectedService!.duration_minutes);
+      const { data: clientRecordId, error: clientError } = await supabase.rpc("ensure_self_client_record", {
+        _clinic_id: clinicId!,
+      });
+      if (clientError) throw clientError;
+
       const { error } = await supabase.from("appointments").insert({
         clinic_id: clinicId!,
         practitioner_id: selectedPractitionerId!,
         service_type_id: selectedService!.id,
-        client_id: userId,
+        client_id: clientRecordId,
         starts_at: slot.toISOString(),
         ends_at: endsAt.toISOString(),
         status: "scheduled",
@@ -191,11 +196,6 @@ function BookingPage() {
         color: selectedService!.color,
       });
       if (error) throw error;
-      // Ensure a clinic_clients record exists so the clinic sees this booker in their list.
-      // Failure here is non-fatal — the booking itself succeeded.
-      await supabase.rpc("ensure_self_client_record", {
-        _clinic_id: clinicId!,
-      });
     },
     onSuccess: () => {
       toast.success("Appointment booked. We'll see you soon.");

@@ -64,14 +64,12 @@ export function NewAppointmentDialog({ clinicId, open, onOpenChange, initialStar
       const startsAt = new Date(start);
       const endsAt = addMinutes(startsAt, service.duration_minutes);
 
-      let resolvedClientUserId: string | null = null;
       let resolvedClientRecordId: string | null = null;
       let resolvedGuestName: string | null = null;
 
       if (clientMode === "existing") {
         const c = (clientsQ.data ?? []).find((x) => x.id === clientId);
         if (!c) throw new Error("Please select a client.");
-        resolvedClientUserId = c.user_id;
         resolvedClientRecordId = c.id;
         resolvedGuestName = c.user_id ? null : c.full_name;
       } else {
@@ -92,7 +90,7 @@ export function NewAppointmentDialog({ clinicId, open, onOpenChange, initialStar
         clinic_id: clinicId,
         practitioner_id: practitionerId,
         service_type_id: serviceId,
-        client_id: resolvedClientUserId,
+        client_id: resolvedClientRecordId,
         starts_at: startsAt.toISOString(),
         ends_at: endsAt.toISOString(),
         guest_name: resolvedGuestName,

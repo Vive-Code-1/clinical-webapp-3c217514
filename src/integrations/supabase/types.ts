@@ -1415,12 +1415,32 @@ export type Database = {
           },
         ]
       }
+      profile_ical_tokens: {
+        Row: {
+          created_at: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          token?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           full_name: string | null
-          ical_token: string
           id: string
           preferred_language: string
           timezone: string
@@ -1430,7 +1450,6 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
-          ical_token?: string
           id: string
           preferred_language?: string
           timezone?: string
@@ -1440,11 +1459,97 @@ export type Database = {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
-          ical_token?: string
           id?: string
           preferred_language?: string
           timezone?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      public_availability_overrides: {
+        Row: {
+          clinic_id: string
+          end_time: string | null
+          id: string
+          is_closed: boolean
+          override_date: string
+          practitioner_id: string
+          start_time: string | null
+        }
+        Insert: {
+          clinic_id: string
+          end_time?: string | null
+          id: string
+          is_closed?: boolean
+          override_date: string
+          practitioner_id: string
+          start_time?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          end_time?: string | null
+          id?: string
+          is_closed?: boolean
+          override_date?: string
+          practitioner_id?: string
+          start_time?: string | null
+        }
+        Relationships: []
+      }
+      public_clinic_members: {
+        Row: {
+          clinic_id: string
+          id: string
+          is_active: boolean
+          role: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          clinic_id: string
+          id: string
+          is_active?: boolean
+          role: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string
+          id?: string
+          is_active?: boolean
+          role?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      public_locations: {
+        Row: {
+          city: string | null
+          clinic_id: string
+          country: string
+          id: string
+          is_active: boolean
+          name: string
+          region: string | null
+        }
+        Insert: {
+          city?: string | null
+          clinic_id: string
+          country?: string
+          id: string
+          is_active?: boolean
+          name: string
+          region?: string | null
+        }
+        Update: {
+          city?: string | null
+          clinic_id?: string
+          country?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          region?: string | null
         }
         Relationships: []
       }
