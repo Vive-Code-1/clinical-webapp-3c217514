@@ -33,6 +33,7 @@ import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
 import { myProfileQuery } from "@/lib/me-queries";
 import { useAppTranslation } from "@/lib/app-translations";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
+import { useLayoutDensity } from "@/lib/layout-density";
 
 const RANGES = ["today", "week", "month", "year"] as const;
 type Range = (typeof RANGES)[number];
