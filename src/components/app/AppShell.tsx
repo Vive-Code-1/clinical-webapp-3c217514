@@ -47,14 +47,13 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/forms" as const, label: "Forms", icon: ClipboardList },
     { to: "/invoices" as const, label: "Invoices", icon: Receipt },
     { to: "/messages" as const, label: "Messages", icon: MessageSquare },
-    { to: "/billing-settings" as const, label: "Billing", icon: Settings },
+    { to: "/reports" as const, label: "Reports", icon: BarChart3 },
+    { to: "/billing-settings" as const, label: "Billing", icon: Receipt },
     { to: "/integrations" as const, label: "Integrations", icon: Sparkles },
   ];
 
   const secondary = [
-    { label: "Setting", icon: Settings },
-    { label: "Help & Center", icon: HelpCircle },
-
+    { to: "/settings" as const, label: "Settings", icon: Settings },
   ];
 
   return (
