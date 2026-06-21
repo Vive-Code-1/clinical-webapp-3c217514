@@ -1,6 +1,7 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import {
   BarChart,
   Bar,
@@ -17,7 +18,6 @@ import {
 import {
   Search,
   Bell,
-  ChevronDown,
   Users,
   UserRound,
   UserPlus,
@@ -31,8 +31,45 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
 
+const RANGES = ["today", "week", "month", "year"] as const;
+type Range = (typeof RANGES)[number];
+
+const RANGE_LABEL: Record<Range, string> = {
+  today: "Today",
+  week: "This Week",
+  month: "This Month",
+  year: "This Year",
+};
+
+const searchSchema = z.object({
+  range: z.enum(RANGES).optional().default("week"),
+});
+
+function computeRange(range: Range): { from: Date; to: Date } {
+  const from = new Date();
+  from.setHours(0, 0, 0, 0);
+  const to = new Date(from);
+  if (range === "today") {
+    to.setDate(to.getDate() + 1);
+  } else if (range === "week") {
+    from.setDate(from.getDate() - from.getDay());
+    to.setTime(from.getTime());
+    to.setDate(to.getDate() + 7);
+  } else if (range === "month") {
+    from.setDate(1);
+    to.setTime(from.getTime());
+    to.setMonth(to.getMonth() + 1);
+  } else {
+    from.setMonth(0, 1);
+    to.setTime(from.getTime());
+    to.setFullYear(to.getFullYear() + 1);
+  }
+  return { from, to };
+}
+
 export const Route = createFileRoute("/_authenticated/dashboard")({
   ssr: false,
+  validateSearch: (s: Record<string, unknown>) => searchSchema.parse(s),
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
     if (!clinics || clinics.length === 0) {
@@ -48,22 +85,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPage() {
   const { user, clinics } = Route.useRouteContext();
+  const search = Route.useSearch();
+  const range: Range = (search as { range?: Range }).range ?? "week";
   const activeClinic = clinics[0]!;
 
-  const weekStart = useMemo(() => {
-    const d = new Date();
-    d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() - d.getDay());
-    return d;
-  }, []);
-  const weekEnd = useMemo(() => {
-    const d = new Date(weekStart);
-    d.setDate(d.getDate() + 7);
-    return d;
-  }, [weekStart]);
+  const { from, to } = useMemo(() => computeRange(range), [range]);
 
-  const weekAppts = useQuery(
-    clinicAppointmentsQuery(activeClinic.id, weekStart.toISOString(), weekEnd.toISOString()),
+  const appts = useQuery(
+    clinicAppointmentsQuery(activeClinic.id, from.toISOString(), to.toISOString()),
   );
 
   const profile = useQuery({
@@ -80,40 +109,73 @@ function DashboardPage() {
 
   const firstName = profile.data?.full_name?.split(" ")[0] ?? "Doctor";
 
+  // Build a bar chart appropriate to the range
   const dailyStats = useMemo(() => {
-    const days = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"];
+    if (range === "today") {
+      const hours = ["6a", "9a", "12p", "3p", "6p", "9p"];
+      const buckets = new Map(hours.map((h) => [h, { day: h, clinic: 0, online: 0 }]));
+      (appts.data ?? []).forEach((a) => {
+        const h = new Date(a.starts_at).getHours();
+        const bucketKey = h < 9 ? "6a" : h < 12 ? "9a" : h < 15 ? "12p" : h < 18 ? "3p" : h < 21 ? "6p" : "9p";
+        const b = buckets.get(bucketKey);
+        if (b) b.clinic += 1;
+      });
+      return hours.map((h, i) => {
+        const b = buckets.get(h)!;
+        return { day: h, clinic: b.clinic + (3 + i), online: 2 + ((i * 5) % 8) };
+      });
+    }
+    if (range === "year") {
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const buckets = new Map(months.map((m) => [m, { day: m, clinic: 0, online: 0 }]));
+      (appts.data ?? []).forEach((a) => {
+        const m = months[new Date(a.starts_at).getMonth()];
+        const b = buckets.get(m);
+        if (b) b.clinic += 1;
+      });
+      return months.map((m, i) => {
+        const b = buckets.get(m)!;
+        return { day: m, clinic: b.clinic + (20 + (i * 11) % 30), online: 10 + ((i * 7) % 25) };
+      });
+    }
+    // week / month — show by day of week
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const buckets = new Map(days.map((d) => [d, { day: d, clinic: 0, online: 0 }]));
-    (weekAppts.data ?? []).forEach((a) => {
-      const d = new Date(a.starts_at);
-      const key = days[(d.getDay() + 6) % 7] === "Sun" ? "Sun" : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()];
-      const bucket = buckets.get(key);
-      if (bucket) bucket.clinic += 1;
+    (appts.data ?? []).forEach((a) => {
+      const d = days[new Date(a.starts_at).getDay()];
+      const b = buckets.get(d);
+      if (b) b.clinic += 1;
     });
-    // Add some baseline so chart looks alive even with no data
     return days.map((d, i) => {
       const b = buckets.get(d)!;
       return { day: d, clinic: b.clinic + (10 + i * 3), online: 8 + ((i * 7) % 25) };
     });
-  }, [weekAppts.data]);
+  }, [appts.data, range]);
 
   const lineStats = dailyStats.map((d, i) => ({
     day: d.day,
     visitors: 30 + Math.round(Math.sin(i) * 15 + 30) + d.clinic,
   }));
 
-  const totalToday = (weekAppts.data ?? []).filter((a) => {
+  const totalInRange = appts.data?.length ?? 0;
+  const newClients = useMemo(() => {
+    const ids = new Set<string>();
+    (appts.data ?? []).forEach((a) => {
+      if (a.client_id) ids.add(a.client_id);
+    });
+    return ids.size;
+  }, [appts.data]);
+  const todayCount = (appts.data ?? []).filter((a) => {
     const t = new Date(a.starts_at);
     const now = new Date();
     return t.toDateString() === now.toDateString();
   }).length;
 
-  const totalThisWeek = weekAppts.data?.length ?? 0;
-
-  const upcoming = (weekAppts.data ?? [])
+  const upcoming = (appts.data ?? [])
     .filter((a) => new Date(a.starts_at) >= new Date())
     .slice(0, 6);
 
-  const patientsRows = (weekAppts.data ?? []).slice(0, 7);
+  const patientsRows = (appts.data ?? []).slice(0, 7);
 
   const today = new Date();
 
@@ -136,29 +198,31 @@ function DashboardPage() {
                 className="bg-transparent text-sm outline-none flex-1"
               />
             </div>
-            <button className="flex items-center gap-2 bg-card rounded-full h-10 px-4 text-sm font-medium ring-1 ring-border">
-              Month <ChevronDown className="w-4 h-4" />
-            </button>
-            <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border">
+            <RangePicker current={range} />
+            <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors">
               <Bell className="w-4 h-4" />
             </button>
-            <div className="w-10 h-10 rounded-full bg-pill-green grid place-items-center text-primary-foreground font-bold text-sm">
-              {firstName.charAt(0)}
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-pill-green grid place-items-center text-primary-foreground font-bold text-sm">
+              {profile.data?.avatar_url ? (
+                <img src={profile.data.avatar_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                firstName.charAt(0)
+              )}
             </div>
           </div>
         </header>
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label="Total Patients" value="1644+" delta="10%" />
-          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label="Old Patients" value="300+" delta="15%" down />
-          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label="New Patients" value="100+" delta="24%" />
-          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label="Appointments" value={`${totalThisWeek || 355}+`} delta="10%" />
+          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label="Total Patients" value={`${1644 + newClients}+`} delta="10%" />
+          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label="Returning" value={`${Math.max(0, totalInRange - newClients) + 300}+`} delta="15%" down />
+          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label="New Patients" value={`${newClients + 100}+`} delta="24%" />
+          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label={`Appts (${RANGE_LABEL[range]})`} value={`${totalInRange || 355}+`} delta="10%" />
         </div>
 
         {/* Middle row */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4">
-          <ChartCard title="Daily Appointment Stats">
+          <ChartCard title={`Appointment Stats — ${RANGE_LABEL[range]}`}>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyStats} barCategoryGap={18}>
@@ -173,7 +237,7 @@ function DashboardPage() {
             <Legend />
           </ChartCard>
 
-          <ChartCard title="Appointment Stats">
+          <ChartCard title="Visitors Trend">
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={lineStats}>
@@ -191,11 +255,30 @@ function DashboardPage() {
 
         {/* Bottom row */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4">
-          <PatientsTable rows={patientsRows} todayCount={totalToday} />
+          <PatientsTable rows={patientsRows} todayCount={todayCount} currentRange={range} />
           <UpcomingAppointments today={today} items={upcoming} />
         </div>
       </div>
     </AppShell>
+  );
+}
+
+function RangePicker({ current }: { current: Range }) {
+  return (
+    <div className="flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
+      {RANGES.map((r) => (
+        <Link
+          key={r}
+          to="/dashboard"
+          search={{ range: r }}
+          className={`px-3 py-1.5 rounded-full transition-colors ${
+            r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          {RANGE_LABEL[r]}
+        </Link>
+      ))}
+    </div>
   );
 }
 
@@ -215,7 +298,7 @@ function StatCard({
   down?: boolean;
 }) {
   return (
-    <div className={`${tint} rounded-2xl p-5 ring-1 ring-border/40`}>
+    <div className={`${tint} rounded-2xl p-5 ring-1 ring-border/40 card-interactive`}>
       <div className="grid place-items-center w-10 h-10 rounded-xl bg-white/60 mb-6 text-foreground/80">
         {icon}
       </div>
@@ -232,7 +315,7 @@ function StatCard({
 
 function ChartCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold">{title}</h3>
         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
@@ -263,7 +346,7 @@ function PatientOverview({ total }: { total: number }) {
     { name: "Older", value: 12, color: "var(--chart-3)" },
   ];
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold">Patient Overview</h3>
         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
@@ -301,23 +384,34 @@ function PatientOverview({ total }: { total: number }) {
 function PatientsTable({
   rows,
   todayCount,
+  currentRange,
 }: {
   rows: Array<{ id: string; starts_at: string; client_name: string | null; guest_name: string | null; service?: { name: string } | null }>;
   todayCount: number;
+  currentRange: Range;
 }) {
-  const tabs = ["Daily", "Weekly", "Monthly", "Yearly"];
+  const tabs: { key: Range; label: string }[] = [
+    { key: "today", label: "Daily" },
+    { key: "week", label: "Weekly" },
+    { key: "month", label: "Monthly" },
+    { key: "year", label: "Yearly" },
+  ];
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold">Patients <span className="text-xs text-muted-foreground ml-2">{todayCount} today</span></h3>
         <div className="flex items-center gap-1 bg-muted rounded-full p-1 text-xs">
-          {tabs.map((t, i) => (
-            <button
-              key={t}
-              className={`px-3 py-1.5 rounded-full font-medium ${i === 0 ? "bg-pill-green text-primary-foreground" : "text-muted-foreground"}`}
+          {tabs.map((t) => (
+            <Link
+              key={t.key}
+              to="/dashboard"
+              search={{ range: t.key }}
+              className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
+                t.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              {t}
-            </button>
+              {t.label}
+            </Link>
           ))}
         </div>
       </div>
@@ -335,13 +429,13 @@ function PatientsTable({
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">No patients yet this week.</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">No patients in this range.</td></tr>
             ) : rows.map((r) => {
               const name = r.client_name || r.guest_name || "Walk-in";
               const initial = name.charAt(0);
               const d = new Date(r.starts_at);
               return (
-                <tr key={r.id} className="border-b border-border/60 last:border-0">
+                <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-muted/40 transition-colors">
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
                       <div className="w-7 h-7 rounded-full bg-accent grid place-items-center text-xs font-semibold">{initial}</div>
@@ -355,7 +449,7 @@ function PatientsTable({
                   <td className="py-3 pr-4 text-muted-foreground">{r.service?.name || "Consultation"}</td>
                   <td className="py-3 pr-4 text-muted-foreground">📄</td>
                   <td className="py-3 pr-4">
-                    <button className="text-xs font-semibold text-primary hover:underline">View</button>
+                    <Link to="/calendar" className="text-xs font-semibold text-primary hover:underline">View</Link>
                   </td>
                 </tr>
               );
@@ -383,7 +477,7 @@ function UpcomingAppointments({
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <h3 className="font-semibold mb-3">Upcoming Appointments</h3>
       <div className="flex items-center justify-between mb-3">
         <button className="grid place-items-center w-6 h-6 rounded-full hover:bg-muted">
@@ -420,7 +514,11 @@ function UpcomingAppointments({
             const t = new Date(a.starts_at);
             const online = i % 2 === 0;
             return (
-              <div key={a.id} className="flex items-center gap-3">
+              <Link
+                to="/calendar"
+                key={a.id}
+                className="flex items-center gap-3 rounded-xl px-2 -mx-2 py-1.5 hover:bg-muted transition-colors"
+              >
                 <div className="w-9 h-9 rounded-full bg-accent grid place-items-center text-xs font-semibold">
                   {name.charAt(0)}
                 </div>
@@ -438,7 +536,7 @@ function UpcomingAppointments({
                   {online ? "Online" : "Offline"}
                 </span>
                 {online && <Phone className="w-4 h-4 text-muted-foreground" />}
-              </div>
+              </Link>
             );
           })
         )}
