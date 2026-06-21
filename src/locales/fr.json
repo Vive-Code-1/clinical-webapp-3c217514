@@ -410,7 +410,114 @@
       "body": "Rejoignez des centaines de cliniques qui utilisent déjà SANTÉ. Gratuit pendant 30 jours — sans carte bancaire.",
       "primary": "Démarrer l'essai gratuit",
       "secondary": "Parler à un commercial"
+    },
+    "walkthrough": {
+      "eyebrow": "Visite interactive",
+      "title": "Découvrez SANTÉ en action — en 60 secondes.",
+      "subtitle": "Cliquez sur un onglet pour explorer. La démo défile automatiquement à travers chaque étape du flux clinique.",
+      "play": "Lecture auto",
+      "pause": "Pause",
+      "steps": {
+        "dashboard": {
+          "tab": "Tableau de bord",
+          "title": "Un tableau de bord serein pour toute la clinique",
+          "body": "Visualisez patients, retours, nouvelles réservations et rendez-vous de la semaine — avec mises à jour en temps réel.",
+          "bullets": ["Indicateurs en direct", "Vue quotidienne des RDV", "Répartition des patients"]
+        },
+        "appointments": {
+          "tab": "Rendez-vous",
+          "title": "Des réservations qui respectent vos limites",
+          "body": "Auto-réservation, synchro de calendrier, statuts colorés et rappels automatiques réduisent fortement les absences.",
+          "bullets": ["Auto-réservation en ligne", "Synchro Google & Apple", "Rappels SMS + e-mail"]
+        },
+        "reports": {
+          "tab": "Rapports",
+          "title": "Des analyses pour mieux décider",
+          "body": "Revenus, tendances de RDV, mix de services, rétention — visualisés pour agir sur l'essentiel.",
+          "bullets": ["Rapports revenus & performance", "Vue tendance 12 mois", "Export CSV"]
+        },
+        "messages": {
+          "tab": "Messages",
+          "title": "Messagerie de qualité médicale",
+          "body": "Discussion sécurisée avec les patients : toute la conversation reste à un seul endroit.",
+          "bullets": ["Chiffrement de bout en bout", "Partage de fichiers", "Accusés de lecture & modèles"]
+        },
+        "billing": {
+          "tab": "Facturation",
+          "title": "Soyez payé plus vite, sans friction",
+          "body": "Générez factures, acceptez cartes sauvegardées, envoyez reçus et réconciliez en un seul écran.",
+          "bullets": ["Paiement via Stripe", "Taxes & forfaits", "Reçus automatiques"]
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Tout ce que vous devez savoir.",
+      "subtitle": "Vous ne trouvez pas la réponse ? Utilisez le formulaire ci-dessous et notre équipe vous répondra sous un jour ouvré.",
+      "items": {
+        "appointments_1": {
+          "q": "Les patients peuvent-ils réserver en ligne ?",
+          "a": "Oui. Chaque clinique dispose d'une page de réservation aux couleurs de sa marque. La disponibilité se synchronise automatiquement avec le calendrier de chaque praticien."
+        },
+        "appointments_2": {
+          "q": "Envoyez-vous des rappels de rendez-vous ?",
+          "a": "SANTÉ envoie des rappels SMS et e-mail automatiques 24 h et 1 h avant chaque visite. Cadence et texte sont entièrement personnalisables."
+        },
+        "billing_1": {
+          "q": "Comment fonctionne la facturation ?",
+          "a": "Générez des factures en un clic, débitez des cartes enregistrées, appliquez taxes et forfaits, envoyez des reçus automatiques. Paiements opérés par Stripe, conformes PCI-DSS."
+        },
+        "billing_2": {
+          "q": "Puis-je émettre des remboursements ou paiements partiels ?",
+          "a": "Absolument. Remboursements complets, partiels, acomptes et paiements en plusieurs fois sont gérés directement depuis l'écran de facturation."
+        },
+        "clinical_1": {
+          "q": "Quels formats de notes cliniques sont pris en charge ?",
+          "a": "Notes SOAP structurées, suivis, notes couples et familiales, plus des modèles personnalisés illimités. Un Scribe IA optionnel (anglais) transforme la séance enregistrée en note prête à éditer."
+        },
+        "clinical_2": {
+          "q": "Puis-je importer des documents et formulaires d'admission ?",
+          "a": "Oui — téléversez PDF et images dans le dossier patient, et envoyez formulaires d'admission ou de consentement avec signature numérique avant la première visite."
+        },
+        "security_1": {
+          "q": "SANTÉ est-il conforme aux réglementations de confidentialité ?",
+          "a": "SANTÉ est conforme à la PIPEDA, avec chiffrement médical au repos et en transit. Données stockées au Canada, sauvegardes quotidiennes et plan de reprise."
+        },
+        "security_2": {
+          "q": "Qui peut voir les données patient ?",
+          "a": "Des permissions basées sur les rôles limitent l'accès au personnel clinique habilité. Chaque lecture et écriture est consignée pour audit."
+        }
+      }
+    },
+    "lead": {
+      "eyebrow": "Réservez une démo personnalisée",
+      "title": "Parlez à un spécialiste SANTÉ.",
+      "body": "Parlez-nous de votre pratique : un membre de notre équipe vous présentera la plateforme, répondra à vos questions et vous aidera à migrer.",
+      "bullets": [
+        "Démo personnalisée de 30 minutes",
+        "Migration gratuite de vos données",
+        "Spécialiste bilingue (FR / EN)"
+      ],
+      "fields": {
+        "name": "Nom complet",
+        "email": "E-mail professionnel",
+        "phone": "Téléphone",
+        "service": "Je suis surtout intéressé par"
+      },
+      "services": {
+        "scheduling": "Prise de rendez-vous",
+        "billing": "Facturation & paiements",
+        "clinical": "Notes cliniques & Scribe IA",
+        "telehealth": "Téléconsultation",
+        "all": "L'ensemble de SANTÉ"
+      },
+      "submit": "Demander ma démo",
+      "privacy": "Nous n'utiliserons vos coordonnées que pour vous contacter au sujet de SANTÉ. Pas de spam — promis.",
+      "error": "Une erreur est survenue. Vérifiez le formulaire et réessayez.",
+      "successTitle": "Merci — demande reçue.",
+      "successBody": "Un spécialiste vous contactera sous un jour ouvré. Surveillez votre boîte mail."
     }
   }
 }
+
 
