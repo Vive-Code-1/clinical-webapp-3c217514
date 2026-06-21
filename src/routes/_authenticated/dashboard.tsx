@@ -30,16 +30,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
+import { useAppTranslation } from "@/lib/app-translations";
 
 const RANGES = ["today", "week", "month", "year"] as const;
 type Range = (typeof RANGES)[number];
-
-const RANGE_LABEL: Record<Range, string> = {
-  today: "Today",
-  week: "This Week",
-  month: "This Month",
-  year: "This Year",
-};
 
 const searchSchema = z.object({
   range: z.enum(RANGES).optional().default("week"),
@@ -88,6 +82,13 @@ function DashboardPage() {
   const search = Route.useSearch();
   const range: Range = (search as { range?: Range }).range ?? "week";
   const activeClinic = clinics[0]!;
+  const { t } = useAppTranslation();
+  const RANGE_LABEL: Record<Range, string> = {
+    today: t("app.dashboard.today"),
+    week: t("app.dashboard.week"),
+    month: t("app.dashboard.month"),
+    year: t("app.dashboard.year"),
+  };
 
   const { from, to } = useMemo(() => computeRange(range), [range]);
 
@@ -181,20 +182,20 @@ function DashboardPage() {
 
   return (
     <AppShell clinicId={activeClinic.id}>
-      <div className="px-6 py-6 max-w-[1600px] mx-auto">
+      <div className="px-6 py-6 w-full min-w-0">
         {/* Top bar */}
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
           <div className="min-w-0">
-            <p className="text-sm text-muted-foreground">Welcome back</p>
+            <p className="text-sm text-muted-foreground">{t("app.dashboard.welcome")}</p>
             <h1 className="text-2xl font-bold tracking-tight truncate">
-              Dr. {firstName} <span className="inline-block">👋</span>
+              {t("app.dashboard.doctor")} {firstName} <span className="inline-block">👋</span>
             </h1>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <div className="hidden md:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-72 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
-                placeholder="Search"
+                placeholder={t("app.dashboard.search")}
                 className="bg-transparent text-sm outline-none flex-1"
               />
             </div>
@@ -214,15 +215,15 @@ function DashboardPage() {
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label="Total Patients" value={`${1644 + newClients}+`} delta="10%" />
-          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label="Returning" value={`${Math.max(0, totalInRange - newClients) + 300}+`} delta="15%" down />
-          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label="New Patients" value={`${newClients + 100}+`} delta="24%" />
-          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label={`Appts (${RANGE_LABEL[range]})`} value={`${totalInRange || 355}+`} delta="10%" />
+          <StatCard tint="bg-stat-blue" icon={<Users className="w-5 h-5" />} label={t("app.dashboard.totalPatients")} value={`${1644 + newClients}+`} delta="10%" />
+          <StatCard tint="bg-stat-pink" icon={<UserRound className="w-5 h-5" />} label={t("app.dashboard.returning")} value={`${Math.max(0, totalInRange - newClients) + 300}+`} delta="15%" down />
+          <StatCard tint="bg-stat-green" icon={<UserPlus className="w-5 h-5" />} label={t("app.dashboard.newPatients")} value={`${newClients + 100}+`} delta="24%" />
+          <StatCard tint="bg-stat-peach" icon={<CalendarCheck className="w-5 h-5" />} label={t("app.dashboard.apptsIn", { range: RANGE_LABEL[range] })} value={`${totalInRange || 355}+`} delta="10%" />
         </div>
 
         {/* Middle row */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4">
-          <ChartCard title={`Appointment Stats — ${RANGE_LABEL[range]}`}>
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4 min-w-0">
+          <ChartCard title={t("app.dashboard.apptStats", { range: RANGE_LABEL[range] })}>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyStats} barCategoryGap={18}>
@@ -237,7 +238,7 @@ function DashboardPage() {
             <Legend />
           </ChartCard>
 
-          <ChartCard title="Visitors Trend">
+          <ChartCard title={t("app.dashboard.visitorsTrend")}>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={lineStats}>
@@ -254,7 +255,7 @@ function DashboardPage() {
         </div>
 
         {/* Bottom row */}
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-4 min-w-0">
           <PatientsTable rows={patientsRows} todayCount={todayCount} currentRange={range} />
           <UpcomingAppointments today={today} items={upcoming} />
         </div>
@@ -264,6 +265,13 @@ function DashboardPage() {
 }
 
 function RangePicker({ current }: { current: Range }) {
+  const { t } = useAppTranslation();
+  const labels: Record<Range, string> = {
+    today: t("app.dashboard.today"),
+    week: t("app.dashboard.week"),
+    month: t("app.dashboard.month"),
+    year: t("app.dashboard.year"),
+  };
   return (
     <div className="flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
       {RANGES.map((r) => (
@@ -275,7 +283,7 @@ function RangePicker({ current }: { current: Range }) {
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {RANGE_LABEL[r]}
+          {labels[r]}
         </Link>
       ))}
     </div>
@@ -326,29 +334,31 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 function Legend() {
+  const { t } = useAppTranslation();
   return (
     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
       <span className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-[var(--chart-1)]" /> Clinic
+        <span className="w-2 h-2 rounded-full bg-[var(--chart-1)]" /> {t("app.dashboard.clinic")}
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="w-2 h-2 rounded-full bg-[var(--chart-3)]" /> Online
+        <span className="w-2 h-2 rounded-full bg-[var(--chart-3)]" /> {t("app.dashboard.online")}
       </span>
     </div>
   );
 }
 
 function PatientOverview({ total }: { total: number }) {
+  const { t } = useAppTranslation();
   const data = [
-    { name: "Adult", value: 10, color: "var(--chart-1)" },
-    { name: "Child", value: 8, color: "var(--chart-4)" },
-    { name: "Teen", value: 40, color: "var(--chart-1)" },
-    { name: "Older", value: 12, color: "var(--chart-3)" },
+    { name: t("app.dashboard.adult"), value: 10, color: "var(--chart-1)" },
+    { name: t("app.dashboard.child"), value: 8, color: "var(--chart-4)" },
+    { name: t("app.dashboard.teen"), value: 40, color: "var(--chart-1)" },
+    { name: t("app.dashboard.older"), value: 12, color: "var(--chart-3)" },
   ];
   return (
     <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold">Patient Overview</h3>
+        <h3 className="font-semibold">{t("app.dashboard.patientOverview")}</h3>
         <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
       </div>
       <div className="relative h-44">
@@ -364,7 +374,7 @@ function PatientOverview({ total }: { total: number }) {
         <div className="absolute inset-0 grid place-items-center pointer-events-none">
           <div className="text-center">
             <div className="text-2xl font-extrabold">{total}</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">Total</div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground">{t("app.dashboard.total")}</div>
           </div>
         </div>
       </div>
@@ -390,27 +400,28 @@ function PatientsTable({
   todayCount: number;
   currentRange: Range;
 }) {
+  const { t } = useAppTranslation();
   const tabs: { key: Range; label: string }[] = [
-    { key: "today", label: "Daily" },
-    { key: "week", label: "Weekly" },
-    { key: "month", label: "Monthly" },
-    { key: "year", label: "Yearly" },
+    { key: "today", label: t("app.dashboard.daily") },
+    { key: "week", label: t("app.dashboard.weekly") },
+    { key: "month", label: t("app.dashboard.monthly") },
+    { key: "year", label: t("app.dashboard.yearly") },
   ];
   return (
-    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
+    <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive min-w-0">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold">Patients <span className="text-xs text-muted-foreground ml-2">{todayCount} today</span></h3>
+        <h3 className="font-semibold">{t("app.dashboard.patients")} <span className="text-xs text-muted-foreground ml-2">{t("app.dashboard.todayCount", { count: todayCount })}</span></h3>
         <div className="flex items-center gap-1 bg-muted rounded-full p-1 text-xs">
-          {tabs.map((t) => (
+          {tabs.map((tab) => (
             <Link
-              key={t.key}
+              key={tab.key}
               to="/dashboard"
-              search={{ range: t.key }}
+              search={{ range: tab.key }}
               className={`px-3 py-1.5 rounded-full font-medium transition-colors ${
-                t.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {t.label}
+              {tab.label}
             </Link>
           ))}
         </div>
@@ -419,19 +430,19 @@ function PatientsTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="text-[11px] uppercase tracking-widest text-muted-foreground border-b border-border">
-              <th className="text-left font-medium py-2 pr-4">Name</th>
-              <th className="text-left font-medium py-2 pr-4">Age</th>
-              <th className="text-left font-medium py-2 pr-4">Date & Time</th>
-              <th className="text-left font-medium py-2 pr-4">Appointed For</th>
-              <th className="text-left font-medium py-2 pr-4">Report</th>
-              <th className="text-left font-medium py-2 pr-4">Action</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.name")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.age")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.dateTime")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.appointedFor")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.report")}</th>
+              <th className="text-left font-medium py-2 pr-4">{t("app.dashboard.action")}</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">No patients in this range.</td></tr>
+              <tr><td colSpan={6} className="py-8 text-center text-muted-foreground text-sm">{t("app.dashboard.noPatients")}</td></tr>
             ) : rows.map((r) => {
-              const name = r.client_name || r.guest_name || "Walk-in";
+              const name = r.client_name || r.guest_name || t("app.dashboard.walkIn");
               const initial = name.charAt(0);
               const d = new Date(r.starts_at);
               return (
@@ -446,10 +457,10 @@ function PatientsTable({
                   <td className="py-3 pr-4 text-muted-foreground">
                     {d.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })} · {d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </td>
-                  <td className="py-3 pr-4 text-muted-foreground">{r.service?.name || "Consultation"}</td>
+                  <td className="py-3 pr-4 text-muted-foreground">{r.service?.name || t("app.dashboard.consultation")}</td>
                   <td className="py-3 pr-4 text-muted-foreground">📄</td>
                   <td className="py-3 pr-4">
-                    <Link to="/calendar" className="text-xs font-semibold text-primary hover:underline">View</Link>
+                    <Link to="/calendar" className="text-xs font-semibold text-primary hover:underline">{t("app.dashboard.view")}</Link>
                   </td>
                 </tr>
               );
@@ -468,22 +479,23 @@ function UpcomingAppointments({
   today: Date;
   items: Array<{ id: string; starts_at: string; client_name: string | null; guest_name: string | null }>;
 }) {
-  const monthLabel = today.toLocaleString(undefined, { month: "long" });
+  const { t, i18n } = useAppTranslation();
+  const locale = i18n.resolvedLanguage ?? "en";
+  const monthLabel = today.toLocaleString(locale, { month: "long" });
   const days = Array.from({ length: 7 }).map((_, i) => {
     const d = new Date(today);
     d.setDate(d.getDate() - today.getDay() + i);
     return d;
   });
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
-      <h3 className="font-semibold mb-3">Upcoming Appointments</h3>
+      <h3 className="font-semibold mb-3">{t("app.dashboard.upcoming")}</h3>
       <div className="flex items-center justify-between mb-3">
         <button className="grid place-items-center w-6 h-6 rounded-full hover:bg-muted">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium">{monthLabel}</span>
+        <span className="text-sm font-medium capitalize">{monthLabel}</span>
         <button className="grid place-items-center w-6 h-6 rounded-full hover:bg-muted">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -499,7 +511,7 @@ function UpcomingAppointments({
               }`}
             >
               <span className="font-bold">{d.getDate()}</span>
-              <span className="text-[10px] opacity-80">{dayNames[d.getDay()]}</span>
+              <span className="text-[10px] opacity-80 capitalize">{d.toLocaleDateString(locale, { weekday: "short" })}</span>
             </div>
           );
         })}
@@ -507,11 +519,11 @@ function UpcomingAppointments({
 
       <div className="space-y-3">
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No upcoming appointments.</p>
+          <p className="text-sm text-muted-foreground">{t("app.dashboard.noUpcoming")}</p>
         ) : (
           items.map((a, i) => {
-            const name = a.client_name || a.guest_name || "Patient";
-            const t = new Date(a.starts_at);
+            const name = a.client_name || a.guest_name || t("app.dashboard.patient");
+            const time = new Date(a.starts_at);
             const online = i % 2 === 0;
             return (
               <Link
@@ -525,7 +537,7 @@ function UpcomingAppointments({
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
                 <span
@@ -533,7 +545,7 @@ function UpcomingAppointments({
                     online ? "bg-pill-green/10 text-pill-green" : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {online ? "Online" : "Offline"}
+                  {online ? t("app.dashboard.online") : t("app.dashboard.offline")}
                 </span>
                 {online && <Phone className="w-4 h-4 text-muted-foreground" />}
               </Link>
