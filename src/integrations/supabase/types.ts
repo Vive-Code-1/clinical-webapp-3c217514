@@ -818,6 +818,7 @@ export type Database = {
       }
       home_analytics_events: {
         Row: {
+          clinic_id: string | null
           created_at: string
           event: string
           id: string
@@ -826,6 +827,7 @@ export type Database = {
           path: string | null
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
           event: string
           id?: string
@@ -834,6 +836,7 @@ export type Database = {
           path?: string | null
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
           event?: string
           id?: string
@@ -841,10 +844,19 @@ export type Database = {
           metadata?: Json
           path?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "home_analytics_events_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       home_leads: {
         Row: {
+          clinic_id: string | null
           created_at: string
           email: string
           full_name: string
@@ -855,6 +867,7 @@ export type Database = {
           source: string | null
         }
         Insert: {
+          clinic_id?: string | null
           created_at?: string
           email: string
           full_name: string
@@ -865,6 +878,7 @@ export type Database = {
           source?: string | null
         }
         Update: {
+          clinic_id?: string | null
           created_at?: string
           email?: string
           full_name?: string
@@ -874,7 +888,15 @@ export type Database = {
           service?: string | null
           source?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "home_leads_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       intake_forms: {
         Row: {
@@ -1639,6 +1661,107 @@ export type Database = {
           },
         ]
       }
+      security_alerts: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          audit_log_id: string | null
+          clinic_id: string | null
+          created_at: string
+          emailed_at: string | null
+          id: string
+          message: string
+          metadata: Json
+          severity: string
+          title: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          audit_log_id?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          emailed_at?: string | null
+          id?: string
+          message: string
+          metadata?: Json
+          severity: string
+          title: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          audit_log_id?: string | null
+          clinic_id?: string | null
+          created_at?: string
+          emailed_at?: string | null
+          id?: string
+          message?: string
+          metadata?: Json
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "security_alerts_audit_log_id_fkey"
+            columns: ["audit_log_id"]
+            isOneToOne: false
+            referencedRelation: "security_audit_log"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      security_audit_log: {
+        Row: {
+          action: string
+          actor_email: string | null
+          actor_id: string | null
+          clinic_id: string | null
+          id: string
+          ip_address: unknown
+          metadata: Json
+          new_data: Json | null
+          occurred_at: string
+          old_data: Json | null
+          record_id: string | null
+          severity: string
+          table_name: string
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          actor_email?: string | null
+          actor_id?: string | null
+          clinic_id?: string | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          new_data?: Json | null
+          occurred_at?: string
+          old_data?: Json | null
+          record_id?: string | null
+          severity?: string
+          table_name: string
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          actor_email?: string | null
+          actor_id?: string | null
+          clinic_id?: string | null
+          id?: string
+          ip_address?: unknown
+          metadata?: Json
+          new_data?: Json | null
+          occurred_at?: string
+          old_data?: Json | null
+          record_id?: string | null
+          severity?: string
+          table_name?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       service_types: {
         Row: {
           buffer_after_minutes: number
@@ -1762,6 +1885,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _log_audit: {
+        Args: {
+          _action: string
+          _clinic_id: string
+          _meta?: Json
+          _new: Json
+          _old: Json
+          _record_id: string
+          _severity?: string
+          _table: string
+        }
+        Returns: string
+      }
+      _raise_alert: {
+        Args: {
+          _audit_id: string
+          _clinic_id: string
+          _message: string
+          _meta?: Json
+          _severity: string
+          _title: string
+        }
+        Returns: undefined
+      }
       can_access_conversation: {
         Args: { _conv_id: string; _user_id: string }
         Returns: boolean
