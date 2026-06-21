@@ -153,16 +153,74 @@ function IntakeFormsSection({ clinicId }: { clinicId: string }) {
     },
   });
 
+  const toggleActive = useMutation({
+    mutationFn: async (f: IntakeForm) => {
+      const { error } = await supabase.from("intake_forms").update({ is_active: !f.is_active }).eq("id", f.id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] }),
+  });
+
+  const duplicate = useMutation({
+    mutationFn: async (f: IntakeForm) => {
+      const { error } = await supabase.from("intake_forms").insert({
+        clinic_id: clinicId,
+        title: `${f.title} (copy)`,
+        description: f.description,
+        kind: f.kind,
+        schema: f.schema as never,
+        is_active: false,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success("Form duplicated");
+    },
+  });
+
+  const seedSamples = useMutation({
+    mutationFn: async () => {
+      const existing = new Set((forms.data ?? []).map((f) => f.title));
+      const rows = SAMPLE_INTAKE_FORMS.filter((s) => !existing.has(s.title)).map((s) => ({
+        clinic_id: clinicId,
+        title: s.title,
+        description: s.description,
+        kind: s.kind,
+        schema: { fields: s.fields } as never,
+        is_active: true,
+      }));
+      if (rows.length === 0) return 0;
+      const { error } = await supabase.from("intake_forms").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (n) => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success(n ? `Loaded ${n} sample form(s)` : "All samples already present");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   return (
     <>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="font-semibold">Forms</h2>
-        <button
-          onClick={() => { setEditing(null); setOpen(true); }}
-          className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
-        >
-          <Plus className="w-4 h-4" /> New form
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => seedSamples.mutate()}
+            disabled={seedSamples.isPending}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-4 text-sm font-semibold hover:bg-muted/80 disabled:opacity-50"
+          >
+            <Sparkles className="w-4 h-4" /> Load sample library
+          </button>
+          <button
+            onClick={() => { setEditing(null); setOpen(true); }}
+            className="inline-flex items-center gap-2 bg-primary text-primary-foreground rounded-full h-9 px-4 text-sm font-semibold hover:brightness-110"
+          >
+            <Plus className="w-4 h-4" /> New form
+          </button>
+        </div>
       </div>
 
       {forms.isLoading ? (
