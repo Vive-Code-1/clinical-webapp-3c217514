@@ -7,8 +7,9 @@ export const Route = createFileRoute("/api/public/stripe/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const stripeKey = process.env.STRIPE_SECRET_KEY;
-        const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+        const { getAppSecret } = await import("@/lib/app-secrets.server");
+        const stripeKey = await getAppSecret("STRIPE_SECRET_KEY");
+        const webhookSecret = await getAppSecret("STRIPE_WEBHOOK_SECRET");
         if (!stripeKey || !webhookSecret) {
           return new Response("Stripe not configured", { status: 503 });
         }
