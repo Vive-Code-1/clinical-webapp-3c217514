@@ -14,6 +14,10 @@ import {
   ClipboardList,
 } from "lucide-react";
 import dashboardPreview from "@/assets/dashboard-preview.jpg";
+import { InteractiveWalkthrough } from "@/components/home/InteractiveWalkthrough";
+import { FaqSection } from "@/components/home/FaqSection";
+import { LeadCaptureForm } from "@/components/home/LeadCaptureForm";
+import { trackHomeEvent } from "@/lib/home-analytics";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -87,7 +91,7 @@ function BentoCard({
 }
 
 function HomePage() {
-  const { t } = useAppTranslation();
+  const { t, language } = useAppTranslation();
 
   return (
     <SiteLayout>
@@ -118,41 +122,38 @@ function HomePage() {
           <div className="mt-9 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/auth/sign-up"
+              onClick={() => void trackHomeEvent("cta_hero_primary", language)}
               className="group inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-base font-semibold shadow-xl shadow-primary/20 hover:-translate-y-0.5 transition-transform"
             >
               {t("landing.hero.ctaPrimary")}
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <Link
-              to="/contact"
+            <a
+              href="#walkthrough"
+              onClick={() => void trackHomeEvent("cta_hero_secondary", language)}
               className="inline-flex items-center gap-2 bg-card border border-border px-7 py-3.5 rounded-full text-base font-semibold text-foreground hover:bg-foreground/5 transition-colors"
             >
               {t("landing.hero.ctaSecondary")}
-            </Link>
+            </a>
           </div>
           <p className="mt-4 text-xs font-medium tracking-wide text-muted-foreground">
             {t("landing.hero.trustNote")}
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto px-6 pb-20">
-          <div className="relative bg-card rounded-[2rem] p-3 shadow-2xl ring-1 ring-foreground/10 overflow-hidden">
-            <div className="aspect-[16/10] rounded-[1.5rem] overflow-hidden bg-secondary flex flex-col">
-              <div className="h-9 border-b border-foreground/5 flex items-center px-4 gap-1.5 shrink-0">
-                <span className="size-2.5 rounded-full bg-destructive/60" />
-                <span className="size-2.5 rounded-full bg-chart-4/60" />
-                <span className="size-2.5 rounded-full bg-primary/60" />
-              </div>
-              <img
-                src={dashboardPreview}
-                alt={t("landing.hero.ctaSecondary")}
-                className="flex-1 w-full h-full object-cover"
-                loading="eager"
-                width={1600}
-                height={1000}
-              />
-            </div>
+        <div id="walkthrough" className="max-w-6xl mx-auto px-6 pb-10 scroll-mt-20">
+          <div className="text-center mb-6">
+            <span className="text-xs font-bold uppercase tracking-widest text-primary mb-2 block">
+              {t("landing.walkthrough.eyebrow")}
+            </span>
+            <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+              {t("landing.walkthrough.title")}
+            </h2>
+            <p className="mt-2 text-sm md:text-base font-serif text-muted-foreground max-w-2xl mx-auto">
+              {t("landing.walkthrough.subtitle")}
+            </p>
           </div>
+          <InteractiveWalkthrough />
           <p className="mt-8 text-center text-[11px] font-bold tracking-[0.18em] uppercase text-muted-foreground">
             {t("landing.logos")}
           </p>
@@ -364,6 +365,7 @@ function HomePage() {
           </div>
           <Link
             to="/pricing"
+            onClick={() => void trackHomeEvent("cta_pricing", language)}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-base font-semibold shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-transform"
           >
             {t("landing.pricing.cta")}
@@ -371,6 +373,12 @@ function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FaqSection />
+
+      {/* LEAD CAPTURE */}
+      <LeadCaptureForm />
 
       {/* FINAL CTA */}
       <section className="px-6 pb-24">
@@ -391,6 +399,7 @@ function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/auth/sign-up"
+              onClick={() => void trackHomeEvent("cta_final_primary", language)}
               className="inline-flex items-center gap-2 bg-background text-foreground px-7 py-3.5 rounded-full text-base font-semibold hover:-translate-y-0.5 transition-transform"
             >
               {t("landing.cta.primary")}
@@ -398,6 +407,7 @@ function HomePage() {
             </Link>
             <Link
               to="/contact"
+              onClick={() => void trackHomeEvent("cta_final_secondary", language)}
               className="inline-flex items-center gap-2 border border-sidebar-deep-foreground/30 px-7 py-3.5 rounded-full text-base font-semibold hover:bg-sidebar-deep-foreground/10 transition-colors"
             >
               {t("landing.cta.secondary")}

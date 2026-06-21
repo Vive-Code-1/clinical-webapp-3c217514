@@ -410,7 +410,114 @@
       "body": "Join hundreds of practices already running on SANTÉ. Free for 30 days — no credit card required.",
       "primary": "Start free trial",
       "secondary": "Talk to sales"
+    },
+    "walkthrough": {
+      "eyebrow": "Interactive walkthrough",
+      "title": "See SANTÉ in action — in 60 seconds.",
+      "subtitle": "Click any tab below to explore. The demo auto-plays through every part of the clinic workflow.",
+      "play": "Auto-play",
+      "pause": "Pause",
+      "steps": {
+        "dashboard": {
+          "tab": "Dashboard",
+          "title": "One calm dashboard for the whole clinic",
+          "body": "See patient counts, returning visitors, new bookings and weekly appointments at a glance — with real-time updates from every provider.",
+          "bullets": ["Live KPI cards", "Daily appointment overview", "Patient demographics donut"]
+        },
+        "appointments": {
+          "tab": "Appointments",
+          "title": "Bookings that respect your boundaries",
+          "body": "Self-booking, calendar sync, color-coded statuses and automated reminders cut no-shows dramatically.",
+          "bullets": ["Online self-booking", "Google & Apple calendar sync", "SMS + email reminders"]
+        },
+        "reports": {
+          "tab": "Reports",
+          "title": "Insights that drive better decisions",
+          "body": "Revenue, appointment trends, service mix, retention — all visualized so you can act on what matters.",
+          "bullets": ["Revenue & performance reports", "12-month trend view", "Exportable CSV"]
+        },
+        "messages": {
+          "tab": "Messages",
+          "title": "Healthcare-grade messaging",
+          "body": "Secure two-way chat with patients keeps the conversation in one place — never lost in personal inboxes.",
+          "bullets": ["End-to-end encrypted", "File & document share", "Read-receipts and templates"]
+        },
+        "billing": {
+          "tab": "Billing",
+          "title": "Get paid faster, with less friction",
+          "body": "Generate invoices, accept saved cards, auto-send receipts and reconcile in one screen.",
+          "bullets": ["Stripe-powered checkout", "Tax & package pricing", "Automatic receipts"]
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Frequently asked questions",
+      "title": "Everything you need to know.",
+      "subtitle": "Can't find an answer? Use the lead form below and our team will follow up within one business day.",
+      "items": {
+        "appointments_1": {
+          "q": "Can patients book appointments online?",
+          "a": "Yes. Every clinic gets a branded booking page where patients can pick a service, provider and time slot. Availability syncs automatically with each practitioner's personal calendar."
+        },
+        "appointments_2": {
+          "q": "Do you send appointment reminders?",
+          "a": "SANTÉ sends automated SMS and email reminders 24 hours and 1 hour before each visit. Reminder cadence and copy are fully customizable per service."
+        },
+        "billing_1": {
+          "q": "How does billing work?",
+          "a": "Generate invoices in one click, charge saved cards, apply taxes and packages, and auto-send receipts. Stripe powers payment processing with full PCI-DSS compliance."
+        },
+        "billing_2": {
+          "q": "Can I issue refunds or partial payments?",
+          "a": "Absolutely. Full refunds, partial refunds, deposits and installments are supported directly from the invoice screen — no need to leave SANTÉ."
+        },
+        "clinical_1": {
+          "q": "What clinical note formats are supported?",
+          "a": "Structured SOAP notes, follow-ups, couple and family notes, plus unlimited custom templates. An optional AI Scribe (English) transforms recorded sessions into ready-to-edit notes."
+        },
+        "clinical_2": {
+          "q": "Can I import documents and intake forms?",
+          "a": "Yes — upload PDFs and images directly to a patient file, and send digital intake or consent forms with auto-signature capture before the first visit."
+        },
+        "security_1": {
+          "q": "Is SANTÉ compliant with privacy regulations?",
+          "a": "SANTÉ is PIPEDA-compliant with healthcare-grade encryption at rest and in transit. Data is stored in Canada with daily backups and disaster recovery."
+        },
+        "security_2": {
+          "q": "Who can see patient data?",
+          "a": "Role-based permissions restrict access to clinical staff with explicit grants. Every read and write is audit-logged for compliance reviews."
+        }
+      }
+    },
+    "lead": {
+      "eyebrow": "Book a personalized demo",
+      "title": "Talk to a SANTÉ specialist.",
+      "body": "Tell us about your practice and a member of our team will walk you through the platform, answer questions and help you migrate.",
+      "bullets": [
+        "Personalized 30-minute demo",
+        "Free migration of existing data",
+        "Bilingual specialist (EN / FR)"
+      ],
+      "fields": {
+        "name": "Full name",
+        "email": "Work email",
+        "phone": "Phone",
+        "service": "I'm most interested in"
+      },
+      "services": {
+        "scheduling": "Scheduling & calendar",
+        "billing": "Billing & payments",
+        "clinical": "Clinical notes & AI Scribe",
+        "telehealth": "Telehealth",
+        "all": "All of SANTÉ"
+      },
+      "submit": "Request my demo",
+      "privacy": "We'll only use your details to contact you about SANTÉ. No spam — promise.",
+      "error": "Something went wrong. Please check the form and try again.",
+      "successTitle": "Thanks — request received.",
+      "successBody": "A specialist will reach out within one business day. Watch your inbox."
     }
   }
 }
+
 
