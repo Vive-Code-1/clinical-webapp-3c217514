@@ -230,11 +230,59 @@ function IntakeFormsSection({ clinicId }: { clinicId: string }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const importForms = useMutation({
+    mutationFn: async (raw: unknown) => {
+      const arr = Array.isArray(raw) ? raw : (raw as { forms?: unknown[] })?.forms;
+      if (!Array.isArray(arr)) throw new Error("Invalid file: expected array of forms");
+      const existing = new Set((forms.data ?? []).map((f) => f.title));
+      const rows = arr
+        .filter((s: any) => s && typeof s.title === "string" && s.schema && Array.isArray(s.schema.fields))
+        .filter((s: any) => !existing.has(s.title))
+        .map((s: any) => ({
+          clinic_id: clinicId,
+          title: s.title,
+          description: s.description ?? null,
+          kind: (s.kind ?? "intake") as IntakeFormKind,
+          schema: s.schema as never,
+          is_active: s.is_active ?? true,
+        }));
+      if (rows.length === 0) return 0;
+      const { error } = await supabase.from("intake_forms").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (n) => {
+      queryClient.invalidateQueries({ queryKey: ["intake-forms", clinicId] });
+      toast.success(n ? `Imported ${n} form(s)` : "Nothing new to import");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const exportForms = () => {
+    const data = (forms.data ?? []).map(({ id: _id, ...rest }) => rest);
+    downloadJson(`intake-forms-${new Date().toISOString().slice(0, 10)}.json`, data);
+  };
+
   return (
     <>
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="font-semibold">Forms</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={exportForms}
+            disabled={(forms.data ?? []).length === 0}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-3 text-xs font-semibold hover:bg-muted/80 disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5" /> Export JSON
+          </button>
+          <button
+            onClick={async () => {
+              try { importForms.mutate(await pickJsonFile()); } catch (e: any) { toast.error(e.message ?? "Invalid JSON"); }
+            }}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-3 text-xs font-semibold hover:bg-muted/80"
+          >
+            <Upload className="w-3.5 h-3.5" /> Import JSON
+          </button>
           <button
             onClick={() => seedSamples.mutate()}
             disabled={seedSamples.isPending}
