@@ -76,12 +76,8 @@ export function AppShell({ clinicId, children }: Props) {
     .map((s) => s[0]?.toUpperCase())
     .join("") || "U";
 
-  // Use userId initializer
-  if (!userId) {
-    void supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUserId(data.user.id);
-    });
-  }
+
+
 
   return (
     <div className="min-h-screen bg-background text-foreground flex p-4 gap-4">
