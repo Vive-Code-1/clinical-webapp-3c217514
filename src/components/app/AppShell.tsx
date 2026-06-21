@@ -81,12 +81,6 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
     .map((s) => s[0]?.toUpperCase())
     .join("") || "U";
 
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const routerState = useRouterState();
-  // Auto-close mobile drawer on route change
-  useEffect(() => {
-    setMobileNavOpen(false);
-  }, [routerState.location.pathname]);
 
   const SidebarInner = ({ onNavigate }: { onNavigate?: () => void }) => (
     <>
