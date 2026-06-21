@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import i18nInstance from "./i18n";
+import i18nInstance from ".";
 import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
-import type { SupportedLanguage } from "./i18n";
+import type { SupportedLanguage } from ".";
 
 type TranslationValue = string | string[] | Record<string, unknown>;
 type TranslationOptions = Record<string, unknown> & { returnObjects?: boolean };

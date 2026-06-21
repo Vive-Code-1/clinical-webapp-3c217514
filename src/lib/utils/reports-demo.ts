@@ -1,4 +1,4 @@
-import type { ReportData, ReportRange } from "./reports.functions";
+import type { ReportData, ReportRange } from "../functions/reports";
 
 const SERVICES = [
   "Initial Consultation",
