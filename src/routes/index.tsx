@@ -91,7 +91,7 @@ function BentoCard({
 }
 
 function HomePage() {
-  const { t } = useAppTranslation();
+  const { t, language } = useAppTranslation();
 
   return (
     <SiteLayout>
