@@ -34,6 +34,7 @@ type ServiceRow = {
   color: string;
   is_active: boolean;
   online_bookable: boolean;
+  is_telehealth: boolean;
 };
 
 function ServicesPage() {
@@ -47,7 +48,7 @@ function ServicesPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("service_types")
-        .select("id, name, description, duration_minutes, price_cents, currency, color, is_active, online_bookable")
+        .select("id, name, description, duration_minutes, price_cents, currency, color, is_active, online_bookable, is_telehealth")
         .eq("clinic_id", activeClinicId)
         .order("name");
       if (error) throw error;
@@ -165,6 +166,7 @@ function ServiceDialog({
   const [color, setColor] = useState(existing?.color ?? "#7A5C3A");
   const [description, setDescription] = useState(existing?.description ?? "");
   const [onlineBookable, setOnlineBookable] = useState(existing?.online_bookable ?? true);
+  const [isTelehealth, setIsTelehealth] = useState(existing?.is_telehealth ?? false);
   const [isActive, setIsActive] = useState(existing?.is_active ?? true);
   const [err, setErr] = useState<string | null>(null);
 
@@ -179,6 +181,7 @@ function ServiceDialog({
         currency,
         color,
         online_bookable: onlineBookable,
+        is_telehealth: isTelehealth,
         is_active: isActive,
       };
       if (existing) {
