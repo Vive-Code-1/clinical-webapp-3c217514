@@ -175,32 +175,36 @@ function DashboardPage() {
 
   return (
     <AppShell clinicId={activeClinic.id} hideHeader>
-      <div className="px-6 py-6 w-full min-w-0">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 w-full min-w-0">
         {/* Top bar */}
-        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
+        <header className="flex flex-col gap-4 mb-6 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
           <div className="min-w-0">
             <p className="text-sm text-muted-foreground">{t("app.dashboard.welcome")}</p>
-            <h1 className="text-2xl font-bold tracking-tight truncate">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight truncate">
               {t("app.dashboard.doctor")} {firstName} <span className="inline-block">👋</span>
             </h1>
             {username && (
               <p className="text-xs text-muted-foreground mt-0.5 truncate">@{username}</p>
             )}
           </div>
-          <div className="flex items-center gap-3 shrink-0">
-            <LanguageToggle />
-            <div className="hidden md:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-72 ring-1 ring-border">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0 flex-wrap">
+            <div className="hidden xl:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-60 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
                 placeholder={t("app.dashboard.search")}
-                className="bg-transparent text-sm outline-none flex-1"
+                className="bg-transparent text-sm outline-none flex-1 min-w-0"
               />
             </div>
-            <RangePicker current={range} />
-            <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors">
+            <div className="-mx-1 overflow-x-auto max-w-full">
+              <RangePicker current={range} />
+            </div>
+            <div className="hidden lg:block">
+              <LanguageToggle />
+            </div>
+            <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors shrink-0">
               <Bell className="w-4 h-4" />
             </button>
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-pill-green grid place-items-center text-primary-foreground font-bold text-sm">
+            <div className="hidden lg:grid w-10 h-10 rounded-full overflow-hidden bg-pill-green place-items-center text-primary-foreground font-bold text-sm shrink-0">
               {profile.data?.avatar_src ? (
                 <img src={profile.data.avatar_src} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -209,6 +213,9 @@ function DashboardPage() {
             </div>
           </div>
         </header>
+
+
+
 
 
         {/* Stat cards */}

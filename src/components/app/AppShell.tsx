@@ -156,15 +156,15 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row p-2 sm:p-4 gap-2 sm:gap-4">
+    <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row p-2 sm:p-4 gap-2 sm:gap-4">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex w-64 shrink-0 flex-col rounded-3xl bg-sidebar-deep text-sidebar-deep-foreground px-5 py-6">
+      <aside className="hidden lg:flex w-64 shrink-0 flex-col rounded-3xl bg-sidebar-deep text-sidebar-deep-foreground px-5 py-6">
         <SidebarInner />
       </aside>
 
       <main className="flex-1 min-w-0 flex flex-col">
-        {/* Mobile top bar */}
-        <div className="md:hidden flex items-center justify-between gap-2 px-2 py-2">
+        {/* Mobile + tablet top bar */}
+        <div className="lg:hidden flex items-center justify-between gap-2 px-2 py-2">
           <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <SheetTrigger asChild>
               <button
@@ -203,7 +203,7 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
 
         {/* Desktop header */}
         {!hideHeader && (
-          <div className="hidden md:flex w-full px-4 md:px-6 py-3 items-center justify-end gap-3">
+          <div className="hidden lg:flex w-full px-4 md:px-6 py-3 items-center justify-end gap-3">
             <LanguageToggle />
             <Link
               to="/settings"
