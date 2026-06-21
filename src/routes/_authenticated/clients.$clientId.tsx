@@ -790,29 +790,59 @@ function NoteDialog({
             />
           </label>
 
-          {kind === "soap" ? (
-            <>
-              {(["subjective", "objective", "assessment", "plan"] as const).map((k) => (
-                <label key={k} className="block">
-                  <span className="block text-xs font-semibold text-muted-foreground mb-1 capitalize">{k}</span>
-                  <textarea
-                    value={content[k] ?? ""}
-                    onChange={(e) => setContent((c) => ({ ...c, [k]: e.target.value }))}
-                    className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[70px]"
-                  />
-                </label>
-              ))}
-            </>
-          ) : (
-            <label className="block">
-              <span className="block text-xs font-semibold text-muted-foreground mb-1">Content</span>
-              <textarea
-                value={content.body ?? ""}
-                onChange={(e) => setContent({ body: e.target.value })}
-                className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[160px]"
-              />
-            </label>
-          )}
+          {(() => {
+            const FIELDS: Record<string, { key: string; label: string }[]> = {
+              soap: [
+                { key: "subjective", label: "Subjective" },
+                { key: "objective", label: "Objective" },
+                { key: "assessment", label: "Assessment" },
+                { key: "plan", label: "Plan" },
+              ],
+              couple: [
+                { key: "presenting_concerns", label: "Presenting concerns" },
+                { key: "partner_a_perspective", label: "Partner A — perspective" },
+                { key: "partner_b_perspective", label: "Partner B — perspective" },
+                { key: "dynamics_observed", label: "Dynamics observed" },
+                { key: "interventions", label: "Interventions" },
+                { key: "homework_plan", label: "Homework / plan" },
+              ],
+              family: [
+                { key: "attendees", label: "Attendees" },
+                { key: "presenting_concerns", label: "Presenting concerns" },
+                { key: "family_dynamics", label: "Family dynamics" },
+                { key: "interventions", label: "Interventions" },
+                { key: "strengths", label: "Strengths" },
+                { key: "plan_next_steps", label: "Plan / next steps" },
+              ],
+            };
+            const fields = FIELDS[kind];
+            if (fields) {
+              return (
+                <>
+                  {fields.map((f) => (
+                    <label key={f.key} className="block">
+                      <span className="block text-xs font-semibold text-muted-foreground mb-1">{f.label}</span>
+                      <textarea
+                        value={content[f.key] ?? ""}
+                        onChange={(e) => setContent((c) => ({ ...c, [f.key]: e.target.value }))}
+                        className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[70px]"
+                      />
+                    </label>
+                  ))}
+                </>
+              );
+            }
+            return (
+              <label className="block">
+                <span className="block text-xs font-semibold text-muted-foreground mb-1">Content</span>
+                <textarea
+                  value={content.body ?? ""}
+                  onChange={(e) => setContent({ body: e.target.value })}
+                  className="w-full bg-background border border-border rounded-lg px-3 py-2 text-sm min-h-[160px]"
+                />
+              </label>
+            );
+          })()}
 
           <DialogFooter>
             <button
