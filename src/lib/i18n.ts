@@ -21,7 +21,7 @@ if (!i18n.isInitialized) {
     fallbackLng: "en",
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     interpolation: { escapeValue: false },
-    initImmediate: false,
+    initAsync: false,
     detection: {
       order: ["localStorage", "navigator", "htmlTag"],
       caches: ["localStorage"],
