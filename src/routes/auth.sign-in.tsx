@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { useState, type FormEvent } from "react";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
+import { useAppTranslation } from "@/lib/app-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/auth/sign-in")({
 });
 
 function SignInPage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -70,7 +70,7 @@ type AuthShellProps = {
 };
 
 export function AuthShell({ mode, onSubmit, onGoogle, error, loading }: AuthShellProps) {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   const key = mode === "sign-in" ? "signIn" : "signUp";
 
   return (

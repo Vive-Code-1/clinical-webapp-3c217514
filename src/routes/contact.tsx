@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
 import { useState, type FormEvent } from "react";
 import { SiteLayout } from "@/components/site/SiteLayout";
+import { useAppTranslation } from "@/lib/app-translations";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   const [sent, setSent] = useState(false);
 
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
