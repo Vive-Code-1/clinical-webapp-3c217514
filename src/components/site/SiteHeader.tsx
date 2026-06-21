@@ -42,7 +42,10 @@ export function SiteHeader() {
         </div>
         <div className="flex items-center gap-4">
           <LanguageToggle />
-          <Link to="/auth/sign-in" className="hidden sm:inline text-sm font-medium text-foreground/80 hover:text-foreground">
+          <Link
+            to="/auth/sign-in"
+            className="text-sm font-medium text-foreground/80 hover:text-foreground sm:px-0 px-3 py-2 sm:py-0 sm:bg-transparent bg-secondary rounded-full"
+          >
             {t("nav.signIn")}
           </Link>
           <Link
