@@ -265,6 +265,13 @@ function DashboardPage() {
 }
 
 function RangePicker({ current }: { current: Range }) {
+  const { t } = useAppTranslation();
+  const labels: Record<Range, string> = {
+    today: t("app.dashboard.today"),
+    week: t("app.dashboard.week"),
+    month: t("app.dashboard.month"),
+    year: t("app.dashboard.year"),
+  };
   return (
     <div className="flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
       {RANGES.map((r) => (
@@ -276,7 +283,7 @@ function RangePicker({ current }: { current: Range }) {
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          {RANGE_LABEL[r]}
+          {labels[r]}
         </Link>
       ))}
     </div>
