@@ -166,7 +166,7 @@ function ClientsPage() {
         </header>
 
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
-          <div className="bg-card rounded-2xl ring-1 ring-border overflow-hidden">
+          <div className="bg-card rounded-2xl ring-1 ring-border card-pop overflow-hidden">
             <div className="px-5 py-4 border-b border-border flex items-center justify-between">
               <h2 className="font-semibold">
                 {filtered.length} {filtered.length === 1 ? "client" : "clients"}
@@ -295,7 +295,7 @@ function ClientDetail({
 
   if (!client) {
     return (
-      <div className="bg-card rounded-2xl ring-1 ring-border p-8 text-sm text-muted-foreground text-center hidden xl:block">
+      <div className="bg-card rounded-2xl ring-1 ring-border card-pop p-8 text-sm text-muted-foreground text-center hidden xl:block">
         Select a client to view details and booking history.
       </div>
     );
@@ -308,7 +308,7 @@ function ClientDetail({
     .join("");
 
   return (
-    <div className="bg-card rounded-2xl ring-1 ring-border p-5 max-h-[calc(100vh-160px)] overflow-y-auto">
+    <div className="bg-card rounded-2xl ring-1 ring-border card-pop p-5 max-h-[calc(100vh-160px)] overflow-y-auto">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-14 h-14 rounded-full bg-pill-green text-primary-foreground grid place-items-center font-bold text-lg shrink-0">

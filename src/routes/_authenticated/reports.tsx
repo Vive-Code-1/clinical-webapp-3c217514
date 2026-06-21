@@ -179,7 +179,7 @@ function ReportsPage() {
               />
             </div>
 
-            <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
+            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
               <h2 className="text-sm font-semibold mb-4">Daily revenue</h2>
               <BarChart
                 data={view.revenue.byDay.map((d) => ({ label: d.date, value: d.cents }))}
@@ -188,7 +188,7 @@ function ReportsPage() {
               />
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
+            <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
               <h2 className="text-sm font-semibold mb-4">Daily appointments</h2>
               <BarChart
                 data={view.appointments.byDay.map((d) => ({ label: d.date, value: d.count }))}
@@ -198,7 +198,7 @@ function ReportsPage() {
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
+              <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles className="w-4 h-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold">Top services</h2>
@@ -219,7 +219,7 @@ function ReportsPage() {
                 )}
               </section>
 
-              <section className="rounded-2xl border border-border bg-card p-5 card-interactive">
+              <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
                 <div className="flex items-center gap-2 mb-4">
                   <Users className="w-4 h-4 text-muted-foreground" />
                   <h2 className="text-sm font-semibold">Top clients</h2>
@@ -267,7 +267,7 @@ function KpiCard({
     rose: "bg-rose-100 text-rose-700",
   }[tone];
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 card-interactive">
+    <div className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">
           {label}

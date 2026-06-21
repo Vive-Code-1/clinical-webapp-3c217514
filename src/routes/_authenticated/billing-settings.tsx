@@ -129,7 +129,7 @@ function BillingSettingsPage() {
         <h1 className="text-3xl font-bold tracking-tight mb-1">Billing settings</h1>
         <p className="text-muted-foreground mb-6">Tax rates and reminder configuration</p>
 
-        <section className="rounded-2xl border border-border bg-card p-6 mb-6">
+        <section className="rounded-2xl border border-border bg-card card-pop p-6 mb-6">
           <h2 className="text-lg font-semibold mb-1">Tax rates</h2>
           <p className="text-sm text-muted-foreground mb-4">Reusable rates applied to invoice line items.</p>
 
@@ -182,7 +182,7 @@ function BillingSettingsPage() {
           )}
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-6">
+        <section className="rounded-2xl border border-border bg-card card-pop p-6">
           <h2 className="text-lg font-semibold mb-1">Appointment reminders</h2>
           <p className="text-sm text-muted-foreground mb-4">
             Automated email and SMS sent before appointments. SMS requires Twilio (configure when ready).

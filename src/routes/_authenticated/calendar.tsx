@@ -463,7 +463,7 @@ function IcalButton({ userId }: { userId: string }) {
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-card border border-border rounded-2xl p-6 w-full max-w-lg space-y-3"
+            className="bg-card border border-border rounded-2xl card-pop p-6 w-full max-w-lg space-y-3"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold">Subscribe to your calendar</h2>

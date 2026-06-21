@@ -97,7 +97,7 @@ function MessagesPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="h-[calc(100vh-2rem)] flex rounded-3xl overflow-hidden bg-card border border-border">
+      <div className="h-[calc(100vh-2rem)] flex rounded-3xl overflow-hidden bg-card border border-border card-pop">
         <aside className="w-80 shrink-0 border-r border-border flex flex-col">
           <div className="px-4 py-3 border-b border-border flex items-center justify-between">
             <h2 className="text-sm font-semibold flex items-center gap-2">
