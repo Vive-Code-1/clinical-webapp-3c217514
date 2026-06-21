@@ -65,6 +65,7 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
     { to: "/availability" as const, label: t("app.nav.availability"), icon: Clock },
     { to: "/locations" as const, label: t("app.nav.locations"), icon: MapPin },
     { to: "/forms" as const, label: t("app.nav.forms"), icon: ClipboardList },
+    { to: "/exercises" as const, label: t("app.nav.exercises"), icon: Dumbbell },
     { to: "/invoices" as const, label: t("app.nav.invoices"), icon: Receipt },
     { to: "/messages" as const, label: t("app.nav.messages"), icon: MessageSquare },
     { to: "/reports" as const, label: t("app.nav.reports"), icon: BarChart3 },
