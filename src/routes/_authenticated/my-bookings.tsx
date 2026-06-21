@@ -75,9 +75,14 @@ function MyBookingsPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Your account</p>
             <h1 className="text-3xl font-extrabold tracking-tight">My bookings</h1>
           </div>
-          <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
-            Home →
-          </Link>
+          <div className="flex items-center gap-4 text-sm font-semibold">
+            <Link to="/messages" className="text-muted-foreground hover:text-foreground">
+              Messages
+            </Link>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">
+              Home →
+            </Link>
+          </div>
         </div>
       </header>
 
