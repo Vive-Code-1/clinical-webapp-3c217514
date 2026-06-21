@@ -30,16 +30,10 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
+import { useAppTranslation } from "@/lib/app-translations";
 
 const RANGES = ["today", "week", "month", "year"] as const;
 type Range = (typeof RANGES)[number];
-
-const RANGE_LABEL: Record<Range, string> = {
-  today: "Today",
-  week: "This Week",
-  month: "This Month",
-  year: "This Year",
-};
 
 const searchSchema = z.object({
   range: z.enum(RANGES).optional().default("week"),
