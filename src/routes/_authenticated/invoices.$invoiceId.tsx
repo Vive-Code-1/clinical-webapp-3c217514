@@ -194,7 +194,23 @@ function InvoiceDetailPage() {
             )}
           </div>
 
-          <div className="px-8 py-4 border-t border-border bg-muted/20 flex flex-wrap gap-2 justify-end">
+          <div className="px-8 py-4 border-t border-border bg-muted/20 flex flex-wrap gap-2 justify-end items-center">
+            <label className="inline-flex items-center gap-2 text-xs text-muted-foreground mr-auto">
+              Status
+              <select
+                value={i.status}
+                onChange={(e) => setStatus.mutate(e.target.value)}
+                disabled={setStatus.isPending}
+                className="px-3 py-1.5 rounded-lg border border-input bg-background text-sm capitalize"
+              >
+                <option value="draft">Draft</option>
+                <option value="sent">Sent</option>
+                <option value="paid">Paid</option>
+                <option value="partially_paid">Partially paid</option>
+                <option value="overdue">Overdue</option>
+                <option value="void">Void</option>
+              </select>
+            </label>
             {i.status === "draft" && (
               <button
                 onClick={() => setStatus.mutate("sent")}
@@ -202,6 +218,14 @@ function InvoiceDetailPage() {
               >
                 <Send className="w-4 h-4" /> Mark as sent
               </button>
+            )}
+            {i.client?.email && (
+              <a
+                href={`mailto:${i.client.email}?subject=${encodeURIComponent(`Invoice ${i.invoice_number} from ${clinic?.name ?? ""}`)}&body=${encodeURIComponent(`Hello ${i.client.full_name ?? ""},\n\nPlease find your invoice ${i.invoice_number} (total ${fmtMoney(i.total_cents, i.currency)}, balance ${fmtMoney(balance, i.currency)}).\n\nView it here: ${typeof window !== "undefined" ? window.location.href : ""}\n\nThank you,\n${clinic?.name ?? ""}`)}`}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-sm hover:bg-muted"
+              >
+                <Mail className="w-4 h-4" /> Email to client
+              </a>
             )}
             {balance > 0 && i.status !== "void" && (
               <button
@@ -212,10 +236,10 @@ function InvoiceDetailPage() {
               </button>
             )}
             <button
-              onClick={() => window.print()}
+              onClick={() => openInvoicePdf(i, clinic?.name ?? "", balance)}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-sm hover:bg-muted"
             >
-              <Download className="w-4 h-4" /> Print / PDF
+              <Download className="w-4 h-4" /> Download PDF
             </button>
           </div>
         </div>
