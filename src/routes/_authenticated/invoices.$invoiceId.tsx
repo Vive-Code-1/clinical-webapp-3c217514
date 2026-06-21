@@ -8,8 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Download, Plus, Send, Mail, CreditCard } from "lucide-react";
+import { ArrowLeft, Download, Plus, Send, Mail, CreditCard, Zap } from "lucide-react";
 import { createInvoiceCheckout } from "@/lib/billing.functions";
+import { chargeInvoiceWithSavedCard } from "@/lib/saved-cards.functions";
 
 const searchSchema = z.object({ clinic: z.string().optional(), checkout: z.string().optional() });
 
