@@ -28,7 +28,7 @@ import {
   myClinicsQuery,
   clinicAppointmentsQuery,
   type CalendarAppointment,
-} from "@/lib/clinic-queries";
+} from "@/lib/queries/clinic";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),

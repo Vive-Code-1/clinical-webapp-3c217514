@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { LanguageToggle } from "./LanguageToggle";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 
 export function SiteHeader() {
   const { t } = useAppTranslation();

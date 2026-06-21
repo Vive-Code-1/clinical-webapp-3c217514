@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { addMinutes, format, differenceInMinutes } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import type { CalendarAppointment } from "@/lib/clinic-queries";
+import type { CalendarAppointment } from "@/lib/queries/clinic";
 
 type Props = {
   clinicId: string;

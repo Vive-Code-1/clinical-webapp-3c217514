@@ -5,7 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Dumbbell, Plus, Video, Pencil, Trash2 } from "lucide-react";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 

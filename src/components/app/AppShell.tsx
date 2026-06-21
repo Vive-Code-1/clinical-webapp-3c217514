@@ -18,8 +18,8 @@ import {
   BarChart3,
   Dumbbell,
 } from "lucide-react";
-import { useAppTranslation } from "@/lib/app-translations";
-import { clinicBrandingQuery, myProfileQuery } from "@/lib/me-queries";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
+import { clinicBrandingQuery, myProfileQuery } from "@/lib/queries/me";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
 import { BottomNav } from "@/components/app/BottomNav";

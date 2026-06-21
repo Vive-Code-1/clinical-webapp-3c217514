@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 

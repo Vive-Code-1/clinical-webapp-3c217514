@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/site/SiteLayout";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 import {
   ArrowRight,
   CalendarCheck,
@@ -17,7 +17,7 @@ import dashboardPreview from "@/assets/dashboard-preview.jpg";
 import { InteractiveWalkthrough } from "@/components/home/InteractiveWalkthrough";
 import { FaqSection } from "@/components/home/FaqSection";
 import { LeadCaptureForm } from "@/components/home/LeadCaptureForm";
-import { trackHomeEvent } from "@/lib/home-analytics";
+import { trackHomeEvent } from "@/lib/utils/home-analytics";
 
 export const Route = createFileRoute("/")({
   head: () => ({

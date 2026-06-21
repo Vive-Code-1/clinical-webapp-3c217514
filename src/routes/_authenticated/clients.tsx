@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Plus, Search, Mail, Phone, Pencil, Trash2, X, Tag, NotebookPen, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 const searchSchema = z.object({ clinic: z.string().optional(), id: z.string().optional() });
