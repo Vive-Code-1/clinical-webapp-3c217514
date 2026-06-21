@@ -211,6 +211,10 @@ function DashboardPage() {
                 firstName.charAt(0)
               )}
             </div>
+          </div>
+        </header>
+
+
 
 
 
