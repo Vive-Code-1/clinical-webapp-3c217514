@@ -132,10 +132,10 @@ function CalendarPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="px-6 py-6 border-b border-border flex flex-wrap items-center gap-4">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-border flex flex-wrap items-center gap-2 sm:gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Calendar</p>
-          <h1 className="text-2xl font-extrabold tracking-tight truncate">{headerTitle}</h1>
+          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">Calendar</p>
+          <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight truncate">{headerTitle}</h1>
         </div>
 
         <div className="flex items-center gap-2 ml-auto flex-wrap">
