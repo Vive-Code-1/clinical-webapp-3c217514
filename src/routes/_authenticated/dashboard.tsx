@@ -69,7 +69,7 @@ function computeRange(range: Range): { from: Date; to: Date } {
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   ssr: false,
-  validateSearch: searchSchema,
+  validateSearch: (s: Record<string, unknown>) => searchSchema.parse(s),
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
     if (!clinics || clinics.length === 0) {
