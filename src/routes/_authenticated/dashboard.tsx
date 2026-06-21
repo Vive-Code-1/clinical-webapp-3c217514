@@ -198,11 +198,19 @@ function DashboardPage() {
             <div className="-mx-1 overflow-x-auto max-w-full">
               <RangePicker current={range} />
             </div>
+            <div className="hidden lg:block">
+              <LanguageToggle />
+            </div>
             <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors shrink-0">
               <Bell className="w-4 h-4" />
             </button>
-          </div>
-        </header>
+            <div className="hidden lg:grid w-10 h-10 rounded-full overflow-hidden bg-pill-green place-items-center text-primary-foreground font-bold text-sm shrink-0">
+              {profile.data?.avatar_src ? (
+                <img src={profile.data.avatar_src} alt="" className="w-full h-full object-cover" />
+              ) : (
+                firstName.charAt(0)
+              )}
+            </div>
 
 
 
