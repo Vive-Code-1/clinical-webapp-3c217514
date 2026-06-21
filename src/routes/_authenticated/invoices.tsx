@@ -217,17 +217,17 @@ function InvoicesPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="p-6 md:p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Invoices</h1>
-            <p className="text-muted-foreground mt-1">Billing, payments & receipts</p>
+      <div className="p-4 sm:p-6 md:p-8">
+        <div className="flex flex-wrap items-start sm:items-center justify-between gap-3 mb-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Invoices</h1>
+            <p className="text-muted-foreground mt-1 text-sm">Billing, payments & receipts</p>
           </div>
           <button
             onClick={() => setCreateOpen(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-90"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-medium hover:opacity-90 shrink-0"
           >
-            <Plus className="w-4 h-4" /> New invoice
+            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">New invoice</span><span className="sm:hidden">New</span>
           </button>
         </div>
 
@@ -281,7 +281,8 @@ function InvoicesPage() {
               <p className="text-muted-foreground">No invoices yet. Create your first one.</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[720px]">
               <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="w-10 px-4 py-3">
@@ -354,6 +355,7 @@ function InvoicesPage() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>

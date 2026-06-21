@@ -8,8 +8,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Download, Plus, Send, Mail, CreditCard } from "lucide-react";
+import { ArrowLeft, Download, Plus, Send, Mail, CreditCard, Zap } from "lucide-react";
 import { createInvoiceCheckout } from "@/lib/billing.functions";
+import { chargeInvoiceWithSavedCard } from "@/lib/saved-cards.functions";
 
 const searchSchema = z.object({ clinic: z.string().optional(), checkout: z.string().optional() });
 
@@ -133,7 +134,29 @@ function InvoiceDetailPage() {
   const [payOpen, setPayOpen] = useState(false);
   const navigate = Route.useNavigate();
   const checkoutStripe = useServerFn(createInvoiceCheckout);
+  const chargeSaved = useServerFn(chargeInvoiceWithSavedCard);
   const [payingStripe, setPayingStripe] = useState(false);
+  const [chargingSaved, setChargingSaved] = useState(false);
+
+  const savedCard = useQuery({
+    queryKey: ["invoice-saved-card", invoiceId],
+    queryFn: async () => {
+      const inv = await (supabase as any)
+        .from("invoices")
+        .select("client_id, clinic_id")
+        .eq("id", invoiceId)
+        .single();
+      if (!inv.data?.client_id) return null;
+      const { data } = await (supabase as any)
+        .from("saved_payment_methods")
+        .select("id, brand, last4, is_default")
+        .eq("clinic_id", inv.data.clinic_id)
+        .eq("client_id", inv.data.client_id)
+        .eq("is_default", true)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   useEffect(() => {
     if (search.checkout === "success") {
@@ -352,6 +375,29 @@ function InvoiceDetailPage() {
             )}
             {balance > 0 && i.status !== "void" && (
               <>
+                {savedCard.data && (
+                  <button
+                    onClick={async () => {
+                      if (!confirm(`Charge ${savedCard.data.brand} •••• ${savedCard.data.last4} for ${fmtMoney(balance, i.currency)}?`)) return;
+                      try {
+                        setChargingSaved(true);
+                        await chargeSaved({ data: { invoiceId } });
+                        toast.success("Payment captured");
+                        queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
+                        queryClient.invalidateQueries({ queryKey: ["invoices", activeClinicId] });
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Charge failed");
+                      } finally {
+                        setChargingSaved(false);
+                      }
+                    }}
+                    disabled={chargingSaved}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium disabled:opacity-60"
+                    title="Charge saved card on file"
+                  >
+                    <Zap className="w-4 h-4" /> {chargingSaved ? "Charging…" : `One-click rebill (•••• ${savedCard.data.last4})`}
+                  </button>
+                )}
                 <button
                   onClick={payWithStripe}
                   disabled={payingStripe}

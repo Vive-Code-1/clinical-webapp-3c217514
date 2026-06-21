@@ -1799,6 +1799,10 @@ export type Database = {
         Args: { _invoice_id: string }
         Returns: undefined
       }
+      seed_default_note_templates: {
+        Args: { _clinic_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "owner" | "practitioner" | "receptionist" | "client"
