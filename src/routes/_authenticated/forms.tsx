@@ -596,11 +596,57 @@ function NoteTemplatesSection({ clinicId }: { clinicId: string }) {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const importTemplates = useMutation({
+    mutationFn: async (raw: unknown) => {
+      const arr = Array.isArray(raw) ? raw : (raw as { templates?: unknown[] })?.templates;
+      if (!Array.isArray(arr)) throw new Error("Invalid file: expected array of templates");
+      const existing = new Set((templates.data ?? []).map((t) => t.title));
+      const rows = arr
+        .filter((s: any) => s && typeof s.title === "string" && s.body && typeof s.body === "object")
+        .filter((s: any) => !existing.has(s.title))
+        .map((s: any) => ({
+          clinic_id: clinicId,
+          title: s.title,
+          kind: (s.kind ?? "general") as NoteKind,
+          body: s.body as never,
+        }));
+      if (rows.length === 0) return 0;
+      const { error } = await supabase.from("note_templates").insert(rows);
+      if (error) throw error;
+      return rows.length;
+    },
+    onSuccess: (n) => {
+      queryClient.invalidateQueries({ queryKey: ["note-templates", clinicId] });
+      toast.success(n ? `Imported ${n} template(s)` : "Nothing new to import");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const exportTemplates = () => {
+    const data = (templates.data ?? []).map(({ id: _id, ...rest }) => rest);
+    downloadJson(`note-templates-${new Date().toISOString().slice(0, 10)}.json`, data);
+  };
+
   return (
     <>
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="font-semibold">Clinical note templates</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={exportTemplates}
+            disabled={(templates.data ?? []).length === 0}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-3 text-xs font-semibold hover:bg-muted/80 disabled:opacity-50"
+          >
+            <Download className="w-3.5 h-3.5" /> Export JSON
+          </button>
+          <button
+            onClick={async () => {
+              try { importTemplates.mutate(await pickJsonFile()); } catch (e: any) { toast.error(e.message ?? "Invalid JSON"); }
+            }}
+            className="inline-flex items-center gap-2 bg-muted text-foreground rounded-full h-9 px-3 text-xs font-semibold hover:bg-muted/80"
+          >
+            <Upload className="w-3.5 h-3.5" /> Import JSON
+          </button>
           <button
             onClick={() => seedSamples.mutate()}
             disabled={seedSamples.isPending}
