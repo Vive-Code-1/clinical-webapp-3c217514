@@ -198,12 +198,15 @@ function DashboardPage() {
               />
             </div>
             <div className="flex-1 sm:flex-none min-w-0">
-              <RangePicker current={range} fill />
+              <RangePicker current={range} fill paddingX={density.pickerPaddingX} paddingY={density.pickerPaddingY} />
             </div>
             <div className="hidden lg:block">
               <LanguageToggle />
             </div>
-            <button className="grid place-items-center w-10 h-10 rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors shrink-0">
+            <button
+              style={{ width: density.bellSize, height: density.bellSize }}
+              className="grid place-items-center rounded-full bg-card ring-1 ring-border hover:bg-muted transition-colors shrink-0"
+            >
               <Bell className="w-4 h-4" />
             </button>
             <div className="hidden lg:grid w-10 h-10 rounded-full overflow-hidden bg-pill-green place-items-center text-primary-foreground font-bold text-sm shrink-0">
