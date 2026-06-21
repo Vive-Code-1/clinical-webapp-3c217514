@@ -65,6 +65,7 @@ const STATUS_ICON: Record<string, typeof CheckCircle2> = {
 function InvoicesPage() {
   const { clinics } = Route.useRouteContext();
   const search = Route.useSearch();
+  const navigate = Route.useNavigate();
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
@@ -201,8 +202,14 @@ function InvoicesPage() {
               <tbody>
                 {invoices.data.map((inv) => {
                   const Icon = STATUS_ICON[inv.status] ?? FileText;
+                  const open = () =>
+                    navigate({ to: "/invoices/$invoiceId", params: { invoiceId: inv.id }, search: { clinic: activeClinicId } });
                   return (
-                    <tr key={inv.id} className="border-t border-border hover:bg-muted/20">
+                    <tr
+                      key={inv.id}
+                      onClick={open}
+                      className="border-t border-border hover:bg-muted/30 cursor-pointer"
+                    >
                       <td className="px-5 py-3 font-mono text-xs">{inv.invoice_number}</td>
                       <td className="px-5 py-3">{inv.client?.full_name ?? "—"}</td>
                       <td className="px-5 py-3">
@@ -220,6 +227,7 @@ function InvoicesPage() {
                           to="/invoices/$invoiceId"
                           params={{ invoiceId: inv.id }}
                           search={{ clinic: activeClinicId }}
+                          onClick={(e) => e.stopPropagation()}
                           className="text-primary hover:underline text-xs font-medium"
                         >
                           Open →
