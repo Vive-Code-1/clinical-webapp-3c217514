@@ -38,7 +38,6 @@ function MyBookingsPage() {
         .select(
           "id, starts_at, ends_at, status, notes, meeting_url, practitioner_id, clinic:clinics(id, name, slug, brand_color), service:service_types(name, color, duration_minutes)",
         )
-        .eq("client_id", user.id)
         .order("starts_at", { ascending: false });
       if (error) throw error;
       const rows = (data ?? []) as unknown as Omit<Booking, "practitioner_name">[];

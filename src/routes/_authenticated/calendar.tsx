@@ -438,12 +438,24 @@ function IcalButton({ userId }: { userId: string }) {
   useEffect(() => {
     if (!open || token) return;
     (async () => {
-      const { data, error } = await (supabase.from("profiles") as any)
-        .select("ical_token")
-        .eq("id", userId)
+      const { data, error } = await supabase
+        .from("profile_ical_tokens")
+        .select("token")
+        .eq("user_id", userId)
         .maybeSingle();
       if (error) return toast.error(error.message);
-      setToken(data?.ical_token ?? null);
+      if (data?.token) {
+        setToken(data.token);
+        return;
+      }
+
+      const { data: created, error: createError } = await supabase
+        .from("profile_ical_tokens")
+        .insert({ user_id: userId })
+        .select("token")
+        .single();
+      if (createError) return toast.error(createError.message);
+      setToken(created.token);
     })();
   }, [open, token, userId]);
 

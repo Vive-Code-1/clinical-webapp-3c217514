@@ -1304,7 +1304,7 @@ function HistoryTab({
         .select("id, starts_at, ends_at, status, notes, service:service_types(name, color)")
         .eq("clinic_id", clinicId)
         .order("starts_at", { ascending: false });
-      if (client.user_id) q = q.eq("client_id", client.user_id);
+      if (client.id) q = q.eq("client_id", client.id);
       else if (client.email) q = q.eq("guest_email", client.email);
       else return [];
       const { data, error } = await q;

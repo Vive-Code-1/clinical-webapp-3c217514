@@ -26,15 +26,21 @@ export const Route = createFileRoute("/api/public/ical/$token.ics")({
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-        // Look up profile by token (ical_token column added via migration; types not yet regenerated)
-        const { data: profile, error: pErr } = await (supabaseAdmin.from("profiles") as any)
-          .select("id, full_name, ical_token")
-          .eq("ical_token", token)
+        const { data: tokenRow, error: tokenErr } = await supabaseAdmin
+          .from("profile_ical_tokens")
+          .select("user_id")
+          .eq("token", token)
           .maybeSingle();
 
-        if (pErr || !profile) {
+        if (tokenErr || !tokenRow) {
           return new Response("Not found", { status: 404 });
         }
+
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("id, full_name")
+          .eq("id", tokenRow.user_id)
+          .maybeSingle();
 
         // Fetch all upcoming appointments for this practitioner (next 6 months)
         const from = new Date();
@@ -47,7 +53,7 @@ export const Route = createFileRoute("/api/public/ical/$token.ics")({
           .select(
             "id, starts_at, ends_at, status, notes, guest_name, client_id, service_type_id",
           )
-          .eq("practitioner_id", profile.id)
+          .eq("practitioner_id", tokenRow.user_id)
           .gte("starts_at", from.toISOString())
           .lte("starts_at", to.toISOString());
 
@@ -68,7 +74,7 @@ export const Route = createFileRoute("/api/public/ical/$token.ics")({
             ? supabaseAdmin.from("service_types").select("id, name").in("id", serviceIds)
             : Promise.resolve({ data: [], error: null }),
           clientIds.length
-            ? supabaseAdmin.from("profiles").select("id, full_name").in("id", clientIds)
+            ? supabaseAdmin.from("clinic_clients").select("id, full_name").in("id", clientIds)
             : Promise.resolve({ data: [], error: null }),
         ]);
 
@@ -82,7 +88,7 @@ export const Route = createFileRoute("/api/public/ical/$token.ics")({
           "PRODID:-//Helanthus//Calendar//EN",
           "CALSCALE:GREGORIAN",
           "METHOD:PUBLISH",
-          `X-WR-CALNAME:Helanthus — ${escapeIcs((profile as any).full_name || "Schedule")}`,
+          `X-WR-CALNAME:Helanthus — ${escapeIcs(profile?.full_name || "Schedule")}`,
         ];
 
         for (const a of appts ?? []) {
