@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { FileText, Plus, Receipt, CheckCircle2, Clock, AlertCircle, XCircle } from "lucide-react";
+import { FileText, Plus, Receipt, CheckCircle2, Clock, AlertCircle, XCircle, Mail, X } from "lucide-react";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 
@@ -35,7 +35,7 @@ type InvoiceRow = {
   issued_at: string | null;
   due_at: string | null;
   client_id: string | null;
-  client?: { full_name: string } | null;
+  client?: { full_name: string; email: string | null } | null;
 };
 
 type ClientLite = { id: string; full_name: string };
@@ -69,19 +69,72 @@ function InvoicesPage() {
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const queryClient = useQueryClient();
   const [createOpen, setCreateOpen] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const activeClinic = clinics.find((c: { id: string; name: string }) => c.id === activeClinicId);
 
   const invoices = useQuery({
     queryKey: ["invoices", activeClinicId],
     queryFn: async () => {
       const { data, error } = await (supabase as any)
         .from("invoices")
-        .select("id, invoice_number, status, currency, total_cents, amount_paid_cents, issued_at, due_at, client_id, client:clinic_clients(full_name)")
+        .select("id, invoice_number, status, currency, total_cents, amount_paid_cents, issued_at, due_at, client_id, client:clinic_clients(full_name, email)")
         .eq("clinic_id", activeClinicId)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? []) as InvoiceRow[];
     },
   });
+
+  const toggleOne = (id: string) =>
+    setSelected((s) => {
+      const next = new Set(s);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  const toggleAll = () => {
+    const all = invoices.data ?? [];
+    setSelected((s) => (s.size === all.length ? new Set() : new Set(all.map((i) => i.id))));
+  };
+  const clearSelection = () => setSelected(new Set());
+
+  const bulkSetStatus = useMutation({
+    mutationFn: async (status: string) => {
+      const ids = Array.from(selected);
+      if (ids.length === 0) return 0;
+      const update: any = { status };
+      if (status === "sent") update.issued_at = new Date().toISOString();
+      const { error } = await (supabase as any).from("invoices").update(update).in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (n) => {
+      toast.success(`Updated ${n} invoice(s)`);
+      queryClient.invalidateQueries({ queryKey: ["invoices", activeClinicId] });
+      clearSelection();
+    },
+    onError: (e: any) => toast.error(e.message ?? "Failed"),
+  });
+
+  const bulkEmail = () => {
+    const rows = (invoices.data ?? []).filter((i) => selected.has(i.id));
+    const withEmail = rows.filter((i) => i.client?.email);
+    if (withEmail.length === 0) {
+      toast.error("None of the selected invoices have a client email");
+      return;
+    }
+    const skipped = rows.length - withEmail.length;
+    const emails = Array.from(new Set(withEmail.map((i) => i.client!.email!))).join(",");
+    const subject = `Invoices from ${activeClinic?.name ?? ""}`;
+    const lines = withEmail
+      .map(
+        (i) =>
+          `• ${i.invoice_number} — ${i.client?.full_name ?? ""} — ${fmtMoney(i.total_cents - i.amount_paid_cents, i.currency)} due`,
+      )
+      .join("\n");
+    const body = `Hello,\n\nPlease find your outstanding invoice(s):\n\n${lines}\n\nThank you,\n${activeClinic?.name ?? ""}`;
+    window.location.href = `mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (skipped > 0) toast.warning(`${skipped} invoice(s) skipped — no client email`);
+  };
 
   const clients = useQuery({
     queryKey: ["clients-lite", activeClinicId],
