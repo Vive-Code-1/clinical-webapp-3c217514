@@ -61,7 +61,7 @@ export const createInvoiceCheckout = createServerFn({ method: "POST" })
       data.cancelUrl ?? `${origin}/invoices/${inv.id}?clinic=${inv.clinic_id}&checkout=cancelled`;
 
     const { default: Stripe } = await import("stripe");
-    const stripe = new Stripe(stripeKey, { apiVersion: "2024-06-20" as Stripe.LatestApiVersion });
+    const stripe = new Stripe(stripeKey);
 
     const currency = (inv.currency || "usd").toLowerCase();
     // Single line item for the outstanding balance keeps things simple and accurate.
