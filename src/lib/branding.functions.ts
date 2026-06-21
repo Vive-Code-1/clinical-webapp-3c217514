@@ -58,7 +58,7 @@ export const updateClinicBranding = createServerFn({ method: "POST" })
     if (data.brand_color !== undefined) patch.brand_color = data.brand_color;
     if (data.brand_font !== undefined) patch.brand_font = data.brand_font;
     if (data.logo_url !== undefined) patch.logo_url = data.logo_url;
-    const { error } = await context.supabase.from("clinics").update(patch).eq("id", data.clinicId);
+    const { error } = await context.supabase.from("clinics").update(patch as any).eq("id", data.clinicId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
