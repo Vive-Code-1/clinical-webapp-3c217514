@@ -113,7 +113,9 @@ export function AppShell({ clinicId, children }: Props) {
           Logout
         </button>
       </aside>
-      <main className="flex-1 min-w-0">{children}</main>
+      <main key={typeof window !== "undefined" ? window.location.pathname : "ssr"} className="flex-1 min-w-0 animate-fade-in">
+        {children}
+      </main>
     </div>
   );
 }
