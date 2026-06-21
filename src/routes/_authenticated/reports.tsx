@@ -67,7 +67,7 @@ function ReportsPage() {
   const money = (cents: number) => fmt.format((cents ?? 0) / 100);
 
   const setRange = (r: ReportRange) =>
-    navigate({ search: (s) => ({ ...s, range: r }) as any, replace: true });
+    navigate({ search: (s: any) => ({ ...s, range: r }), replace: true });
 
   return (
     <AppShell clinicId={activeClinicId}>
