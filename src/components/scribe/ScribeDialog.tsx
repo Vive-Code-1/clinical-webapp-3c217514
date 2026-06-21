@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { X, Sparkles, Copy, Loader2 } from "lucide-react";
-import { generateSoapNote, type ScribeResult } from "@/lib/scribe.functions";
+import { generateSoapNote, type ScribeResult } from "@/lib/functions/scribe";
 
 type Props = {
   open: boolean;

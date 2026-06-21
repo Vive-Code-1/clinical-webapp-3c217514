@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { MessageSquare, Send, Plus, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import {
   Dialog,
   DialogContent,

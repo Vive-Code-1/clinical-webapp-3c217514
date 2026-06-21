@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 
 export function SiteFooter() {
   const { t } = useAppTranslation();

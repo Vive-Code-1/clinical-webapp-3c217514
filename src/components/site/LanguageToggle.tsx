@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import i18nInstance, { type SupportedLanguage } from "@/lib/i18n";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 
 const LANGS: SupportedLanguage[] = ["en", "fr"];
 

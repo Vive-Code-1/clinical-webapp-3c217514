@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Plus, MapPin, DoorOpen, Trash2, Pencil } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { supabase } from "@/integrations/supabase/client";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 

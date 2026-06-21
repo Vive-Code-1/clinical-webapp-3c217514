@@ -6,9 +6,9 @@ import { toast } from "sonner";
 import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil, Copy, Sparkles, Power, Download, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { SAMPLE_INTAKE_FORMS, SAMPLE_NOTE_TEMPLATES } from "@/lib/forms-samples";
+import { SAMPLE_INTAKE_FORMS, SAMPLE_NOTE_TEMPLATES } from "@/lib/utils/forms-samples";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),

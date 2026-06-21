@@ -13,10 +13,10 @@ import {
   Wand2,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
-import { getClinicReport, type ReportRange } from "@/lib/reports.functions";
-import { buildDemoReport, isEmptyReport } from "@/lib/reports-demo";
-import { useAppTranslation } from "@/lib/app-translations";
+import { myClinicsQuery } from "@/lib/queries/clinic";
+import { getClinicReport, type ReportRange } from "@/lib/functions/reports";
+import { buildDemoReport, isEmptyReport } from "@/lib/utils/reports-demo";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),

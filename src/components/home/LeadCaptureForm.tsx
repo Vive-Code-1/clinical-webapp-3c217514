@@ -2,8 +2,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { CheckCircle2, Loader2, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAppTranslation } from "@/lib/app-translations";
-import { trackHomeEvent } from "@/lib/home-analytics";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
+import { trackHomeEvent } from "@/lib/utils/home-analytics";
 
 const SERVICES = ["scheduling", "billing", "clinical", "telehealth", "all"] as const;
 

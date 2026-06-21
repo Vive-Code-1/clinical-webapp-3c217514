@@ -21,12 +21,12 @@ import {
   Lock,
 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import {
   getIntegrationStatus,
   setIntegrationSecret,
   type IntegrationStatus,
-} from "@/lib/integrations.functions";
+} from "@/lib/functions/integrations";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 

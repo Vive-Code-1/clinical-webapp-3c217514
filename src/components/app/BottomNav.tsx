@@ -16,7 +16,7 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import { useAppTranslation } from "@/lib/app-translations";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 type NavItem = {

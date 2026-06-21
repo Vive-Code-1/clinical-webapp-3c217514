@@ -6,14 +6,14 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery } from "@/lib/clinic-queries";
+import { myClinicsQuery } from "@/lib/queries/clinic";
 import { Trash2, CreditCard, Plus, Star } from "lucide-react";
 import {
   createCardSetupSession,
   confirmCardSetup,
   setDefaultCard,
   deleteSavedCard,
-} from "@/lib/saved-cards.functions";
+} from "@/lib/functions/saved-cards";
 
 const searchSchema = z.object({ clinic: z.string().optional(), setup: z.string().optional() });
 

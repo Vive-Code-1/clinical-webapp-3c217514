@@ -7,8 +7,8 @@ import {
   Receipt,
   Play,
 } from "lucide-react";
-import { useAppTranslation } from "@/lib/app-translations";
-import { trackHomeEvent } from "@/lib/home-analytics";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
+import { trackHomeEvent } from "@/lib/utils/home-analytics";
 
 type StepKey = "dashboard" | "appointments" | "reports" | "messages" | "billing";
 

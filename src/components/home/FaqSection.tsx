@@ -4,8 +4,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { useAppTranslation } from "@/lib/app-translations";
-import { trackHomeEvent } from "@/lib/home-analytics";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
+import { trackHomeEvent } from "@/lib/utils/home-analytics";
 
 const KEYS = [
   "appointments_1",

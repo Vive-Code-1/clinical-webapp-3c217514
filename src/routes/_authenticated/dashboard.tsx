@@ -29,11 +29,11 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
-import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
-import { myProfileQuery } from "@/lib/me-queries";
-import { useAppTranslation } from "@/lib/app-translations";
+import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/queries/clinic";
+import { myProfileQuery } from "@/lib/queries/me";
+import { useAppTranslation } from "@/lib/i18n/app-translations";
 import { LanguageToggle } from "@/components/site/LanguageToggle";
-import { useLayoutDensity } from "@/lib/layout-density";
+import { useLayoutDensity } from "@/lib/utils/layout-density";
 
 const RANGES = ["today", "week", "month", "year"] as const;
 type Range = (typeof RANGES)[number];

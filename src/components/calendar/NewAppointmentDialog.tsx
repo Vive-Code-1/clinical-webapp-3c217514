@@ -1,7 +1,7 @@
 import { useState, useMemo, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { clinicServicesQuery, clinicPractitionersQuery } from "@/lib/clinic-queries";
+import { clinicServicesQuery, clinicPractitionersQuery } from "@/lib/queries/clinic";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { addMinutes, format } from "date-fns";

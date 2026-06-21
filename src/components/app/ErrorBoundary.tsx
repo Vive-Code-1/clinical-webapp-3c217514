@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from "react";
-import { reportLovableError } from "@/lib/lovable-error-reporting";
+import { reportLovableError } from "@/lib/utils/lovable-error-reporting";
 
 type Props = { children: ReactNode };
 type State = { error: Error | null };
