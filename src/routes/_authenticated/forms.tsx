@@ -87,7 +87,7 @@ function FormsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Forms & templates</h1>
         </header>
 
-        <div className="bg-card rounded-2xl ring-1 ring-border overflow-hidden">
+        <div className="bg-card rounded-2xl ring-1 ring-border card-pop overflow-hidden">
           <div className="border-b border-border px-2 flex gap-1">
             {[
               { id: "intake" as const, label: "Intake & consent forms", icon: ClipboardList },

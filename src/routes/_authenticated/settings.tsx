@@ -102,7 +102,7 @@ function SettingsPage() {
           </p>
         </div>
 
-        <section className="rounded-2xl border border-border bg-card p-5 space-y-5">
+        <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-5">
           <header className="flex items-center gap-2">
             <Palette className="w-4 h-4 text-muted-foreground" />
             <h2 className="text-sm font-semibold">Branding</h2>
@@ -244,7 +244,7 @@ function SettingsPage() {
           </button>
         </section>
 
-        <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
+        <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-3">
           <header className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-muted-foreground" />
             <h2 className="text-sm font-semibold">AI Scribe</h2>

@@ -96,7 +96,7 @@ function ClientProfilePage() {
           <p className="text-sm text-muted-foreground">Client not found.</p>
         ) : (
           <>
-            <header className="bg-card rounded-2xl ring-1 ring-border p-6 mb-4 flex items-center gap-5">
+            <header className="bg-card rounded-2xl ring-1 ring-border card-pop p-6 mb-4 flex items-center gap-5">
               <div className="w-16 h-16 rounded-full bg-pill-green text-primary-foreground grid place-items-center font-bold text-2xl shrink-0">
                 {c.full_name.charAt(0).toUpperCase()}
               </div>
@@ -122,7 +122,7 @@ function ClientProfilePage() {
               </div>
             </header>
 
-            <div className="bg-card rounded-2xl ring-1 ring-border overflow-hidden">
+            <div className="bg-card rounded-2xl ring-1 ring-border card-pop overflow-hidden">
               <div className="border-b border-border px-2 flex gap-1 overflow-x-auto">
                 {[
                   { id: "overview" as Tab, label: "Overview", icon: Heart },

@@ -92,7 +92,7 @@ function ServicesPage() {
           </button>
         </div>
 
-        <div className="bg-card rounded-3xl ring-1 ring-border divide-y divide-border overflow-hidden">
+        <div className="bg-card rounded-3xl ring-1 ring-border card-pop divide-y divide-border overflow-hidden">
           {services.isLoading && <p className="p-6 text-sm text-muted-foreground">Loading…</p>}
           {services.data?.length === 0 && (
             <p className="p-6 font-serif text-muted-foreground text-sm">No services yet.</p>

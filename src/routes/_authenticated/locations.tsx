@@ -184,7 +184,7 @@ function LocationCard({
     .join(", ");
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-5">
+    <div className="rounded-2xl border border-border bg-card card-pop p-5">
       <div className="flex items-start gap-3">
         <div className="grid place-items-center w-10 h-10 rounded-xl bg-primary/10 text-primary shrink-0">
           <MapPin className="w-5 h-5" />
@@ -303,7 +303,7 @@ function LocationDialog({
       onClick={onClose}
     >
       <div
-        className="bg-card border border-border rounded-2xl p-6 w-full max-w-md space-y-3"
+        className="bg-card border border-border rounded-2xl card-pop p-6 w-full max-w-md space-y-3"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-lg font-bold">{location ? "Edit location" : "New location"}</h2>

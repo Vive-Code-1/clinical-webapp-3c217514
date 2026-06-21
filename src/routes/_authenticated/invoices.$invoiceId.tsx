@@ -378,7 +378,7 @@ function InvoiceDetailPage() {
         </div>
 
         {(i.payments ?? []).length > 0 && (
-          <div className="mt-6 rounded-2xl border border-border bg-card overflow-hidden">
+          <div className="mt-6 rounded-2xl border border-border bg-card card-pop overflow-hidden">
             <div className="px-6 py-3 border-b border-border text-sm font-medium">Payment history</div>
             <table className="w-full text-sm">
               <tbody>

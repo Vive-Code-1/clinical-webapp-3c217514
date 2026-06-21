@@ -108,7 +108,7 @@ function AvailabilityPage() {
           Set the hours you are open for sessions. Online bookings will respect these windows.
         </p>
 
-        <div className="bg-card rounded-3xl ring-1 ring-border divide-y divide-border overflow-hidden">
+        <div className="bg-card rounded-3xl ring-1 ring-border card-pop divide-y divide-border overflow-hidden">
           {DAYS.map((d) => (
             <DayRow
               key={d.code}

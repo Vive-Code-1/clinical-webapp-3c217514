@@ -137,7 +137,7 @@ function IntegrationsPage() {
           const required = items.filter((i) => i.required);
           const ready = required.length === 0 ? items.some((i) => i.configured) : required.every((i) => i.configured);
           return (
-            <section key={g.id} className="rounded-2xl border border-border bg-card overflow-hidden">
+            <section key={g.id} className="rounded-2xl border border-border bg-card card-pop overflow-hidden">
               <header className="px-5 py-4 border-b border-border flex items-start gap-3">
                 <div className="grid place-items-center w-9 h-9 rounded-lg bg-muted shrink-0">
                   <Icon className="w-4 h-4" />

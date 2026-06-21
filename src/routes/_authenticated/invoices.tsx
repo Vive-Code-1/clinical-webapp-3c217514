@@ -272,7 +272,7 @@ function InvoicesPage() {
           </div>
         )}
 
-        <div className="rounded-2xl border border-border bg-card overflow-hidden">
+        <div className="rounded-2xl border border-border bg-card card-pop overflow-hidden">
           {invoices.isLoading ? (
             <div className="p-8 text-center text-muted-foreground">Loading…</div>
           ) : !invoices.data || invoices.data.length === 0 ? (
