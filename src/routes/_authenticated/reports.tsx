@@ -45,6 +45,7 @@ function ReportsPage() {
   const { clinics } = Route.useRouteContext();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+  const { t } = useAppTranslation();
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const range: ReportRange = search.range ?? "30d";
   const fetchReport = useServerFn(getClinicReport);
@@ -73,35 +74,39 @@ function ReportsPage() {
   );
   const money = (cents: number) => fmt.format((cents ?? 0) / 100);
 
+  const rangeLabel = (r: ReportRange) =>
+    t(`app.reports.range${r === "7d" ? "7" : r === "30d" ? "30" : r === "90d" ? "90" : "1y"}`);
+
   const setRange = (r: ReportRange) =>
     navigate({ search: (s: any) => ({ ...s, range: r }), replace: true });
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="p-6 md:p-8 space-y-6">
+      <div className="p-6 md:p-8 space-y-6 min-w-0">
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
+            <h1 className="text-2xl font-bold tracking-tight">{t("app.reports.title")}</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Revenue, appointments, and clinic performance trends.
+              {t("app.reports.subtitle")}
             </p>
           </div>
           <div className="inline-flex rounded-xl border border-border bg-card p-1">
-            {RANGES.map((r) => (
+            {RANGE_IDS.map((r) => (
               <button
-                key={r.id}
-                onClick={() => setRange(r.id)}
+                key={r}
+                onClick={() => setRange(r)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  range === r.id
+                  range === r
                     ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {r.label}
+                {rangeLabel(r)}
               </button>
             ))}
           </div>
         </div>
+
 
         {report.isLoading && !view && <div className="text-sm text-muted-foreground">Loading…</div>}
         {report.isError && !demoActive && (
