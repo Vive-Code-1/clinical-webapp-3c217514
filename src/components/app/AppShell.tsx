@@ -166,25 +166,16 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
       <main className="flex-1 min-w-0 flex flex-col">
         {/* Mobile + tablet top bar */}
         <div className="lg:hidden flex items-center justify-between gap-2 px-2 py-2">
-          <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-            <SheetTrigger asChild>
-              <button
-                aria-label="Open menu"
-                className="grid place-items-center w-10 h-10 rounded-xl bg-sidebar-deep text-sidebar-deep-foreground"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="w-72 p-0 bg-sidebar-deep text-sidebar-deep-foreground border-0"
-            >
-              <SheetTitle className="sr-only">Navigation menu</SheetTitle>
-              <div className="flex flex-col h-full px-5 py-6">
-                <SidebarInner onNavigate={() => setMobileNavOpen(false)} />
-              </div>
-            </SheetContent>
-          </Sheet>
+          <Link to="/" className="flex items-center gap-2 px-1">
+            {logoSrc ? (
+              <img src={logoSrc} alt={clinicName} className="w-8 h-8 rounded-lg object-cover" />
+            ) : (
+              <span className="grid place-items-center w-8 h-8 rounded-lg bg-sidebar-deep text-sidebar-deep-foreground">
+                <Leaf className="w-4 h-4" />
+              </span>
+            )}
+            <span className="text-base font-bold tracking-tight truncate max-w-[140px]">{clinicName}</span>
+          </Link>
           <div className="flex items-center gap-2">
             <LanguageToggle />
             <Link
