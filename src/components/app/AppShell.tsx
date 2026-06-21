@@ -203,7 +203,7 @@ export function AppShell({ clinicId, hideHeader, children }: Props) {
 
         {/* Desktop header */}
         {!hideHeader && (
-          <div className="hidden md:flex w-full px-4 md:px-6 py-3 items-center justify-end gap-3">
+          <div className="hidden lg:flex w-full px-4 md:px-6 py-3 items-center justify-end gap-3">
             <LanguageToggle />
             <Link
               to="/settings"
