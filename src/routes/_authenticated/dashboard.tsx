@@ -85,7 +85,8 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function DashboardPage() {
   const { user, clinics } = Route.useRouteContext();
-  const { range } = Route.useSearch();
+  const search = Route.useSearch();
+  const range: Range = (search as { range?: Range }).range ?? "week";
   const activeClinic = clinics[0]!;
 
   const { from, to } = useMemo(() => computeRange(range), [range]);
