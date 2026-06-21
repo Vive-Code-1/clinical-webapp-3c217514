@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, isPast } from "date-fns";
 import { toast } from "sonner";
-import { CalendarDays, Clock, MapPin, X } from "lucide-react";
+import { CalendarDays, Clock, MapPin, X, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Booking = {
@@ -36,7 +36,7 @@ function MyBookingsPage() {
       const { data, error } = await supabase
         .from("appointments")
         .select(
-          "id, starts_at, ends_at, status, notes, practitioner_id, clinic:clinics(id, name, slug, brand_color), service:service_types(name, color, duration_minutes)",
+          "id, starts_at, ends_at, status, notes, meeting_url, practitioner_id, clinic:clinics(id, name, slug, brand_color), service:service_types(name, color, duration_minutes)",
         )
         .eq("client_id", user.id)
         .order("starts_at", { ascending: false });
