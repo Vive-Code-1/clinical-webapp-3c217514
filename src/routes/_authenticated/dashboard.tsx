@@ -82,6 +82,13 @@ function DashboardPage() {
   const search = Route.useSearch();
   const range: Range = (search as { range?: Range }).range ?? "week";
   const activeClinic = clinics[0]!;
+  const { t } = useAppTranslation();
+  const RANGE_LABEL: Record<Range, string> = {
+    today: t("app.dashboard.today"),
+    week: t("app.dashboard.week"),
+    month: t("app.dashboard.month"),
+    year: t("app.dashboard.year"),
+  };
 
   const { from, to } = useMemo(() => computeRange(range), [range]);
 
