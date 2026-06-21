@@ -63,8 +63,8 @@ function BookingPage() {
     queryKey: ["public-services", clinicId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("service_types")
-        .select("id, name, description, duration_minutes, price_cents, currency, color")
+        .from("public_service_types")
+        .select("id, name, duration_minutes, price_cents, currency, color")
         .eq("clinic_id", clinicId!)
         .eq("is_active", true)
         .eq("online_bookable", true)
@@ -113,7 +113,7 @@ function BookingPage() {
 
       const [rulesRes, overridesRes, apptsRes] = await Promise.all([
         supabase
-          .from("availability_rules")
+          .from("public_availability_rules")
           .select("start_time, end_time")
           .eq("practitioner_id", selectedPractitionerId!)
           .eq("clinic_id", clinicId!)
@@ -260,9 +260,6 @@ function BookingPage() {
                       <p className="text-xs text-muted-foreground">
                         {s.duration_minutes} min · {(s.price_cents / 100).toFixed(2)} {s.currency}
                       </p>
-                      {s.description && (
-                        <p className="text-xs font-serif text-muted-foreground mt-2 line-clamp-2">{s.description}</p>
-                      )}
                     </div>
                   </div>
                 </button>
