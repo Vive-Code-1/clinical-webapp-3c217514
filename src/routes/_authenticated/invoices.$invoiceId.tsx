@@ -375,6 +375,29 @@ function InvoiceDetailPage() {
             )}
             {balance > 0 && i.status !== "void" && (
               <>
+                {savedCard.data && (
+                  <button
+                    onClick={async () => {
+                      if (!confirm(`Charge ${savedCard.data.brand} •••• ${savedCard.data.last4} for ${fmtMoney(balance, i.currency)}?`)) return;
+                      try {
+                        setChargingSaved(true);
+                        await chargeSaved({ data: { invoiceId } });
+                        toast.success("Payment captured");
+                        queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
+                        queryClient.invalidateQueries({ queryKey: ["invoices", activeClinicId] });
+                      } catch (e: any) {
+                        toast.error(e?.message ?? "Charge failed");
+                      } finally {
+                        setChargingSaved(false);
+                      }
+                    }}
+                    disabled={chargingSaved}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-medium disabled:opacity-60"
+                    title="Charge saved card on file"
+                  >
+                    <Zap className="w-4 h-4" /> {chargingSaved ? "Charging…" : `One-click rebill (•••• ${savedCard.data.last4})`}
+                  </button>
+                )}
                 <button
                   onClick={payWithStripe}
                   disabled={payingStripe}
