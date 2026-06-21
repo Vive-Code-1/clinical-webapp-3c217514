@@ -1,23 +1,18 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { toast } from "sonner";
-import { MessageSquare, Send, Plus, ArrowLeft } from "lucide-react";
+import { MessageSquare, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/queries/clinic";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import type { Conv } from "@/components/messages/types";
+import { ConversationView } from "@/components/messages/ConversationView";
+import { NewConversationDialog } from "@/components/messages/NewConversationDialog";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
-  c: z.string().optional(), // active conversation id
+  c: z.string().optional(),
 });
 
 export const Route = createFileRoute("/_authenticated/messages")({
@@ -32,25 +27,6 @@ export const Route = createFileRoute("/_authenticated/messages")({
   errorComponent: ({ error }) => <div className="p-8 text-sm text-destructive">{error.message}</div>,
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
-
-type Conv = {
-  id: string;
-  subject: string | null;
-  last_message_at: string;
-  clinic_id: string;
-  client_id: string;
-  practitioner_id: string;
-  client: { full_name: string | null } | null;
-  practitioner: { full_name: string | null } | null;
-};
-
-type Msg = {
-  id: string;
-  conversation_id: string;
-  sender_id: string;
-  body: string;
-  created_at: string;
-};
 
 function MessagesPage() {
   const { clinics, user } = Route.useRouteContext() as any;
@@ -79,7 +55,6 @@ function MessagesPage() {
     },
   });
 
-  // Realtime: refresh list on any change
   useEffect(() => {
     const ch = supabase
       .channel("conv-list")
@@ -180,215 +155,5 @@ function MessagesPage() {
         />
       )}
     </AppShell>
-  );
-}
-
-function ConversationView({
-  conversationId,
-  userId,
-  onBack,
-}: {
-  conversationId: string;
-  userId: string;
-  onBack: () => void;
-}) {
-  const queryClient = useQueryClient();
-  const [body, setBody] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const msgs = useQuery({
-    queryKey: ["messages", conversationId],
-    queryFn: async (): Promise<Msg[]> => {
-      const { data, error } = await (supabase as any)
-        .from("messages")
-        .select("id, conversation_id, sender_id, body, created_at")
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true });
-      if (error) throw error;
-      return data as Msg[];
-    },
-  });
-
-  useEffect(() => {
-    const ch = supabase
-      .channel(`msgs-${conversationId}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
-        },
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(ch);
-    };
-  }, [conversationId, queryClient]);
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
-  }, [msgs.data?.length]);
-
-  const send = useMutation({
-    mutationFn: async (text: string) => {
-      const { error } = await (supabase as any).from("messages").insert({
-        conversation_id: conversationId,
-        sender_id: userId,
-        body: text,
-      });
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      setBody("");
-      queryClient.invalidateQueries({ queryKey: ["messages", conversationId] });
-      queryClient.invalidateQueries({ queryKey: ["conversations"] });
-    },
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const submit = (e: FormEvent) => {
-    e.preventDefault();
-    const t = body.trim();
-    if (!t) return;
-    send.mutate(t);
-  };
-
-  return (
-    <>
-      <div className="px-4 py-3 border-b border-border flex items-center gap-2 md:hidden">
-        <button onClick={onBack} className="text-sm text-muted-foreground inline-flex items-center gap-1">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </button>
-      </div>
-      <div ref={scrollRef} className="flex-1 overflow-auto p-4 space-y-2 bg-muted/20">
-        {msgs.data?.map((m) => {
-          const mine = m.sender_id === userId;
-          return (
-            <div key={m.id} className={`flex ${mine ? "justify-end" : "justify-start"}`}>
-              <div
-                className={`max-w-[75%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap break-words ${
-                  mine ? "bg-primary text-primary-foreground" : "bg-card border border-border"
-                }`}
-              >
-                {m.body}
-                <div className={`text-[10px] mt-1 ${mine ? "opacity-70" : "text-muted-foreground"}`}>
-                  {new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <form onSubmit={submit} className="border-t border-border p-3 flex gap-2">
-        <input
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          placeholder="Type a message…"
-          className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-sm"
-        />
-        <button
-          type="submit"
-          disabled={send.isPending || !body.trim()}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-60"
-        >
-          <Send className="w-4 h-4" /> Send
-        </button>
-      </form>
-    </>
-  );
-}
-
-function NewConversationDialog({
-  open,
-  onOpenChange,
-  clinicId,
-  practitionerId,
-  onCreated,
-}: {
-  open: boolean;
-  onOpenChange: (v: boolean) => void;
-  clinicId: string;
-  practitionerId: string;
-  onCreated: (id: string) => void;
-}) {
-  const [clientId, setClientId] = useState("");
-  const [subject, setSubject] = useState("");
-
-  const clients = useQuery({
-    queryKey: ["clinic-clients-mini", clinicId],
-    enabled: open,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("clinic_clients")
-        .select("id, full_name, email")
-        .eq("clinic_id", clinicId)
-        .order("full_name");
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const create = useMutation({
-    mutationFn: async () => {
-      if (!clientId) throw new Error("Pick a client");
-      const { data, error } = await (supabase as any)
-        .from("conversations")
-        .insert({
-          clinic_id: clinicId,
-          client_id: clientId,
-          practitioner_id: practitionerId,
-          subject: subject.trim() || null,
-        })
-        .select("id")
-        .single();
-      if (error) throw error;
-      return data.id as string;
-    },
-    onSuccess: (id) => onCreated(id),
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>New conversation</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-3">
-          <label className="block">
-            <span className="text-xs font-medium text-muted-foreground">Client</span>
-            <select
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value)}
-              className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
-            >
-              <option value="">Choose a client…</option>
-              {clients.data?.map((c: any) => (
-                <option key={c.id} value={c.id}>
-                  {c.full_name} {c.email ? `· ${c.email}` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="text-xs font-medium text-muted-foreground">Subject (optional)</span>
-            <input
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="mt-1 w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
-            />
-          </label>
-        </div>
-        <DialogFooter>
-          <button
-            onClick={() => create.mutate()}
-            disabled={create.isPending || !clientId}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-60"
-          >
-            {create.isPending ? "Creating…" : "Start conversation"}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
