@@ -39,12 +39,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
 
-const RANGES: { id: ReportRange; label: string }[] = [
-  { id: "7d", label: "Last 7 days" },
-  { id: "30d", label: "Last 30 days" },
-  { id: "90d", label: "Last 90 days" },
-  { id: "1y", label: "Last 12 months" },
-];
+const RANGE_IDS: ReportRange[] = ["7d", "30d", "90d", "1y"];
 
 function ReportsPage() {
   const { clinics } = Route.useRouteContext();
