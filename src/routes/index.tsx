@@ -365,6 +365,7 @@ function HomePage() {
           </div>
           <Link
             to="/pricing"
+            onClick={() => void trackHomeEvent("cta_pricing", language)}
             className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 rounded-full text-base font-semibold shadow-lg shadow-primary/20 hover:-translate-y-0.5 transition-transform"
           >
             {t("landing.pricing.cta")}
@@ -372,6 +373,12 @@ function HomePage() {
           </Link>
         </div>
       </section>
+
+      {/* FAQ */}
+      <FaqSection />
+
+      {/* LEAD CAPTURE */}
+      <LeadCaptureForm />
 
       {/* FINAL CTA */}
       <section className="px-6 pb-24">
@@ -392,6 +399,7 @@ function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/auth/sign-up"
+              onClick={() => void trackHomeEvent("cta_final_primary", language)}
               className="inline-flex items-center gap-2 bg-background text-foreground px-7 py-3.5 rounded-full text-base font-semibold hover:-translate-y-0.5 transition-transform"
             >
               {t("landing.cta.primary")}
@@ -399,6 +407,7 @@ function HomePage() {
             </Link>
             <Link
               to="/contact"
+              onClick={() => void trackHomeEvent("cta_final_secondary", language)}
               className="inline-flex items-center gap-2 border border-sidebar-deep-foreground/30 px-7 py-3.5 rounded-full text-base font-semibold hover:bg-sidebar-deep-foreground/10 transition-colors"
             >
               {t("landing.cta.secondary")}
