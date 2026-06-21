@@ -5,6 +5,7 @@ import { clinicServicesQuery, clinicPractitionersQuery } from "@/lib/queries/cli
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { addMinutes, format } from "date-fns";
+import { ClientPicker } from "./ClientPicker";
 
 type Props = {
   clinicId: string;
@@ -173,82 +174,21 @@ export function NewAppointmentDialog({ clinicId, open, onOpenChange, initialStar
             />
           </Field>
 
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Client</span>
-              <div className="flex gap-1 text-xs font-semibold">
-                <button
-                  type="button"
-                  onClick={() => setClientMode("existing")}
-                  className={`px-2.5 py-1 rounded-full ${
-                    clientMode === "existing" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  Existing
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setClientMode("guest")}
-                  className={`px-2.5 py-1 rounded-full ${
-                    clientMode === "guest" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
-                  }`}
-                >
-                  New / guest
-                </button>
-              </div>
-            </div>
-
-            {clientMode === "existing" ? (
-              <div className="space-y-2">
-                <input
-                  value={clientSearch}
-                  onChange={(e) => setClientSearch(e.target.value)}
-                  placeholder="Search by name, email, phone…"
-                  className="w-full bg-background border border-input rounded-xl px-3 py-2.5 text-sm"
-                />
-                <div className="max-h-44 overflow-y-auto rounded-xl border border-input divide-y divide-border">
-                  {filteredClients.length === 0 && (
-                    <p className="px-3 py-4 text-xs text-muted-foreground text-center">
-                      {clientsQ.isLoading ? "Loading…" : "No matching clients."}
-                    </p>
-                  )}
-                  {filteredClients.slice(0, 50).map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setClientId(c.id)}
-                      className={`w-full text-left px-3 py-2 text-sm hover:bg-accent ${
-                        clientId === c.id ? "bg-primary/10" : ""
-                      }`}
-                    >
-                      <p className="font-semibold">{c.full_name}</p>
-                      {(c.email || c.phone) && (
-                        <p className="text-xs text-muted-foreground">{c.email || c.phone}</p>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <input
-                  value={guestName}
-                  onChange={(e) => setGuestName(e.target.value)}
-                  placeholder="Full name"
-                  className="w-full bg-background border border-input rounded-xl px-3 py-2.5"
-                  required={clientMode === "guest"}
-                />
-                <label className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <input
-                    type="checkbox"
-                    checked={saveAsClient}
-                    onChange={(e) => setSaveAsClient(e.target.checked)}
-                  />
-                  Also save as a client record
-                </label>
-              </div>
-            )}
-          </div>
+          <ClientPicker
+            mode={clientMode}
+            onModeChange={setClientMode}
+            clients={clientsQ.data ?? []}
+            isLoading={clientsQ.isLoading}
+            filtered={filteredClients}
+            search={clientSearch}
+            onSearch={setClientSearch}
+            selectedClientId={clientId}
+            onSelectClient={setClientId}
+            guestName={guestName}
+            onGuestName={setGuestName}
+            saveAsClient={saveAsClient}
+            onSaveAsClient={setSaveAsClient}
+          />
 
           <Field label="Notes">
             <textarea
