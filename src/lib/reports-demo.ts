@@ -126,5 +126,7 @@ export function buildDemoReport(range: ReportRange, currency = "USD"): ReportDat
 
 export function isEmptyReport(r: ReportData | undefined | null): boolean {
   if (!r) return true;
-  return r.appointments.total === 0 && r.revenue.totalCents === 0 && r.revenue.outstandingCents === 0;
+  // Treat the report as "empty" (worth showing the demo) whenever there are
+  // no real appointments to chart, even if a stray invoice exists.
+  return r.appointments.total === 0;
 }
