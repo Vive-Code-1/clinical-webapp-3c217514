@@ -158,10 +158,7 @@ export function AppShell({ clinicId, children }: Props) {
             </Avatar>
           </Link>
         </div>
-        <div
-          key={typeof window !== "undefined" ? window.location.pathname : "ssr"}
-          className="w-full min-w-0 flex-1 animate-fade-in"
-        >
+        <div className="w-full min-w-0 flex-1">
           {children}
         </div>
       </main>
