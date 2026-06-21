@@ -50,7 +50,7 @@ function InvoiceDetailPage() {
     },
   });
 
-  const clinic = clinics.find((c) => c.id === activeClinicId);
+  const clinic = clinics.find((c: { id: string }) => c.id === activeClinicId);
 
   const setStatus = useMutation({
     mutationFn: async (status: string) => {

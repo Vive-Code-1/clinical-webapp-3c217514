@@ -10,6 +10,7 @@ import {
   Clock,
   MapPin,
   ClipboardList,
+  Receipt,
   Settings,
   HelpCircle,
   LogOut,
@@ -42,6 +43,8 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/availability" as const, label: "Availability", icon: Clock },
     { to: "/locations" as const, label: "Locations", icon: MapPin },
     { to: "/forms" as const, label: "Forms", icon: ClipboardList },
+    { to: "/invoices" as const, label: "Invoices", icon: Receipt },
+    { to: "/billing-settings" as const, label: "Billing", icon: Settings },
   ];
 
   const secondary = [
