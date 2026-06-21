@@ -7,6 +7,11 @@ import type { SupportedLanguage } from "./i18n";
 
 type TranslationValue = string | string[] | Record<string, unknown>;
 type TranslationOptions = Record<string, unknown> & { returnObjects?: boolean };
+type AppTranslate = {
+  (key: string): string;
+  (key: string, options: TranslationOptions & { returnObjects: true }): unknown;
+  (key: string, options?: TranslationOptions): string;
+};
 
 const dictionaries = { en, fr } as const;
 
@@ -32,7 +37,7 @@ export function useAppTranslation() {
   const { t: translate, i18n } = useTranslation();
   const language = languageOf(i18n.resolvedLanguage ?? i18n.language);
 
-  const t = (key: string, options?: TranslationOptions): TranslationValue => {
+  const t = ((key: string, options?: TranslationOptions): TranslationValue => {
     const fallback = lookup(language, key) ?? lookup("en", key);
     const translated = translate(key, {
       ...options,
@@ -48,7 +53,7 @@ export function useAppTranslation() {
     }
 
     return translated;
-  };
+  }) as AppTranslate;
 
   return { t, i18n, language };
 }
