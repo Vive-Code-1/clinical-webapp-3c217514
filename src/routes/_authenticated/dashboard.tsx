@@ -14,16 +14,6 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  Tooltip,
-} from "recharts";
 import { Search, Bell, Users, UserRound, UserPlus, CalendarCheck } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/queries/clinic";
@@ -33,36 +23,15 @@ import { LanguageToggle } from "@/components/site/LanguageToggle";
 import { useLayoutDensity } from "@/lib/utils/layout-density";
 import { RANGES, type Range } from "@/components/dashboard/types";
 import { RangePicker } from "@/components/dashboard/RangePicker";
-import { StatCard, ChartCard, ChartLegend, PatientOverview } from "@/components/dashboard/Cards";
+import { StatCard, PatientOverview } from "@/components/dashboard/Cards";
 import { PatientsTable } from "@/components/dashboard/PatientsTable";
 import { UpcomingAppointments } from "@/components/dashboard/UpcomingAppointments";
+import { AppointmentsBarChart, VisitorsLineChart } from "@/components/dashboard/Charts";
+import { computeRange, useDashboardStats } from "@/components/dashboard/stats";
 
 const searchSchema = z.object({
   range: z.enum(RANGES).optional().default("week"),
 });
-
-/** Translate the URL range into a concrete [from, to) date window. */
-function computeRange(range: Range): { from: Date; to: Date } {
-  const from = new Date();
-  from.setHours(0, 0, 0, 0);
-  const to = new Date(from);
-  if (range === "today") {
-    to.setDate(to.getDate() + 1);
-  } else if (range === "week") {
-    from.setDate(from.getDate() - from.getDay());
-    to.setTime(from.getTime());
-    to.setDate(to.getDate() + 7);
-  } else if (range === "month") {
-    from.setDate(1);
-    to.setTime(from.getTime());
-    to.setMonth(to.getMonth() + 1);
-  } else {
-    from.setMonth(0, 1);
-    to.setTime(from.getTime());
-    to.setFullYear(to.getFullYear() + 1);
-  }
-  return { from, to };
-}
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   ssr: false,
@@ -105,63 +74,9 @@ function DashboardPage() {
   const firstName = profile.data?.full_name?.split(" ")[0] ?? "Doctor";
   const username = profile.data?.full_name ?? user.email?.split("@")[0] ?? "";
 
-  // Bucket appointments into chart-friendly daily/hourly/monthly aggregates.
-  const dailyStats = useMemo(() => {
-    if (range === "today") {
-      const hours = ["6a", "9a", "12p", "3p", "6p", "9p"];
-      const buckets = new Map(hours.map((h) => [h, { day: h, clinic: 0, online: 0 }]));
-      (appts.data ?? []).forEach((a) => {
-        const h = new Date(a.starts_at).getHours();
-        const bucketKey =
-          h < 9 ? "6a" : h < 12 ? "9a" : h < 15 ? "12p" : h < 18 ? "3p" : h < 21 ? "6p" : "9p";
-        const b = buckets.get(bucketKey);
-        if (b) b.clinic += 1;
-      });
-      return hours.map((h, i) => {
-        const b = buckets.get(h)!;
-        return { day: h, clinic: b.clinic + (3 + i), online: 2 + ((i * 5) % 8) };
-      });
-    }
-    if (range === "year") {
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      const buckets = new Map(months.map((m) => [m, { day: m, clinic: 0, online: 0 }]));
-      (appts.data ?? []).forEach((a) => {
-        const m = months[new Date(a.starts_at).getMonth()];
-        const b = buckets.get(m);
-        if (b) b.clinic += 1;
-      });
-      return months.map((m, i) => {
-        const b = buckets.get(m)!;
-        return { day: m, clinic: b.clinic + (20 + ((i * 11) % 30)), online: 10 + ((i * 7) % 25) };
-      });
-    }
-    // week / month — bucket by day-of-week
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const buckets = new Map(days.map((d) => [d, { day: d, clinic: 0, online: 0 }]));
-    (appts.data ?? []).forEach((a) => {
-      const d = days[new Date(a.starts_at).getDay()];
-      const b = buckets.get(d);
-      if (b) b.clinic += 1;
-    });
-    return days.map((d, i) => {
-      const b = buckets.get(d)!;
-      return { day: d, clinic: b.clinic + (10 + i * 3), online: 8 + ((i * 7) % 25) };
-    });
-  }, [appts.data, range]);
-
-  const lineStats = dailyStats.map((d, i) => ({
-    day: d.day,
-    visitors: 30 + Math.round(Math.sin(i) * 15 + 30) + d.clinic,
-  }));
+  const { dailyStats, lineStats, newClients } = useDashboardStats(appts.data, range);
 
   const totalInRange = appts.data?.length ?? 0;
-  const newClients = useMemo(() => {
-    const ids = new Set<string>();
-    (appts.data ?? []).forEach((a) => {
-      if (a.client_id) ids.add(a.client_id);
-    });
-    return ids.size;
-  }, [appts.data]);
   const todayCount = (appts.data ?? []).filter((a) => {
     const ts = new Date(a.starts_at);
     const now = new Date();
@@ -260,34 +175,11 @@ function DashboardPage() {
 
         {/* Middle row — charts */}
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_1fr_360px] gap-4 mb-4 min-w-0">
-          <ChartCard title={t("app.dashboard.apptStats", { range: RANGE_LABEL[range] })}>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyStats} barCategoryGap={18}>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={28} />
-                  <Tooltip cursor={{ fill: "transparent" }} contentStyle={{ borderRadius: 12, border: "1px solid var(--border)", fontSize: 12 }} />
-                  <Bar dataKey="online" stackId="a" fill="var(--chart-3)" radius={[0, 0, 6, 6]} />
-                  <Bar dataKey="clinic" stackId="a" fill="var(--chart-1)" radius={[6, 6, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <ChartLegend />
-          </ChartCard>
-
-          <ChartCard title={t("app.dashboard.visitorsTrend")}>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={lineStats}>
-                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} width={28} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid var(--border)", fontSize: 12 }} />
-                  <Line type="monotone" dataKey="visitors" stroke="var(--chart-1)" strokeWidth={3} dot={{ r: 4, fill: "var(--chart-1)" }} activeDot={{ r: 6 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </ChartCard>
-
+          <AppointmentsBarChart
+            data={dailyStats}
+            title={t("app.dashboard.apptStats", { range: RANGE_LABEL[range] })}
+          />
+          <VisitorsLineChart data={lineStats} title={t("app.dashboard.visitorsTrend")} />
           <PatientOverview total={70} />
         </div>
 

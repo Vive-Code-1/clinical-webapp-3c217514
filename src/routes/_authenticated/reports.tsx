@@ -3,21 +3,15 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { useMemo, useState } from "react";
-import {
-  TrendingUp,
-  CalendarCheck,
-  AlertTriangle,
-  Wallet,
-  Users,
-  Sparkles,
-  Wand2,
-} from "lucide-react";
+import { TrendingUp, CalendarCheck, AlertTriangle, Wallet } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/queries/clinic";
 import { getClinicReport, type ReportRange } from "@/lib/functions/reports";
 import { buildDemoReport, isEmptyReport } from "@/lib/utils/reports-demo";
 import { useAppTranslation } from "@/lib/i18n/app-translations";
 import { KpiCard, BarChart } from "@/components/reports/Charts";
+import { TopServices, TopClients } from "@/components/reports/TopLists";
+import { DemoBanner } from "@/components/reports/DemoBanner";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
@@ -108,7 +102,6 @@ function ReportsPage() {
           </div>
         </div>
 
-
         {report.isLoading && !view && <div className="text-sm text-muted-foreground">{t("app.reports.loading")}</div>}
         {report.isError && !demoActive && (
           <div className="rounded-2xl border border-destructive/40 bg-destructive/5 p-4 text-sm text-destructive">
@@ -116,33 +109,19 @@ function ReportsPage() {
           </div>
         )}
 
-        {demoActive && (
-          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 flex items-center gap-3 flex-wrap">
-            <Wand2 className="w-4 h-4 text-primary shrink-0" />
-            <div className="flex-1 min-w-0 text-sm">
-              <span className="font-semibold text-foreground">{t("app.reports.sampleBanner")}</span>{" "}
-              <span className="text-muted-foreground">
-                {t("app.reports.sampleBody")}
-              </span>
-            </div>
-            <button
-              onClick={() => setDemoOverride(demoActive ? false : true)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors"
-            >
-              {liveEmpty && demoOverride !== false ? t("app.reports.viewLive") : t("app.reports.showDemo")}
-            </button>
-          </div>
-        )}
-        {!demoActive && !liveEmpty && (
-          <div className="flex justify-end">
-            <button
-              onClick={() => setDemoOverride(true)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-card hover:bg-muted transition-colors inline-flex items-center gap-1.5"
-            >
-              <Wand2 className="w-3.5 h-3.5" /> {t("app.reports.previewSample")}
-            </button>
-          </div>
-        )}
+        <DemoBanner
+          demoActive={demoActive}
+          liveEmpty={liveEmpty}
+          demoOverride={demoOverride}
+          onToggle={() => setDemoOverride(demoActive ? false : true)}
+          texts={{
+            sampleBanner: t("app.reports.sampleBanner"),
+            sampleBody: t("app.reports.sampleBody"),
+            viewLive: t("app.reports.viewLive"),
+            showDemo: t("app.reports.showDemo"),
+            previewSample: t("app.reports.previewSample"),
+          }}
+        />
 
         {view && (
           <>
@@ -200,47 +179,19 @@ function ReportsPage() {
             </section>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="w-4 h-4 text-muted-foreground" />
-                  <h2 className="text-sm font-semibold">{t("app.reports.topServices")}</h2>
-                </div>
-                {view.topServices.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">{t("app.reports.noData")}</p>
-                ) : (
-                  <ul className="divide-y divide-border">
-                    {view.topServices.map((s) => (
-                      <li key={s.name} className="py-2 flex items-center justify-between gap-3">
-                        <span className="text-sm truncate">{s.name}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">
-                          {s.count} · {money(s.revenueCents)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
-
-              <section className="rounded-2xl border border-border bg-card card-pop p-5 card-interactive">
-                <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-4 h-4 text-muted-foreground" />
-                  <h2 className="text-sm font-semibold">{t("app.reports.topClients")}</h2>
-                </div>
-                {view.topClients.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">{t("app.reports.noData")}</p>
-                ) : (
-                  <ul className="divide-y divide-border">
-                    {view.topClients.map((c) => (
-                      <li key={c.id} className="py-2 flex items-center justify-between gap-3">
-                        <span className="text-sm truncate">{c.name}</span>
-                        <span className="text-xs text-muted-foreground tabular-nums">
-                          {c.appointments} {t("app.reports.appts")} · {money(c.spentCents)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </section>
+              <TopServices
+                items={view.topServices}
+                title={t("app.reports.topServices")}
+                emptyLabel={t("app.reports.noData")}
+                money={money}
+              />
+              <TopClients
+                items={view.topClients}
+                title={t("app.reports.topClients")}
+                emptyLabel={t("app.reports.noData")}
+                apptsLabel={t("app.reports.appts")}
+                money={money}
+              />
             </div>
           </>
         )}
@@ -248,4 +199,3 @@ function ReportsPage() {
     </AppShell>
   );
 }
-
