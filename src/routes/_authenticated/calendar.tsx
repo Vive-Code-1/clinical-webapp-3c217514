@@ -138,12 +138,12 @@ function CalendarPage() {
           <h1 className="text-lg sm:text-2xl font-extrabold tracking-tight truncate">{headerTitle}</h1>
         </div>
 
-        <div className="flex items-center gap-2 ml-auto flex-wrap">
+        <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-auto flex-wrap">
           {clinics.length > 1 && (
             <select
               value={activeClinicId}
               onChange={(e) => setSearch({ clinic: e.target.value })}
-              className="bg-background border border-input rounded-xl px-3 py-2 text-sm font-semibold"
+              className="bg-background border border-input rounded-xl px-3 py-2 text-sm font-semibold min-w-0 flex-1 sm:flex-none"
             >
               {clinics.map((c: (typeof clinics)[number]) => (
                 <option key={c.id} value={c.id}>
@@ -159,7 +159,7 @@ function CalendarPage() {
               <button
                 key={v}
                 onClick={() => setView(v)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold uppercase tracking-wider transition ${
                   view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -168,22 +168,24 @@ function CalendarPage() {
             ))}
           </div>
 
-          <button onClick={() => goNav(-1)} className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
-            ←
-          </button>
-          <button onClick={() => goNav(0)} className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
-            Today
-          </button>
-          <button onClick={() => goNav(1)} className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
-            →
-          </button>
+          <div className="inline-flex items-center gap-1">
+            <button onClick={() => goNav(-1)} aria-label="Previous" className="px-2.5 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
+              ←
+            </button>
+            <button onClick={() => goNav(0)} className="px-3 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
+              Today
+            </button>
+            <button onClick={() => goNav(1)} aria-label="Next" className="px-2.5 py-2 rounded-xl border border-input hover:bg-accent text-sm font-semibold">
+              →
+            </button>
+          </div>
           <IcalButton userId={user.id} />
           <button
             onClick={() => {
               setDialogStart(new Date());
               setDialogOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110"
+            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 ml-auto sm:ml-0"
           >
             + New
           </button>
@@ -238,8 +240,8 @@ function TimeGrid({
   onApptClick: (a: CalendarAppointment) => void;
 }) {
   const cols = days.length;
-  const gridTemplate = `60px repeat(${cols}, minmax(0, 1fr))`;
-  const minW = cols === 1 ? "min-w-[400px]" : "min-w-[900px]";
+  const gridTemplate = `48px repeat(${cols}, minmax(0, 1fr))`;
+  const minW = cols === 1 ? "min-w-[320px]" : "min-w-[640px] sm:min-w-[900px]";
 
   return (
     <div className="overflow-auto">
@@ -353,7 +355,7 @@ function MonthGrid({
 
   return (
     <div className="overflow-auto">
-      <div className="min-w-[900px] grid grid-cols-7 border-b border-border bg-card/40">
+      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 border-b border-border bg-card/40">
         {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((d) => (
           <div
             key={d}
@@ -363,7 +365,7 @@ function MonthGrid({
           </div>
         ))}
       </div>
-      <div className="min-w-[900px] grid grid-cols-7 grid-rows-6">
+      <div className="min-w-[640px] sm:min-w-[900px] grid grid-cols-7 grid-rows-6">
         {cells.map((d) => {
           const inMonth = isSameMonth(d, anchor);
           const isToday = isSameDay(d, today);

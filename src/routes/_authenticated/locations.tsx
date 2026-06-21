@@ -66,14 +66,14 @@ function LocationsPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="px-6 py-6 border-b border-border flex flex-wrap items-center gap-4">
-        <div>
+      <div className="px-4 sm:px-6 py-4 sm:py-6 border-b border-border flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
+        <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Settings</p>
-          <h1 className="text-2xl font-extrabold tracking-tight">Locations & Rooms</h1>
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">Locations & Rooms</h1>
         </div>
         <button
           onClick={() => setNewLocOpen(true)}
-          className="ml-auto px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 flex items-center gap-2"
+          className="sm:ml-auto px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-lg shadow-primary/10 hover:brightness-110 inline-flex items-center justify-center gap-2 self-start"
         >
           <Plus className="w-4 h-4" /> New location
         </button>
@@ -212,7 +212,7 @@ function LocationCard({
         </div>
       </div>
 
-      <div className="mt-4 pl-13 ml-13 border-l-2 border-dashed border-border pl-4">
+      <div className="mt-4 sm:ml-13 border-l-2 border-dashed border-border pl-4">
         <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
           Rooms
         </p>
@@ -236,18 +236,18 @@ function LocationCard({
               </button>
             </div>
           ))}
-          <div className="flex gap-2 pt-1">
+          <div className="flex flex-wrap gap-2 pt-1">
             <input
               value={newRoomName}
               onChange={(e) => setNewRoomName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addRoom()}
               placeholder="New room name…"
-              className="flex-1 bg-background border border-input rounded-lg px-3 py-1.5 text-sm"
+              className="flex-1 min-w-0 bg-background border border-input rounded-lg px-3 py-1.5 text-sm"
             />
             <button
               onClick={addRoom}
               disabled={adding || !newRoomName.trim()}
-              className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-bold disabled:opacity-50 shrink-0"
             >
               Add
             </button>

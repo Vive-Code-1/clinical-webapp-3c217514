@@ -81,14 +81,14 @@ function FormsPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="px-6 py-6 max-w-[1200px] mx-auto">
+      <div className="px-4 sm:px-6 py-4 sm:py-6 max-w-[1200px] mx-auto">
         <header className="mb-6">
           <p className="text-sm text-muted-foreground">Clinical setup</p>
           <h1 className="text-2xl font-bold tracking-tight">Forms & templates</h1>
         </header>
 
         <div className="bg-card rounded-2xl ring-1 ring-border card-pop overflow-hidden">
-          <div className="border-b border-border px-2 flex gap-1">
+          <div className="border-b border-border px-1 sm:px-2 flex gap-1 overflow-x-auto">
             {[
               { id: "intake" as const, label: "Intake & consent forms", icon: ClipboardList },
               { id: "templates" as const, label: "Clinical note templates", icon: FileText },
@@ -99,17 +99,17 @@ function FormsPage() {
                 <button
                   key={t.id}
                   onClick={() => navigate({ search: { clinic: activeClinicId, tab: t.id === "intake" ? undefined : t.id } })}
-                  className={`flex items-center gap-2 px-4 py-3 text-sm font-semibold border-b-2 transition-colors ${
+                  className={`flex items-center gap-2 px-3 sm:px-4 py-3 text-xs sm:text-sm font-semibold border-b-2 transition-colors whitespace-nowrap ${
                     active ? "border-primary text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 shrink-0" />
                   {t.label}
                 </button>
               );
             })}
           </div>
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {tab === "intake" ? <IntakeFormsSection clinicId={activeClinicId} /> : <NoteTemplatesSection clinicId={activeClinicId} />}
           </div>
         </div>
