@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import "./i18n";
+import i18nInstance from "./i18n";
 import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
 import type { SupportedLanguage } from "./i18n";
@@ -34,13 +35,30 @@ function interpolate(value: TranslationValue, options?: TranslationOptions): Tra
 }
 
 export function useAppTranslation() {
-  const { t: translate, i18n } = useTranslation();
-  const language = languageOf(i18n.resolvedLanguage ?? i18n.language);
+  const { t: translate, i18n } = useTranslation(undefined, { i18n: i18nInstance });
+
+  // Subscribe explicitly to languageChanged so every consumer rerenders even
+  // when react-i18next's internal subscription is missed during hydration.
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (typeof i18nInstance?.on !== "function") return;
+    const handler = () => setTick((n) => n + 1);
+    i18nInstance.on("languageChanged", handler);
+    return () => {
+      if (typeof i18nInstance?.off === "function") {
+        i18nInstance.off("languageChanged", handler);
+      }
+    };
+  }, []);
+
+  const activeI18n = i18n ?? i18nInstance;
+  const language = languageOf(activeI18n?.resolvedLanguage ?? activeI18n?.language);
 
   const t = ((key: string, options?: TranslationOptions): TranslationValue => {
     const fallback = lookup(language, key) ?? lookup("en", key);
     const translated = translate(key, {
       ...options,
+      lng: language,
       defaultValue: typeof fallback === "string" ? fallback : undefined,
     }) as TranslationValue;
 
@@ -55,5 +73,5 @@ export function useAppTranslation() {
     return translated;
   }) as AppTranslate;
 
-  return { t, i18n, language };
+  return { t, i18n: activeI18n, language };
 }
