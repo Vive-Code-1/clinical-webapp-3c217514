@@ -5,6 +5,8 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { format, addMinutes, addDays, startOfDay } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { Step } from "@/components/booking/Step";
+import { DatePicker } from "@/components/booking/DatePicker";
 
 const searchSchema = z.object({
   service: z.string().optional(),
@@ -360,47 +362,3 @@ function BookingPage() {
   );
 }
 
-function Step({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <div className="flex items-center gap-3 mb-4">
-        <span
-          className="w-7 h-7 rounded-full bg-primary text-primary-foreground inline-flex items-center justify-center text-xs font-extrabold"
-          aria-hidden
-        >
-          {n}
-        </span>
-        <h2 className="text-xl font-extrabold tracking-tight">{title}</h2>
-      </div>
-      {children}
-    </section>
-  );
-}
-
-function DatePicker({ selected, onChange }: { selected: string; onChange: (d: string) => void }) {
-  const today = startOfDay(new Date());
-  const days = Array.from({ length: 14 }, (_, i) => addDays(today, i));
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-2">
-      {days.map((d) => {
-        const iso = format(d, "yyyy-MM-dd");
-        const active = iso === selected;
-        return (
-          <button
-            key={iso}
-            onClick={() => onChange(iso)}
-            className={`flex-shrink-0 w-16 py-3 rounded-2xl ring-1 transition-all text-center ${
-              active ? "ring-primary bg-primary/5" : "ring-border bg-card hover:ring-foreground/30"
-            }`}
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              {format(d, "EEE")}
-            </p>
-            <p className="text-lg font-extrabold">{format(d, "d")}</p>
-            <p className="text-[10px] text-muted-foreground">{format(d, "MMM")}</p>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
