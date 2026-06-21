@@ -3,10 +3,13 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { format, addMinutes, addDays, startOfDay } from "date-fns";
+import { format, addMinutes } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { Step } from "@/components/booking/Step";
 import { DatePicker } from "@/components/booking/DatePicker";
+import { ServiceList, PractitionerList } from "@/components/booking/Selectors";
+import { SlotGrid } from "@/components/booking/SlotGrid";
+import { computeSlots } from "@/components/booking/slots";
 
 const searchSchema = z.object({
   service: z.string().optional(),
@@ -26,8 +29,6 @@ export const Route = createFileRoute("/book/$slug")({
   errorComponent: ({ error }) => <div className="p-8 text-sm text-destructive">{error.message}</div>,
   notFoundComponent: () => <div className="p-8">Clinic not found.</div>,
 });
-
-const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"] as const;
 
 function BookingPage() {
   const { slug } = Route.useParams();
@@ -107,74 +108,13 @@ function BookingPage() {
   const slots = useQuery({
     enabled: !!selectedPractitionerId && !!selectedDate && !!selectedService && !!clinicId,
     queryKey: ["slots", clinicId, selectedPractitionerId, search.date, selectedService?.id],
-    queryFn: async () => {
-      const date = selectedDate!;
-      const dayCode = DAY_CODES[date.getDay()]!;
-      const dayStart = startOfDay(date);
-      const dayEnd = addDays(dayStart, 1);
-
-      const [rulesRes, overridesRes, apptsRes] = await Promise.all([
-        supabase
-          .from("public_availability_rules")
-          .select("start_time, end_time")
-          .eq("practitioner_id", selectedPractitionerId!)
-          .eq("clinic_id", clinicId!)
-          .eq("day_of_week", dayCode)
-          .eq("is_active", true),
-        supabase
-          .from("public_availability_overrides")
-          .select("is_closed, start_time, end_time")
-          .eq("practitioner_id", selectedPractitionerId!)
-          .eq("clinic_id", clinicId!)
-          .eq("override_date", format(date, "yyyy-MM-dd")),
-        supabase
-          .from("appointments")
-          .select("starts_at, ends_at, status")
-          .eq("practitioner_id", selectedPractitionerId!)
-          .gte("starts_at", dayStart.toISOString())
-          .lt("starts_at", dayEnd.toISOString()),
-      ]);
-      if (rulesRes.error) throw rulesRes.error;
-      if (overridesRes.error) throw overridesRes.error;
-      if (apptsRes.error) throw apptsRes.error;
-
-      const overrides = overridesRes.data ?? [];
-      if (overrides.some((o) => o.is_closed)) return [];
-
-      const windows: { start: Date; end: Date }[] = [];
-      const pushWindow = (st: string, et: string) => {
-        const [sh, sm] = st.split(":").map(Number);
-        const [eh, em] = et.split(":").map(Number);
-        const s = new Date(date);
-        s.setHours(sh!, sm!, 0, 0);
-        const e = new Date(date);
-        e.setHours(eh!, em!, 0, 0);
-        windows.push({ start: s, end: e });
-      };
-      if (overrides.length > 0) {
-        overrides.forEach((o) => o.start_time && o.end_time && pushWindow(o.start_time, o.end_time));
-      } else {
-        (rulesRes.data ?? []).forEach((r) => pushWindow(r.start_time, r.end_time));
-      }
-
-      const busy = (apptsRes.data ?? [])
-        .filter((a) => a.status !== "cancelled" && a.status !== "no_show")
-        .map((a) => ({ s: new Date(a.starts_at), e: new Date(a.ends_at) }));
-
-      const duration = selectedService!.duration_minutes;
-      const now = new Date();
-      const generated: Date[] = [];
-      for (const w of windows) {
-        let t = new Date(w.start);
-        while (addMinutes(t, duration) <= w.end) {
-          const slotEnd = addMinutes(t, duration);
-          const overlaps = busy.some((b) => t < b.e && slotEnd > b.s);
-          if (!overlaps && t > now) generated.push(new Date(t));
-          t = addMinutes(t, 30);
-        }
-      }
-      return generated;
-    },
+    queryFn: () =>
+      computeSlots({
+        clinicId: clinicId!,
+        practitionerId: selectedPractitionerId!,
+        date: selectedDate!,
+        durationMinutes: selectedService!.duration_minutes,
+      }),
   });
 
   const book = useMutation({
@@ -240,68 +180,27 @@ function BookingPage() {
 
       <main className="max-w-3xl mx-auto px-6 py-10 space-y-10">
         <Step n={1} title="Choose a service">
-          <div className="grid sm:grid-cols-2 gap-3">
-            {services.data?.map((s) => {
-              const active = s.id === search.service;
-              return (
-                <button
-                  key={s.id}
-                  onClick={() =>
-                    navigate({ search: { service: s.id, practitioner: undefined, date: undefined } })
-                  }
-                  className={`text-left p-4 rounded-2xl ring-1 transition-all ${
-                    active
-                      ? "ring-primary bg-primary/5"
-                      : "ring-border bg-card hover:ring-foreground/30"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-1 h-12 rounded-full mt-1" style={{ backgroundColor: s.color }} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold">{s.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {s.duration_minutes} min · {(s.price_cents / 100).toFixed(2)} {s.currency}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-            {services.data?.length === 0 && (
-              <p className="font-serif text-muted-foreground text-sm col-span-full">
-                No services available for online booking yet.
-              </p>
-            )}
-          </div>
+          <ServiceList
+            services={services.data}
+            selectedId={search.service}
+            onSelect={(id) =>
+              navigate({ search: { service: id, practitioner: undefined, date: undefined } })
+            }
+          />
         </Step>
 
         {selectedService && (
           <Step n={2} title="Choose a practitioner">
-            {practitioners.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
-            <div className="grid sm:grid-cols-3 gap-3">
-              {(practitioners.data ?? []).map((p) => {
-                const active = p.user_id === search.practitioner;
-                return (
-                  <button
-                    key={p.user_id}
-                    onClick={() =>
-                      navigate({ search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, practitioner: p.user_id, date: undefined }) })
-                    }
-                    className={`p-4 rounded-2xl ring-1 transition-all text-left ${
-                      active ? "ring-primary bg-primary/5" : "ring-border bg-card hover:ring-foreground/30"
-                    }`}
-                  >
-                    <p className="font-bold">{p.title || (p.role === "owner" ? "Founder" : "Practitioner")}</p>
-                    <p className="text-xs text-muted-foreground capitalize">{p.role}</p>
-                  </button>
-                );
-              })}
-              {practitioners.data?.length === 0 && (
-                <p className="font-serif text-muted-foreground text-sm col-span-full">
-                  No practitioner is offering this service yet.
-                </p>
-              )}
-            </div>
+            <PractitionerList
+              practitioners={practitioners.data}
+              isLoading={practitioners.isLoading}
+              selectedId={selectedPractitionerId}
+              onSelect={(uid) =>
+                navigate({
+                  search: (prev: z.infer<typeof searchSchema>) => ({ ...prev, practitioner: uid, date: undefined }),
+                })
+              }
+            />
           </Step>
         )}
 
@@ -316,41 +215,21 @@ function BookingPage() {
 
         {selectedService && selectedPractitionerId && selectedDate && (
           <Step n={4} title="Available times">
-            {slots.isLoading && <p className="text-sm text-muted-foreground">Loading slots…</p>}
-            {slots.data?.length === 0 && (
-              <p className="font-serif text-muted-foreground text-sm">
-                No openings on this date. Try another day.
-              </p>
-            )}
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-              {slots.data?.map((slot) => (
-                <button
-                  key={slot.toISOString()}
-                  onClick={() => {
-                    if (!userId) {
-                      navigate({ to: "/auth/sign-in" });
-                      return;
-                    }
-                    if (confirm(`Book ${format(slot, "EEEE, MMMM d")} at ${format(slot, "HH:mm")}?`)) {
-                      book.mutate(slot);
-                    }
-                  }}
-                  disabled={book.isPending}
-                  className="px-3 py-2.5 rounded-xl bg-card ring-1 ring-border hover:ring-primary text-sm font-mono font-bold transition-all disabled:opacity-60"
-                >
-                  {format(slot, "HH:mm")}
-                </button>
-              ))}
-            </div>
-            {!authLoading && !userId && (
-              <p className="mt-4 text-sm font-serif text-muted-foreground">
-                You'll be asked to{" "}
-                <Link to="/auth/sign-in" className="font-bold text-primary underline">
-                  sign in
-                </Link>{" "}
-                before confirming.
-              </p>
-            )}
+            <SlotGrid
+              slots={slots.data}
+              isLoading={slots.isLoading}
+              pending={book.isPending}
+              showSignInHint={!authLoading && !userId}
+              onPick={(slot) => {
+                if (!userId) {
+                  navigate({ to: "/auth/sign-in" });
+                  return;
+                }
+                if (confirm(`Book ${format(slot, "EEEE, MMMM d")} at ${format(slot, "HH:mm")}?`)) {
+                  book.mutate(slot);
+                }
+              }}
+            />
           </Step>
         )}
       </main>
@@ -361,4 +240,3 @@ function BookingPage() {
     </div>
   );
 }
-
