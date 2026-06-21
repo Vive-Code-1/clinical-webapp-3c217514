@@ -1,14 +1,21 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
-import { Trash2 } from "lucide-react";
+import { Trash2, CreditCard, Plus, Star } from "lucide-react";
+import {
+  createCardSetupSession,
+  confirmCardSetup,
+  setDefaultCard,
+  deleteSavedCard,
+} from "@/lib/saved-cards.functions";
 
-const searchSchema = z.object({ clinic: z.string().optional() });
+const searchSchema = z.object({ clinic: z.string().optional(), setup: z.string().optional() });
 
 export const Route = createFileRoute("/_authenticated/billing-settings")({
   ssr: false,
