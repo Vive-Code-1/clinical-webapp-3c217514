@@ -282,6 +282,7 @@ function RangePicker({ current }: { current: Range }) {
           key={r}
           to="/dashboard"
           search={{ range: r }}
+          resetScroll={false}
           className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors whitespace-nowrap ${
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
@@ -421,6 +422,7 @@ function PatientsTable({
                 key={tab.key}
                 to="/dashboard"
                 search={{ range: tab.key }}
+                resetScroll={false}
                 className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
                   tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
