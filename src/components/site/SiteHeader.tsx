@@ -47,7 +47,7 @@ export function SiteHeader() {
           </Link>
           <Link
             to="/auth/sign-up"
-            className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold shadow-sm shadow-primary/10 hover:brightness-110 transition-all"
+            className="hidden sm:inline-flex bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold shadow-sm shadow-primary/10 hover:brightness-110 transition-all"
           >
             {t("nav.startTrial")}
           </Link>
