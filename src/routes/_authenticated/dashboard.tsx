@@ -195,9 +195,7 @@ function DashboardPage() {
                 className="bg-transparent text-sm outline-none flex-1 min-w-0"
               />
             </div>
-            <div className="-mx-1 overflow-x-auto max-w-full">
-              <RangePicker current={range} />
-            </div>
+            <RangePicker current={range} />
             <div className="hidden lg:block">
               <LanguageToggle />
             </div>
@@ -278,13 +276,13 @@ function RangePicker({ current }: { current: Range }) {
     year: t("app.dashboard.year"),
   };
   return (
-    <div className="inline-flex items-center gap-1 bg-card rounded-full p-1 ring-1 ring-border text-xs font-medium">
+    <div className="inline-flex items-center gap-0.5 bg-card rounded-full p-1 ring-1 ring-border text-[10px] sm:text-xs font-medium">
       {RANGES.map((r) => (
         <Link
           key={r}
           to="/dashboard"
           search={{ range: r }}
-          className={`px-3 py-1.5 rounded-full transition-colors whitespace-nowrap ${
+          className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-colors whitespace-nowrap ${
             r === current ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
           }`}
         >
