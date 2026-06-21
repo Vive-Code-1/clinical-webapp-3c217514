@@ -479,22 +479,23 @@ function UpcomingAppointments({
   today: Date;
   items: Array<{ id: string; starts_at: string; client_name: string | null; guest_name: string | null }>;
 }) {
-  const monthLabel = today.toLocaleString(undefined, { month: "long" });
+  const { t, i18n } = useAppTranslation();
+  const locale = i18n.resolvedLanguage ?? "en";
+  const monthLabel = today.toLocaleString(locale, { month: "long" });
   const days = Array.from({ length: 7 }).map((_, i) => {
     const d = new Date(today);
     d.setDate(d.getDate() - today.getDay() + i);
     return d;
   });
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
     <div className="bg-card rounded-2xl p-5 ring-1 ring-border card-interactive">
-      <h3 className="font-semibold mb-3">Upcoming Appointments</h3>
+      <h3 className="font-semibold mb-3">{t("app.dashboard.upcoming")}</h3>
       <div className="flex items-center justify-between mb-3">
         <button className="grid place-items-center w-6 h-6 rounded-full hover:bg-muted">
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <span className="text-sm font-medium">{monthLabel}</span>
+        <span className="text-sm font-medium capitalize">{monthLabel}</span>
         <button className="grid place-items-center w-6 h-6 rounded-full hover:bg-muted">
           <ChevronRight className="w-4 h-4" />
         </button>
@@ -510,7 +511,7 @@ function UpcomingAppointments({
               }`}
             >
               <span className="font-bold">{d.getDate()}</span>
-              <span className="text-[10px] opacity-80">{dayNames[d.getDay()]}</span>
+              <span className="text-[10px] opacity-80 capitalize">{d.toLocaleDateString(locale, { weekday: "short" })}</span>
             </div>
           );
         })}
@@ -518,11 +519,11 @@ function UpcomingAppointments({
 
       <div className="space-y-3">
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No upcoming appointments.</p>
+          <p className="text-sm text-muted-foreground">{t("app.dashboard.noUpcoming")}</p>
         ) : (
           items.map((a, i) => {
-            const name = a.client_name || a.guest_name || "Patient";
-            const t = new Date(a.starts_at);
+            const name = a.client_name || a.guest_name || t("app.dashboard.patient");
+            const time = new Date(a.starts_at);
             const online = i % 2 === 0;
             return (
               <Link
@@ -536,7 +537,7 @@ function UpcomingAppointments({
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm truncate">{name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    {time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
                 <span
@@ -544,7 +545,7 @@ function UpcomingAppointments({
                     online ? "bg-pill-green/10 text-pill-green" : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {online ? "Online" : "Offline"}
+                  {online ? t("app.dashboard.online") : t("app.dashboard.offline")}
                 </span>
                 {online && <Phone className="w-4 h-4 text-muted-foreground" />}
               </Link>
