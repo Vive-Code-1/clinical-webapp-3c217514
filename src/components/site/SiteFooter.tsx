@@ -1,8 +1,8 @@
-import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
+import { useAppTranslation } from "@/lib/app-translations";
 
 export function SiteFooter() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   const year = new Date().getFullYear();
 
   return (

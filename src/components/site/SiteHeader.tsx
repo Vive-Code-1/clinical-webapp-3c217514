@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { LanguageToggle } from "./LanguageToggle";
+import { useAppTranslation } from "@/lib/app-translations";
 
 export function SiteHeader() {
-  const { t } = useTranslation();
+  const { t } = useAppTranslation();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {

@@ -1,10 +1,10 @@
-import { useTranslation } from "react-i18next";
+import { useAppTranslation } from "@/lib/app-translations";
 import type { SupportedLanguage } from "@/lib/i18n";
 
 const LANGS: SupportedLanguage[] = ["en", "fr"];
 
 export function LanguageToggle() {
-  const { i18n, t } = useTranslation();
+  const { i18n, t } = useAppTranslation();
   const current = (i18n.resolvedLanguage ?? "en").slice(0, 2) as SupportedLanguage;
 
   return (
