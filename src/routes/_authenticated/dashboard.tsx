@@ -174,7 +174,7 @@ function DashboardPage() {
   const today = new Date();
 
   return (
-    <AppShell clinicId={activeClinic.id}>
+    <AppShell clinicId={activeClinic.id} hideHeader>
       <div className="px-6 py-6 w-full min-w-0">
         {/* Top bar */}
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
