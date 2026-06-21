@@ -1,0 +1,2 @@
+ALTER TABLE public.clinics
+  ADD COLUMN IF NOT EXISTS brand_font TEXT NOT NULL DEFAULT 'inter';
