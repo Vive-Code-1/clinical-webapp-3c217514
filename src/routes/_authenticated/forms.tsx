@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil, Copy, Sparkles, Power } from "lucide-react";
+import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil, Copy, Sparkles, Power, Download, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
