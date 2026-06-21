@@ -281,7 +281,8 @@ function InvoicesPage() {
               <p className="text-muted-foreground">No invoices yet. Create your first one.</p>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[720px]">
               <thead className="bg-muted/40 text-xs uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="w-10 px-4 py-3">
