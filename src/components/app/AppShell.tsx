@@ -44,7 +44,6 @@ export function AppShell({ clinicId, children }: Props) {
     { to: "/availability" as const, label: "Availability", icon: Clock },
     { to: "/locations" as const, label: "Locations", icon: MapPin },
     { to: "/forms" as const, label: "Forms", icon: ClipboardList },
-    { to: "/forms" as const, label: "Forms", icon: ClipboardList },
     { to: "/invoices" as const, label: "Invoices", icon: Receipt },
     { to: "/messages" as const, label: "Messages", icon: MessageSquare },
     { to: "/billing-settings" as const, label: "Billing", icon: Settings },
