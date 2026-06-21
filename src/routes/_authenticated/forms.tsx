@@ -240,7 +240,13 @@ function IntakeFormsSection({ clinicId }: { clinicId: string }) {
                   {f.description && <p className="text-xs text-muted-foreground mt-1">{f.description}</p>}
                   <p className="text-xs text-muted-foreground mt-2">{f.schema?.fields?.length ?? 0} field(s) · {f.is_active ? "Active" : "Inactive"}</p>
                 </div>
-                <div className="flex gap-1">
+                <div className="flex gap-1 shrink-0">
+                  <button onClick={() => toggleActive.mutate(f)} title={f.is_active ? "Deactivate" : "Activate"} className={`text-xs px-2 py-1 rounded inline-flex items-center gap-1 ${f.is_active ? "text-pill-green hover:bg-pill-green/10" : "text-muted-foreground hover:bg-background"}`}>
+                    <Power className="w-3 h-3" />
+                  </button>
+                  <button onClick={() => duplicate.mutate(f)} title="Duplicate" className="text-xs px-2 py-1 hover:bg-background rounded inline-flex items-center gap-1">
+                    <Copy className="w-3 h-3" />
+                  </button>
                   <button onClick={() => { setEditing(f); setOpen(true); }} className="text-xs px-2 py-1 hover:bg-background rounded inline-flex items-center gap-1">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
