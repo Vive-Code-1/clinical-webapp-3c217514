@@ -63,6 +63,18 @@ function SettingsPage() {
   const [scribeOpen, setScribeOpen] = useState(false);
   const logoInput = useRef<HTMLInputElement>(null);
   const avatarInput = useRef<HTMLInputElement>(null);
+  const [density, setDensityState] = useState<LayoutDensity>(() => getDensity(activeClinicId));
+
+  useEffect(() => {
+    setDensityState(getDensity(activeClinicId));
+  }, [activeClinicId]);
+
+  const updateDensity = (next: LayoutDensity) => {
+    setDensityState(next);
+    setDensity(activeClinicId, next);
+  };
+
+  const applyPreset = (p: DensityPreset) => updateDensity(DENSITY_PRESETS[p]);
 
   useEffect(() => {
     if (branding.data) {
