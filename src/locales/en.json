@@ -339,6 +339,78 @@
       "noData": "No data yet.",
       "appts": "appts"
     }
+  },
+  "landing": {
+    "badge": "Trusted by 1,200+ clinics worldwide",
+    "hero": {
+      "titlePre": "A calmer way to run your",
+      "titleHighlight": "clinical practice",
+      "titlePost": ".",
+      "subtitle": "SANTÉ unifies scheduling, charting, billing, telehealth and patient communication in one warm, intuitive dashboard — so you can focus on care, not admin.",
+      "ctaPrimary": "Start free 30-day trial",
+      "ctaSecondary": "View dashboard demo",
+      "trustNote": "No credit card required · Bilingual EN / FR · PIPEDA compliant"
+    },
+    "logos": "Loved by independent therapists, multi-disciplinary clinics, and patient-first health groups",
+    "bento": {
+      "eyebrow": "Everything clinics need.",
+      "eyebrowAlt": "Everything practitioners expect.",
+      "intro": "A focused set of innovative features designed to support patients while fitting naturally into your clinical workflow.",
+      "items": {
+        "dashboard": { "title": "Patient Health Dashboard", "body": "A clear view of reports, medications and care updates — without medical overload." },
+        "team": { "title": "Care Team Communication", "body": "Secure, healthcare-grade messaging between patients and their assigned doctors." },
+        "appts": { "title": "Appointments & Follow-ups", "body": "Manage visits, reschedules and reminders. Daily reports keep every change logged with transparency." },
+        "activity": { "title": "Recent Activity Timeline", "body": "Patient-friendly notes and exercises delivered the moment they're ready — no app to install." },
+        "progress": { "title": "Health Progress & Insights", "body": "Visual trends that show whether a patient is improving, plateauing, or needs intervention." },
+        "scribe": { "title": "AI Scribe & SOAP Notes", "body": "Automated note capture transforms a conversation into a structured, exportable clinical note." }
+      }
+    },
+    "simplify": {
+      "eyebrow": "How SANTÉ simplifies care",
+      "title": "Less admin. More presence with your patients.",
+      "body": "SANTÉ is a practice-centric platform designed to remove confusion, improve engagement, and help clinics deliver better care digitally.",
+      "cards": {
+        "trend": { "title": "Health Trend", "metric": "+72%", "body": "Patients staying engaged with their plan week over week." },
+        "updates": { "title": "Updates", "body": "Smart notifications for new lab results, follow-up advice and treatment plan changes." },
+        "appointments": { "title": "Appointments", "body": "Self-booking, calendar sync, automated SMS & email reminders for every visit." }
+      }
+    },
+    "steps": {
+      "eyebrow": "Simple and efficient",
+      "title": "To deliver better patient care",
+      "body": "SANTÉ fits seamlessly into your clinic workflow while keeping the patient experience clear and intuitive.",
+      "items": {
+        "one": { "step": "Step 1", "title": "Your clinic sets up SANTÉ", "body": "Import services, providers, rooms and locations in minutes." },
+        "two": { "step": "Step 2", "title": "Patients get secure access", "body": "Branded booking, intake forms and messaging — instantly available." },
+        "three": { "step": "Step 3", "title": "Care stays clear & connected", "body": "Every visit, note and payment is captured in one beautiful timeline." }
+      }
+    },
+    "stats": {
+      "title": "Clinics replace 5+ tools with SANTÉ",
+      "items": {
+        "time": { "value": "8 hrs", "label": "saved per practitioner each week" },
+        "noshow": { "value": "-38%", "label": "no-show rate with smart reminders" },
+        "faster": { "value": "2.4x", "label": "faster monthly billing close" },
+        "rating": { "value": "4.9 / 5", "label": "average practitioner rating" }
+      }
+    },
+    "testimonial": {
+      "quote": "SANTÉ replaced our calendar, charting tool, billing software and patient app — in one weekend. Our team finally has time to breathe.",
+      "author": "Dr. Léa Bernard",
+      "role": "Founder · Boréal Wellness Clinic, Montréal"
+    },
+    "pricing": {
+      "eyebrow": "Simple pricing",
+      "title": "Start free. Scale when you're ready.",
+      "body": "Every plan includes scheduling, charting, billing, patient portal and bilingual support.",
+      "cta": "See full pricing"
+    },
+    "cta": {
+      "title": "Bring calm to your clinical day.",
+      "body": "Join hundreds of practices already running on SANTÉ. Free for 30 days — no credit card required.",
+      "primary": "Start free trial",
+      "secondary": "Talk to sales"
+    }
   }
 }
 

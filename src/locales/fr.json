@@ -339,6 +339,78 @@
       "noData": "Aucune donnée pour le moment.",
       "appts": "RDV"
     }
+  },
+  "landing": {
+    "badge": "Adopté par plus de 1 200 cliniques dans le monde",
+    "hero": {
+      "titlePre": "Une façon plus sereine de gérer votre",
+      "titleHighlight": "pratique clinique",
+      "titlePost": ".",
+      "subtitle": "SANTÉ réunit la prise de rendez-vous, les notes cliniques, la facturation, la téléconsultation et la communication patient dans un tableau de bord chaleureux et intuitif — pour vous concentrer sur les soins, pas sur l'administratif.",
+      "ctaPrimary": "Essai gratuit de 30 jours",
+      "ctaSecondary": "Voir la démo du tableau de bord",
+      "trustNote": "Sans carte bancaire · Bilingue FR / EN · Conforme PIPEDA"
+    },
+    "logos": "Apprécié par les thérapeutes indépendants, les cliniques multidisciplinaires et les groupes axés sur le patient",
+    "bento": {
+      "eyebrow": "Tout ce dont une clinique a besoin.",
+      "eyebrowAlt": "Tout ce que les praticiens attendent.",
+      "intro": "Un ensemble ciblé de fonctionnalités innovantes conçues pour soutenir les patients tout en s'intégrant naturellement à votre flux clinique.",
+      "items": {
+        "dashboard": { "title": "Tableau de santé du patient", "body": "Une vue claire des rapports, médicaments et mises à jour de soins — sans surcharge médicale." },
+        "team": { "title": "Communication d'équipe soignante", "body": "Messagerie sécurisée de qualité médicale entre patients et médecins assignés." },
+        "appts": { "title": "Rendez-vous et suivis", "body": "Gérez visites, reports et rappels. Les rapports quotidiens consignent chaque changement en toute transparence." },
+        "activity": { "title": "Fil d'activité récent", "body": "Notes et exercices patient livrés dès qu'ils sont prêts — aucune application à installer." },
+        "progress": { "title": "Progrès & analyses santé", "body": "Tendances visuelles montrant si le patient s'améliore, stagne ou nécessite une intervention." },
+        "scribe": { "title": "Scribe IA & notes SOAP", "body": "La capture automatisée transforme une conversation en une note clinique structurée et exportable." }
+      }
+    },
+    "simplify": {
+      "eyebrow": "Comment SANTÉ simplifie les soins",
+      "title": "Moins d'administratif. Plus de présence avec vos patients.",
+      "body": "SANTÉ est une plateforme centrée sur la pratique, conçue pour réduire la confusion, améliorer l'engagement et aider les cliniques à offrir de meilleurs soins numériques.",
+      "cards": {
+        "trend": { "title": "Tendance santé", "metric": "+72 %", "body": "Patients restant engagés dans leur plan semaine après semaine." },
+        "updates": { "title": "Mises à jour", "body": "Notifications intelligentes pour nouveaux résultats, conseils de suivi et changements de plan." },
+        "appointments": { "title": "Rendez-vous", "body": "Auto-réservation, synchronisation de calendrier, rappels SMS et e-mail automatiques pour chaque visite." }
+      }
+    },
+    "steps": {
+      "eyebrow": "Simple et efficace",
+      "title": "Pour offrir de meilleurs soins",
+      "body": "SANTÉ s'intègre naturellement au flux de votre clinique tout en gardant l'expérience patient claire et intuitive.",
+      "items": {
+        "one": { "step": "Étape 1", "title": "Votre clinique configure SANTÉ", "body": "Importez services, praticiens, salles et lieux en quelques minutes." },
+        "two": { "step": "Étape 2", "title": "Les patients accèdent en toute sécurité", "body": "Réservation, formulaires d'admission et messagerie aux couleurs de la clinique — instantanément." },
+        "three": { "step": "Étape 3", "title": "Les soins restent clairs et connectés", "body": "Chaque visite, note et paiement est consigné dans un même fil élégant." }
+      }
+    },
+    "stats": {
+      "title": "Les cliniques remplacent plus de 5 outils par SANTÉ",
+      "items": {
+        "time": { "value": "8 h", "label": "économisées par praticien chaque semaine" },
+        "noshow": { "value": "-38 %", "label": "de taux d'absence grâce aux rappels intelligents" },
+        "faster": { "value": "2,4×", "label": "plus rapide pour clôturer la facturation mensuelle" },
+        "rating": { "value": "4,9 / 5", "label": "note moyenne des praticiens" }
+      }
+    },
+    "testimonial": {
+      "quote": "SANTÉ a remplacé notre calendrier, notre logiciel de notes, notre outil de facturation et l'app patient — en un week-end. Notre équipe respire enfin.",
+      "author": "Dre Léa Bernard",
+      "role": "Fondatrice · Clinique Boréal Wellness, Montréal"
+    },
+    "pricing": {
+      "eyebrow": "Tarification simple",
+      "title": "Commencez gratuitement. Évoluez à votre rythme.",
+      "body": "Chaque plan inclut la prise de RDV, les notes cliniques, la facturation, le portail patient et le support bilingue.",
+      "cta": "Voir tous les tarifs"
+    },
+    "cta": {
+      "title": "Apportez de la sérénité à votre journée clinique.",
+      "body": "Rejoignez des centaines de cliniques qui utilisent déjà SANTÉ. Gratuit pendant 30 jours — sans carte bancaire.",
+      "primary": "Démarrer l'essai gratuit",
+      "secondary": "Parler à un commercial"
+    }
   }
 }
 
