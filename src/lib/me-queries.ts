@@ -8,7 +8,7 @@ export const myProfileQuery = (userId: string) =>
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url, locale")
+        .select("id, full_name, avatar_url")
         .eq("id", userId)
         .maybeSingle();
       if (error) throw error;
@@ -18,7 +18,6 @@ export const myProfileQuery = (userId: string) =>
         full_name: data?.full_name ?? null,
         avatar_url: data?.avatar_url ?? null,
         avatar_src: avatarSrc,
-        locale: data?.locale ?? null,
       };
     },
     staleTime: 60_000,
