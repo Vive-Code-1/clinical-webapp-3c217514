@@ -351,12 +351,22 @@ function InvoiceDetailPage() {
               </a>
             )}
             {balance > 0 && i.status !== "void" && (
-              <button
-                onClick={() => setPayOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium"
-              >
-                <Plus className="w-4 h-4" /> Record payment
-              </button>
+              <>
+                <button
+                  onClick={payWithStripe}
+                  disabled={payingStripe}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#635bff] text-white text-sm font-medium disabled:opacity-60"
+                  title="Pay this invoice with a card via Stripe"
+                >
+                  <CreditCard className="w-4 h-4" /> {payingStripe ? "Redirecting…" : "Pay with Stripe"}
+                </button>
+                <button
+                  onClick={() => setPayOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" /> Record payment
+                </button>
+              </>
             )}
             <button
               onClick={() => openInvoicePdf(i, clinic?.name ?? "", balance)}
