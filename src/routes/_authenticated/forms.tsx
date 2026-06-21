@@ -3,11 +3,12 @@ import { useState, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil } from "lucide-react";
+import { Plus, Trash2, ClipboardList, FileText, GripVertical, Pencil, Copy, Sparkles, Power } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { SAMPLE_INTAKE_FORMS, SAMPLE_NOTE_TEMPLATES } from "@/lib/forms-samples";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
