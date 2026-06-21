@@ -44,6 +44,34 @@ type IntakeForm = {
 type NoteKind = "soap" | "follow_up" | "couple" | "family" | "general";
 type NoteTemplate = { id: string; title: string; kind: NoteKind; body: Record<string, string> };
 
+function downloadJson(filename: string, data: unknown) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function pickJsonFile(): Promise<unknown> {
+  return new Promise((resolve, reject) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json,.json";
+    input.onchange = async () => {
+      const f = input.files?.[0];
+      if (!f) return reject(new Error("No file"));
+      try {
+        resolve(JSON.parse(await f.text()));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    input.click();
+  });
+}
+
 function FormsPage() {
   const { clinics } = Route.useRouteContext();
   const search = Route.useSearch();
