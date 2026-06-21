@@ -12,7 +12,7 @@ const isBrowser = typeof window !== "undefined";
 
 if (!i18n.isInitialized) {
   const chain = isBrowser ? i18n.use(LanguageDetector) : i18n;
-  void chain.use(initReactI18next).init({
+  chain.use(initReactI18next).init({
     resources: {
       en: { translation: en },
       fr: { translation: fr },
@@ -21,6 +21,7 @@ if (!i18n.isInitialized) {
     fallbackLng: "en",
     supportedLngs: SUPPORTED_LANGUAGES as unknown as string[],
     interpolation: { escapeValue: false },
+    initAsync: false,
     detection: {
       order: ["localStorage", "navigator", "htmlTag"],
       caches: ["localStorage"],
