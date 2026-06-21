@@ -16,6 +16,7 @@ import {
   HelpCircle,
   LogOut,
   Leaf,
+  BarChart3,
 } from "lucide-react";
 
 type Props = {
