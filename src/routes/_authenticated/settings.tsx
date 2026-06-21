@@ -1,18 +1,20 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Save, Palette, Type, ImageIcon, Sparkles } from "lucide-react";
+import { Save, Palette, Type, ImageIcon, Sparkles, Upload, Languages, User as UserIcon, Trash2 } from "lucide-react";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
-import {
-  getClinicBranding,
-  updateClinicBranding,
-  FONT_OPTIONS,
-} from "@/lib/branding.functions";
+import { clinicBrandingQuery, myProfileQuery } from "@/lib/me-queries";
+import { getClinicBranding, updateClinicBranding, FONT_OPTIONS } from "@/lib/branding.functions";
 import { ScribeDialog } from "@/components/scribe/ScribeDialog";
+import { useAppTranslation } from "@/lib/app-translations";
+import { supabase } from "@/integrations/supabase/client";
+import { uploadClinicLogo, uploadUserAvatar } from "@/lib/storage-uploads";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { SupportedLanguage } from "@/lib/i18n";
 
 const searchSchema = z.object({ clinic: z.string().optional() });
 
@@ -22,53 +24,74 @@ export const Route = createFileRoute("/_authenticated/settings")({
   beforeLoad: async ({ context }) => {
     const clinics = await context.queryClient.ensureQueryData(myClinicsQuery(context.user.id));
     if (!clinics || clinics.length === 0) throw redirect({ to: "/onboarding" });
-    return { clinics };
+    return { clinics, user: context.user };
   },
   head: () => ({ meta: [{ title: "Settings — Helanthus" }] }),
   component: SettingsPage,
-  errorComponent: ({ error }) => (
-    <div className="p-8 text-sm text-destructive">{error.message}</div>
-  ),
+  errorComponent: ({ error }) => <div className="p-8 text-sm text-destructive">{error.message}</div>,
   notFoundComponent: () => <div className="p-8">Not found.</div>,
 });
 
-const PRESET_COLORS = [
-  "#16a34a",
-  "#0ea5e9",
-  "#7c3aed",
-  "#db2777",
-  "#f59e0b",
-  "#0f766e",
-  "#1f2937",
-];
+const PRESET_COLORS = ["#16a34a", "#0ea5e9", "#7c3aed", "#db2777", "#f59e0b", "#0f766e", "#1f2937"];
 
 function SettingsPage() {
-  const { clinics } = Route.useRouteContext();
+  const { clinics, user } = Route.useRouteContext();
   const search = Route.useSearch();
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const fetchBranding = useServerFn(getClinicBranding);
   const updateBranding = useServerFn(updateClinicBranding);
   const qc = useQueryClient();
+  const { t, i18n } = useAppTranslation();
+  const currentLang = ((i18n.resolvedLanguage ?? "en").slice(0, 2)) as SupportedLanguage;
 
   const branding = useQuery({
     queryKey: ["clinic-branding", activeClinicId],
     queryFn: () => fetchBranding({ data: { clinicId: activeClinicId } }),
   });
 
+  const profile = useQuery(myProfileQuery(user.id));
+
   const [name, setName] = useState("");
   const [color, setColor] = useState("#16a34a");
   const [font, setFont] = useState("inter");
-  const [logoUrl, setLogoUrl] = useState("");
+  const [logoStored, setLogoStored] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [scribeOpen, setScribeOpen] = useState(false);
+  const logoInput = useRef<HTMLInputElement>(null);
+  const avatarInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (branding.data) {
       setName(branding.data.name);
       setColor(branding.data.brand_color);
       setFont(branding.data.brand_font);
-      setLogoUrl(branding.data.logo_url ?? "");
+      setLogoStored(branding.data.logo_url);
     }
   }, [branding.data]);
+
+  // Resolve a renderable URL for whatever is stored (path or http url)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!logoStored) {
+        setLogoPreview(null);
+        return;
+      }
+      if (/^https?:\/\//i.test(logoStored)) {
+        setLogoPreview(logoStored);
+        return;
+      }
+      const [bucket, ...rest] = logoStored.split("/");
+      if (!bucket || rest.length === 0) return;
+      const { data } = await supabase.storage.from(bucket).createSignedUrl(rest.join("/"), 60 * 60);
+      if (!cancelled) setLogoPreview(data?.signedUrl ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [logoStored]);
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -78,39 +101,152 @@ function SettingsPage() {
           name: name.trim() || undefined,
           brand_color: color,
           brand_font: font,
-          logo_url: logoUrl.trim() ? logoUrl.trim() : null,
+          logo_url: logoStored,
         },
       }),
     onSuccess: () => {
-      toast.success("Branding saved");
+      toast.success(t("app.settings.saved"));
       qc.invalidateQueries({ queryKey: ["clinic-branding", activeClinicId] });
+      qc.invalidateQueries({ queryKey: ["clinic-branding-public", activeClinicId] });
       qc.invalidateQueries({ queryKey: ["my-clinics"] });
     },
     onError: (e: any) => toast.error(e?.message ?? "Could not save"),
   });
 
-  const fontStack =
-    FONT_OPTIONS.find((f) => f.id === font)?.stack ?? FONT_OPTIONS[0].stack;
+  const handleLogoPick = async (file: File) => {
+    if (!file.type.startsWith("image/") || file.size > 4 * 1024 * 1024) {
+      toast.error(t("app.settings.imageOnly"));
+      return;
+    }
+    setUploadingLogo(true);
+    try {
+      const path = await uploadClinicLogo(activeClinicId, file);
+      setLogoStored(path);
+      toast.success(t("app.settings.saved"));
+    } catch (e: any) {
+      toast.error(e?.message ?? t("app.settings.uploadError"));
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleAvatarPick = async (file: File) => {
+    if (!file.type.startsWith("image/") || file.size > 4 * 1024 * 1024) {
+      toast.error(t("app.settings.imageOnly"));
+      return;
+    }
+    setUploadingAvatar(true);
+    try {
+      const path = await uploadUserAvatar(user.id, file);
+      const { error } = await supabase
+        .from("profiles")
+        .update({ avatar_url: path })
+        .eq("id", user.id);
+      if (error) throw error;
+      qc.invalidateQueries({ queryKey: ["my-profile", user.id] });
+      toast.success(t("app.settings.saved"));
+    } catch (e: any) {
+      toast.error(e?.message ?? t("app.settings.uploadError"));
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const fontStack = FONT_OPTIONS.find((f) => f.id === font)?.stack ?? FONT_OPTIONS[0].stack;
+  const initials =
+    (profile.data?.full_name ?? "")
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((s) => s[0]?.toUpperCase())
+      .join("") || "U";
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="p-6 md:p-8 max-w-4xl space-y-6">
+      <div className="p-6 md:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Clinic branding, typography, and AI tools.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">{t("app.settings.title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("app.settings.subtitle")}</p>
         </div>
 
+        {/* Language */}
+        <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-3">
+          <header className="flex items-center gap-2">
+            <Languages className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold">{t("app.settings.language")}</h2>
+          </header>
+          <p className="text-sm text-muted-foreground">{t("app.settings.languageHelp")}</p>
+          <div className="inline-flex rounded-xl border border-border bg-background p-1">
+            {(["en", "fr"] as const).map((lng) => (
+              <button
+                key={lng}
+                type="button"
+                onClick={() => void i18n.changeLanguage(lng)}
+                className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors ${
+                  currentLang === lng
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {lng === "en" ? "English" : "Français"}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* My profile / avatar */}
+        <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-4">
+          <header className="flex items-center gap-2">
+            <UserIcon className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold">{t("app.settings.profile")}</h2>
+          </header>
+          <p className="text-sm text-muted-foreground">{t("app.settings.profileHelp")}</p>
+          <div className="flex items-center gap-4">
+            <Avatar className="w-16 h-16">
+              {profile.data?.avatar_src && (
+                <AvatarImage src={profile.data.avatar_src} alt={profile.data.full_name ?? ""} />
+              )}
+              <AvatarFallback className="text-lg font-semibold">{initials}</AvatarFallback>
+            </Avatar>
+            <div className="flex items-center gap-2">
+              <input
+                ref={avatarInput}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void handleAvatarPick(f);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => avatarInput.current?.click()}
+                disabled={uploadingAvatar}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium disabled:opacity-50"
+              >
+                <Upload className="w-4 h-4" />
+                {uploadingAvatar
+                  ? t("app.settings.uploading")
+                  : profile.data?.avatar_src
+                    ? t("app.settings.replaceAvatar")
+                    : t("app.settings.uploadAvatar")}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* Branding */}
         <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-5">
           <header className="flex items-center gap-2">
             <Palette className="w-4 h-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold">Branding</h2>
+            <h2 className="text-sm font-semibold">{t("app.settings.branding")}</h2>
           </header>
 
           <div>
             <label className="text-xs font-semibold uppercase text-muted-foreground">
-              Clinic name
+              {t("app.settings.clinicName")}
             </label>
             <input
               type="text"
@@ -123,32 +259,55 @@ function SettingsPage() {
 
           <div>
             <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center gap-2">
-              <ImageIcon className="w-3.5 h-3.5" /> Logo URL (optional)
+              <ImageIcon className="w-3.5 h-3.5" /> {t("app.settings.logo")}
             </label>
-            <input
-              type="url"
-              value={logoUrl}
-              onChange={(e) => setLogoUrl(e.target.value)}
-              className="mt-1 w-full px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono"
-              placeholder="https://…/logo.png"
-            />
-            {logoUrl && (
-              <div className="mt-2 flex items-center gap-3 p-3 rounded-lg border border-border bg-muted/30">
-                {/* eslint-disable-next-line jsx-a11y/alt-text */}
-                <img
-                  src={logoUrl}
-                  alt="Logo preview"
-                  className="h-10 w-10 rounded object-contain bg-background"
-                  onError={(e) => ((e.currentTarget.style.display = "none"))}
-                />
-                <span className="text-xs text-muted-foreground">Logo preview</span>
+            <div className="mt-2 flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl border border-border bg-muted/30 grid place-items-center overflow-hidden">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="" className="w-full h-full object-contain" />
+                ) : (
+                  <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                )}
               </div>
-            )}
+              <input
+                ref={logoInput}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void handleLogoPick(f);
+                  e.target.value = "";
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => logoInput.current?.click()}
+                disabled={uploadingLogo}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium disabled:opacity-50"
+              >
+                <Upload className="w-4 h-4" />
+                {uploadingLogo
+                  ? t("app.settings.uploading")
+                  : logoStored
+                    ? t("app.settings.replaceLogo")
+                    : t("app.settings.uploadLogo")}
+              </button>
+              {logoStored && (
+                <button
+                  type="button"
+                  onClick={() => setLogoStored(null)}
+                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" /> {t("app.settings.removeLogo")}
+                </button>
+              )}
+            </div>
           </div>
 
           <div>
             <label className="text-xs font-semibold uppercase text-muted-foreground">
-              Brand color
+              {t("app.settings.brandColor")}
             </label>
             <div className="mt-2 flex items-center gap-3 flex-wrap">
               <input
@@ -183,7 +342,7 @@ function SettingsPage() {
 
           <div>
             <label className="text-xs font-semibold uppercase text-muted-foreground flex items-center gap-2">
-              <Type className="w-3.5 h-3.5" /> Typography
+              <Type className="w-3.5 h-3.5" /> {t("app.settings.typography")}
             </label>
             <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-2">
               {FONT_OPTIONS.map((f) => (
@@ -192,9 +351,7 @@ function SettingsPage() {
                   type="button"
                   onClick={() => setFont(f.id)}
                   className={`p-3 rounded-xl border text-left transition-colors ${
-                    font === f.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:bg-muted"
+                    font === f.id ? "border-primary bg-primary/5" : "border-border hover:bg-muted"
                   }`}
                   style={{ fontFamily: f.stack }}
                 >
@@ -205,16 +362,13 @@ function SettingsPage() {
             </div>
           </div>
 
-          <div
-            className="rounded-xl border border-border p-4"
-            style={{ fontFamily: fontStack, borderColor: color }}
-          >
+          <div className="rounded-xl border p-4" style={{ fontFamily: fontStack, borderColor: color }}>
             <div className="text-xs uppercase font-semibold text-muted-foreground mb-2">
-              Live preview
+              {t("app.settings.livePreview")}
             </div>
             <div className="flex items-center gap-3">
-              {logoUrl ? (
-                <img src={logoUrl} alt="" className="h-8 w-8 rounded object-contain" />
+              {logoPreview ? (
+                <img src={logoPreview} alt="" className="h-8 w-8 rounded object-contain" />
               ) : (
                 <div
                   className="h-8 w-8 rounded grid place-items-center text-white text-sm font-bold"
@@ -240,25 +394,23 @@ function SettingsPage() {
             disabled={mutation.isPending}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
           >
-            <Save className="w-4 h-4" /> Save branding
+            <Save className="w-4 h-4" /> {t("app.settings.save")}
           </button>
         </section>
 
+        {/* AI Scribe */}
         <section className="rounded-2xl border border-border bg-card card-pop p-5 space-y-3">
           <header className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-muted-foreground" />
-            <h2 className="text-sm font-semibold">AI Scribe</h2>
+            <h2 className="text-sm font-semibold">{t("app.settings.aiScribe")}</h2>
           </header>
-          <p className="text-sm text-muted-foreground">
-            Paste raw session notes or a dictated transcript and get a clean SOAP note in seconds.
-            Powered by Lovable AI — no extra setup required.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("app.settings.aiScribeBody")}</p>
           <button
             type="button"
             onClick={() => setScribeOpen(true)}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted text-sm font-medium"
           >
-            <Sparkles className="w-4 h-4" /> Open AI Scribe
+            <Sparkles className="w-4 h-4" /> {t("app.settings.openScribe")}
           </button>
         </section>
       </div>

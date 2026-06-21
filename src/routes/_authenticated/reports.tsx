@@ -82,7 +82,7 @@ function ReportsPage() {
 
   return (
     <AppShell clinicId={activeClinicId}>
-      <div className="p-6 md:p-8 max-w-6xl space-y-6">
+      <div className="p-6 md:p-8 space-y-6">
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Reports</h1>

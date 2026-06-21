@@ -223,5 +223,51 @@
     "errors": {
       "backendMissing": "L'authentification n'est pas encore connectée. Connectez Supabase pour activer la connexion."
     }
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "appointment": "Rendez-vous",
+      "clients": "Clients",
+      "services": "Services",
+      "availability": "Disponibilités",
+      "locations": "Lieux",
+      "forms": "Formulaires",
+      "invoices": "Factures",
+      "messages": "Messagerie",
+      "reports": "Rapports",
+      "billing": "Facturation",
+      "integrations": "Intégrations",
+      "settings": "Paramètres",
+      "logout": "Se déconnecter"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Image de marque, langue, profil et outils d'IA de la clinique.",
+      "branding": "Image de marque",
+      "clinicName": "Nom de la clinique",
+      "logo": "Logo de la clinique",
+      "uploadLogo": "Téléverser un logo",
+      "replaceLogo": "Remplacer le logo",
+      "removeLogo": "Retirer",
+      "brandColor": "Couleur de la marque",
+      "typography": "Typographie",
+      "livePreview": "Aperçu en direct",
+      "save": "Enregistrer la marque",
+      "saved": "Marque enregistrée",
+      "language": "Langue",
+      "languageHelp": "Choisissez la langue de l'interface. Le changement s'applique instantanément dans toute l'application.",
+      "profile": "Mon profil",
+      "profileHelp": "Votre photo apparaît dans l'en-tête de toutes les pages.",
+      "uploadAvatar": "Téléverser une photo",
+      "replaceAvatar": "Remplacer la photo",
+      "aiScribe": "Scribe IA",
+      "aiScribeBody": "Collez des notes de séance ou une transcription dictée et obtenez une note SOAP soignée en quelques secondes.",
+      "openScribe": "Ouvrir le Scribe IA",
+      "uploading": "Téléversement…",
+      "uploadError": "Échec du téléversement",
+      "imageOnly": "Veuillez choisir une image de moins de 4 Mo."
+    }
   }
 }
+
