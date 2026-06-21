@@ -28,7 +28,7 @@ type Props = {
   children: ReactNode;
 };
 
-export function AppShell({ clinicId, children }: Props) {
+export function AppShell({ clinicId, hideHeader, children }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useAppTranslation();
