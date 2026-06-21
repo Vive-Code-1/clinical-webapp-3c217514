@@ -86,6 +86,7 @@ function DashboardPage() {
   const range: Range = (search as { range?: Range }).range ?? "week";
   const activeClinic = clinics[0]!;
   const { t } = useAppTranslation();
+  const density = useLayoutDensity(activeClinic.id);
   const RANGE_LABEL: Record<Range, string> = {
     today: t("app.dashboard.today"),
     week: t("app.dashboard.week"),
