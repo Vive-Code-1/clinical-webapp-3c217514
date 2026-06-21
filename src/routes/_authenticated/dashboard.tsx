@@ -422,6 +422,7 @@ function PatientsTable({
                 key={tab.key}
                 to="/dashboard"
                 search={{ range: tab.key }}
+                resetScroll={false}
                 className={`px-3 py-1.5 rounded-full font-medium whitespace-nowrap transition-colors ${
                   tab.key === currentRange ? "bg-pill-green text-primary-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
