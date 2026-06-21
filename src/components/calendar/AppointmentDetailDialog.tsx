@@ -107,6 +107,16 @@ export function AppointmentDetailDialog({ clinicId, appointment, onOpenChange }:
               </span>
             </Row>
             {appointment.notes && <Row label="Notes">{appointment.notes}</Row>}
+            {appointment.meeting_url && !cancelled && (
+              <Row label="Video">
+                <a
+                  href={`/telehealth/${appointment.id}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  Join video call
+                </a>
+              </Row>
+            )}
 
             <DialogFooter className="!justify-between gap-2">
               {!cancelled && (

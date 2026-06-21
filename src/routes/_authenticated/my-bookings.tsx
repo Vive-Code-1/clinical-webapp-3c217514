@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format, isPast } from "date-fns";
 import { toast } from "sonner";
-import { CalendarDays, Clock, MapPin, X } from "lucide-react";
+import { CalendarDays, Clock, MapPin, X, Video } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 type Booking = {
@@ -11,6 +11,7 @@ type Booking = {
   ends_at: string;
   status: string;
   notes: string | null;
+  meeting_url: string | null;
   clinic: { id: string; name: string; slug: string; brand_color: string | null } | null;
   service: { name: string; color: string; duration_minutes: number } | null;
   practitioner_id: string;
@@ -35,7 +36,7 @@ function MyBookingsPage() {
       const { data, error } = await supabase
         .from("appointments")
         .select(
-          "id, starts_at, ends_at, status, notes, practitioner_id, clinic:clinics(id, name, slug, brand_color), service:service_types(name, color, duration_minutes)",
+          "id, starts_at, ends_at, status, notes, meeting_url, practitioner_id, clinic:clinics(id, name, slug, brand_color), service:service_types(name, color, duration_minutes)",
         )
         .eq("client_id", user.id)
         .order("starts_at", { ascending: false });
@@ -74,9 +75,14 @@ function MyBookingsPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Your account</p>
             <h1 className="text-3xl font-extrabold tracking-tight">My bookings</h1>
           </div>
-          <Link to="/" className="text-sm font-semibold text-muted-foreground hover:text-foreground">
-            Home →
-          </Link>
+          <div className="flex items-center gap-4 text-sm font-semibold">
+            <Link to="/messages" className="text-muted-foreground hover:text-foreground">
+              Messages
+            </Link>
+            <Link to="/" className="text-muted-foreground hover:text-foreground">
+              Home →
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -187,6 +193,17 @@ function BookingCard({
           )}
         </div>
         {b.notes && <p className="text-xs font-serif text-muted-foreground mt-2">{b.notes}</p>}
+        {b.meeting_url && !cancelled && (
+          <div className="mt-3">
+            <Link
+              to="/telehealth/$appointmentId"
+              params={{ appointmentId: b.id }}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700"
+            >
+              <Video className="w-3.5 h-3.5" /> Join video call
+            </Link>
+          </div>
+        )}
         {onCancel && !cancelled && (
           <div className="mt-3 flex gap-2">
             <button

@@ -1,15 +1,17 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { ArrowLeft, Download, Plus, Send, Mail } from "lucide-react";
+import { ArrowLeft, Download, Plus, Send, Mail, CreditCard } from "lucide-react";
+import { createInvoiceCheckout } from "@/lib/billing.functions";
 
-const searchSchema = z.object({ clinic: z.string().optional() });
+const searchSchema = z.object({ clinic: z.string().optional(), checkout: z.string().optional() });
 
 export const Route = createFileRoute("/_authenticated/invoices/$invoiceId")({
   ssr: false,
@@ -129,6 +131,33 @@ function InvoiceDetailPage() {
   const activeClinicId = search.clinic ?? clinics[0]!.id;
   const queryClient = useQueryClient();
   const [payOpen, setPayOpen] = useState(false);
+  const navigate = Route.useNavigate();
+  const checkoutStripe = useServerFn(createInvoiceCheckout);
+  const [payingStripe, setPayingStripe] = useState(false);
+
+  useEffect(() => {
+    if (search.checkout === "success") {
+      toast.success("Payment received — refreshing invoice.");
+      queryClient.invalidateQueries({ queryKey: ["invoice", invoiceId] });
+      navigate({ search: (p: z.infer<typeof searchSchema>) => ({ ...p, checkout: undefined }), replace: true });
+    } else if (search.checkout === "cancelled") {
+      toast.info("Checkout cancelled.");
+      navigate({ search: (p: z.infer<typeof searchSchema>) => ({ ...p, checkout: undefined }), replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.checkout]);
+
+  const payWithStripe = async () => {
+    try {
+      setPayingStripe(true);
+      const res = await checkoutStripe({ data: { invoiceId } });
+      if (res?.url) window.location.href = res.url;
+    } catch (e: any) {
+      toast.error(e.message ?? "Could not start Stripe checkout");
+    } finally {
+      setPayingStripe(false);
+    }
+  };
 
   const inv = useQuery({
     queryKey: ["invoice", invoiceId],
@@ -322,12 +351,22 @@ function InvoiceDetailPage() {
               </a>
             )}
             {balance > 0 && i.status !== "void" && (
-              <button
-                onClick={() => setPayOpen(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium"
-              >
-                <Plus className="w-4 h-4" /> Record payment
-              </button>
+              <>
+                <button
+                  onClick={payWithStripe}
+                  disabled={payingStripe}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#635bff] text-white text-sm font-medium disabled:opacity-60"
+                  title="Pay this invoice with a card via Stripe"
+                >
+                  <CreditCard className="w-4 h-4" /> {payingStripe ? "Redirecting…" : "Pay with Stripe"}
+                </button>
+                <button
+                  onClick={() => setPayOpen(true)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-foreground text-background text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" /> Record payment
+                </button>
+              </>
             )}
             <button
               onClick={() => openInvoicePdf(i, clinic?.name ?? "", balance)}

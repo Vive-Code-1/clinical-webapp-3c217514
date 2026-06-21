@@ -22,6 +22,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedServicesRouteImport } from './routes/_authenticated/services'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedMyBookingsRouteImport } from './routes/_authenticated/my-bookings'
+import { Route as AuthenticatedMessagesRouteImport } from './routes/_authenticated/messages'
 import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedInvoicesRouteImport } from './routes/_authenticated/invoices'
 import { Route as AuthenticatedFormsRouteImport } from './routes/_authenticated/forms'
@@ -30,8 +31,10 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCalendarRouteImport } from './routes/_authenticated/calendar'
 import { Route as AuthenticatedBillingSettingsRouteImport } from './routes/_authenticated/billing-settings'
 import { Route as AuthenticatedAvailabilityRouteImport } from './routes/_authenticated/availability'
+import { Route as AuthenticatedTelehealthAppointmentIdRouteImport } from './routes/_authenticated/telehealth.$appointmentId'
 import { Route as AuthenticatedInvoicesInvoiceIdRouteImport } from './routes/_authenticated/invoices.$invoiceId'
 import { Route as AuthenticatedClientsClientIdRouteImport } from './routes/_authenticated/clients.$clientId'
+import { Route as ApiPublicStripeWebhookRouteImport } from './routes/api.public.stripe.webhook'
 import { Route as ApiPublicIcalTokenDoticsRouteImport } from './routes/api.public.ical.$token[.]ics'
 
 const PricingRoute = PricingRouteImport.update({
@@ -98,6 +101,11 @@ const AuthenticatedMyBookingsRoute = AuthenticatedMyBookingsRouteImport.update({
   path: '/my-bookings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMessagesRoute = AuthenticatedMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
   id: '/locations',
   path: '/locations',
@@ -140,6 +148,12 @@ const AuthenticatedAvailabilityRoute =
     path: '/availability',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTelehealthAppointmentIdRoute =
+  AuthenticatedTelehealthAppointmentIdRouteImport.update({
+    id: '/telehealth/$appointmentId',
+    path: '/telehealth/$appointmentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedInvoicesInvoiceIdRoute =
   AuthenticatedInvoicesInvoiceIdRouteImport.update({
     id: '/$invoiceId',
@@ -152,6 +166,11 @@ const AuthenticatedClientsClientIdRoute =
     path: '/$clientId',
     getParentRoute: () => AuthenticatedClientsRoute,
   } as any)
+const ApiPublicStripeWebhookRoute = ApiPublicStripeWebhookRouteImport.update({
+  id: '/api/public/stripe/webhook',
+  path: '/api/public/stripe/webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicIcalTokenDoticsRoute =
   ApiPublicIcalTokenDoticsRouteImport.update({
     id: '/api/public/ical/$token.ics',
@@ -173,6 +192,7 @@ export interface FileRoutesByFullPath {
   '/forms': typeof AuthenticatedFormsRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/locations': typeof AuthenticatedLocationsRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -182,7 +202,9 @@ export interface FileRoutesByFullPath {
   '/book/$slug': typeof BookSlugRoute
   '/clients/$clientId': typeof AuthenticatedClientsClientIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/telehealth/$appointmentId': typeof AuthenticatedTelehealthAppointmentIdRoute
   '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -198,6 +220,7 @@ export interface FileRoutesByTo {
   '/forms': typeof AuthenticatedFormsRoute
   '/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/locations': typeof AuthenticatedLocationsRoute
+  '/messages': typeof AuthenticatedMessagesRoute
   '/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/services': typeof AuthenticatedServicesRoute
@@ -207,7 +230,9 @@ export interface FileRoutesByTo {
   '/book/$slug': typeof BookSlugRoute
   '/clients/$clientId': typeof AuthenticatedClientsClientIdRoute
   '/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/telehealth/$appointmentId': typeof AuthenticatedTelehealthAppointmentIdRoute
   '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -225,6 +250,7 @@ export interface FileRoutesById {
   '/_authenticated/forms': typeof AuthenticatedFormsRoute
   '/_authenticated/invoices': typeof AuthenticatedInvoicesRouteWithChildren
   '/_authenticated/locations': typeof AuthenticatedLocationsRoute
+  '/_authenticated/messages': typeof AuthenticatedMessagesRoute
   '/_authenticated/my-bookings': typeof AuthenticatedMyBookingsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/services': typeof AuthenticatedServicesRoute
@@ -234,7 +260,9 @@ export interface FileRoutesById {
   '/book/$slug': typeof BookSlugRoute
   '/_authenticated/clients/$clientId': typeof AuthenticatedClientsClientIdRoute
   '/_authenticated/invoices/$invoiceId': typeof AuthenticatedInvoicesInvoiceIdRoute
+  '/_authenticated/telehealth/$appointmentId': typeof AuthenticatedTelehealthAppointmentIdRoute
   '/api/public/ical/$token.ics': typeof ApiPublicIcalTokenDoticsRoute
+  '/api/public/stripe/webhook': typeof ApiPublicStripeWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -252,6 +280,7 @@ export interface FileRouteTypes {
     | '/forms'
     | '/invoices'
     | '/locations'
+    | '/messages'
     | '/my-bookings'
     | '/onboarding'
     | '/services'
@@ -261,7 +290,9 @@ export interface FileRouteTypes {
     | '/book/$slug'
     | '/clients/$clientId'
     | '/invoices/$invoiceId'
+    | '/telehealth/$appointmentId'
     | '/api/public/ical/$token.ics'
+    | '/api/public/stripe/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -277,6 +308,7 @@ export interface FileRouteTypes {
     | '/forms'
     | '/invoices'
     | '/locations'
+    | '/messages'
     | '/my-bookings'
     | '/onboarding'
     | '/services'
@@ -286,7 +318,9 @@ export interface FileRouteTypes {
     | '/book/$slug'
     | '/clients/$clientId'
     | '/invoices/$invoiceId'
+    | '/telehealth/$appointmentId'
     | '/api/public/ical/$token.ics'
+    | '/api/public/stripe/webhook'
   id:
     | '__root__'
     | '/'
@@ -303,6 +337,7 @@ export interface FileRouteTypes {
     | '/_authenticated/forms'
     | '/_authenticated/invoices'
     | '/_authenticated/locations'
+    | '/_authenticated/messages'
     | '/_authenticated/my-bookings'
     | '/_authenticated/onboarding'
     | '/_authenticated/services'
@@ -312,7 +347,9 @@ export interface FileRouteTypes {
     | '/book/$slug'
     | '/_authenticated/clients/$clientId'
     | '/_authenticated/invoices/$invoiceId'
+    | '/_authenticated/telehealth/$appointmentId'
     | '/api/public/ical/$token.ics'
+    | '/api/public/stripe/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -327,6 +364,7 @@ export interface RootRouteChildren {
   AuthSignUpRoute: typeof AuthSignUpRoute
   BookSlugRoute: typeof BookSlugRoute
   ApiPublicIcalTokenDoticsRoute: typeof ApiPublicIcalTokenDoticsRoute
+  ApiPublicStripeWebhookRoute: typeof ApiPublicStripeWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -422,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyBookingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/messages': {
+      id: '/_authenticated/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof AuthenticatedMessagesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/locations': {
       id: '/_authenticated/locations'
       path: '/locations'
@@ -478,6 +523,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAvailabilityRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/telehealth/$appointmentId': {
+      id: '/_authenticated/telehealth/$appointmentId'
+      path: '/telehealth/$appointmentId'
+      fullPath: '/telehealth/$appointmentId'
+      preLoaderRoute: typeof AuthenticatedTelehealthAppointmentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/invoices/$invoiceId': {
       id: '/_authenticated/invoices/$invoiceId'
       path: '/$invoiceId'
@@ -491,6 +543,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/clients/$clientId'
       preLoaderRoute: typeof AuthenticatedClientsClientIdRouteImport
       parentRoute: typeof AuthenticatedClientsRoute
+    }
+    '/api/public/stripe/webhook': {
+      id: '/api/public/stripe/webhook'
+      path: '/api/public/stripe/webhook'
+      fullPath: '/api/public/stripe/webhook'
+      preLoaderRoute: typeof ApiPublicStripeWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/ical/$token.ics': {
       id: '/api/public/ical/$token.ics'
@@ -535,9 +594,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedFormsRoute: typeof AuthenticatedFormsRoute
   AuthenticatedInvoicesRoute: typeof AuthenticatedInvoicesRouteWithChildren
   AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
+  AuthenticatedMessagesRoute: typeof AuthenticatedMessagesRoute
   AuthenticatedMyBookingsRoute: typeof AuthenticatedMyBookingsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedServicesRoute: typeof AuthenticatedServicesRoute
+  AuthenticatedTelehealthAppointmentIdRoute: typeof AuthenticatedTelehealthAppointmentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -549,9 +610,12 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedFormsRoute: AuthenticatedFormsRoute,
   AuthenticatedInvoicesRoute: AuthenticatedInvoicesRouteWithChildren,
   AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
+  AuthenticatedMessagesRoute: AuthenticatedMessagesRoute,
   AuthenticatedMyBookingsRoute: AuthenticatedMyBookingsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedServicesRoute: AuthenticatedServicesRoute,
+  AuthenticatedTelehealthAppointmentIdRoute:
+    AuthenticatedTelehealthAppointmentIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -569,6 +633,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthSignUpRoute: AuthSignUpRoute,
   BookSlugRoute: BookSlugRoute,
   ApiPublicIcalTokenDoticsRoute: ApiPublicIcalTokenDoticsRoute,
+  ApiPublicStripeWebhookRoute: ApiPublicStripeWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

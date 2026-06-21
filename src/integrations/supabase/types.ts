@@ -31,6 +31,7 @@ export type Database = {
           id: string
           internal_notes: string | null
           location_id: string | null
+          meeting_url: string | null
           notes: string | null
           practitioner_id: string
           room_id: string | null
@@ -55,6 +56,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           location_id?: string | null
+          meeting_url?: string | null
           notes?: string | null
           practitioner_id: string
           room_id?: string | null
@@ -79,6 +81,7 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           location_id?: string | null
+          meeting_url?: string | null
           notes?: string | null
           practitioner_id?: string
           room_id?: string | null
@@ -606,6 +609,54 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          client_id: string
+          clinic_id: string
+          created_at: string
+          id: string
+          last_message_at: string
+          practitioner_id: string
+          subject: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          clinic_id: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          practitioner_id: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          clinic_id?: string
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          practitioner_id?: string
+          subject?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_forms: {
         Row: {
           clinic_id: string
@@ -945,6 +996,44 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          attachments: Json
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          attachments?: Json
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          attachments?: Json
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       note_templates: {
         Row: {
           body: Json
@@ -998,6 +1087,8 @@ export type Database = {
           recorded_by: string | null
           reference: string | null
           stripe_charge_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
         }
         Insert: {
           amount_cents: number
@@ -1010,6 +1101,8 @@ export type Database = {
           recorded_by?: string | null
           reference?: string | null
           stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
         }
         Update: {
           amount_cents?: number
@@ -1022,6 +1115,8 @@ export type Database = {
           recorded_by?: string | null
           reference?: string | null
           stripe_charge_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
         }
         Relationships: [
           {
@@ -1277,6 +1372,7 @@ export type Database = {
           duration_minutes: number
           id: string
           is_active: boolean
+          is_telehealth: boolean
           name: string
           online_bookable: boolean
           price_cents: number
@@ -1293,6 +1389,7 @@ export type Database = {
           duration_minutes?: number
           id?: string
           is_active?: boolean
+          is_telehealth?: boolean
           name: string
           online_bookable?: boolean
           price_cents?: number
@@ -1309,6 +1406,7 @@ export type Database = {
           duration_minutes?: number
           id?: string
           is_active?: boolean
+          is_telehealth?: boolean
           name?: string
           online_bookable?: boolean
           price_cents?: number
@@ -1385,6 +1483,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_conversation: {
+        Args: { _conv_id: string; _user_id: string }
+        Returns: boolean
+      }
       ensure_self_client_record: {
         Args: {
           _clinic_id: string

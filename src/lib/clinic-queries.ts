@@ -60,6 +60,7 @@ export type CalendarAppointment = {
   service_type_id: string | null;
   room_id: string | null;
   guest_name: string | null;
+  meeting_url: string | null;
   service: { name: string; color: string } | null;
   practitioner_name: string | null;
   client_name: string | null;
@@ -72,7 +73,7 @@ export const clinicAppointmentsQuery = (clinicId: string, fromIso: string, toIso
       const { data: appts, error } = await supabase
         .from("appointments")
         .select(
-          "id, starts_at, ends_at, status, notes, color, practitioner_id, client_id, service_type_id, room_id, guest_name, service:service_types(name, color)",
+          "id, starts_at, ends_at, status, notes, color, practitioner_id, client_id, service_type_id, room_id, guest_name, meeting_url, service:service_types(name, color)",
         )
         .eq("clinic_id", clinicId)
         .gte("starts_at", fromIso)
