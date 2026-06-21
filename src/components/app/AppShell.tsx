@@ -140,7 +140,7 @@ export function AppShell({ clinicId, children }: Props) {
         </button>
       </aside>
       <main className="flex-1 min-w-0 flex flex-col">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-end gap-3">
+        <div className="w-full px-4 md:px-6 py-3 flex items-center justify-end gap-3">
           <LanguageToggle />
           <Link
             to="/settings"
@@ -160,7 +160,7 @@ export function AppShell({ clinicId, children }: Props) {
         </div>
         <div
           key={typeof window !== "undefined" ? window.location.pathname : "ssr"}
-          className="w-full max-w-7xl mx-auto flex-1 animate-fade-in"
+          className="w-full min-w-0 flex-1 animate-fade-in"
         >
           {children}
         </div>
