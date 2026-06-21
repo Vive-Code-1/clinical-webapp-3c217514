@@ -16,6 +16,7 @@ import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery } from "@/lib/clinic-queries";
 import { getClinicReport, type ReportRange } from "@/lib/reports.functions";
 import { buildDemoReport, isEmptyReport } from "@/lib/reports-demo";
+import { useAppTranslation } from "@/lib/app-translations";
 
 const searchSchema = z.object({
   clinic: z.string().optional(),
