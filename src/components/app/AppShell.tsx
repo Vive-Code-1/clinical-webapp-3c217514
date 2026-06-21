@@ -24,10 +24,11 @@ import { LanguageToggle } from "@/components/site/LanguageToggle";
 
 type Props = {
   clinicId?: string;
+  hideHeader?: boolean;
   children: ReactNode;
 };
 
-export function AppShell({ clinicId, children }: Props) {
+export function AppShell({ clinicId, hideHeader, children }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { t } = useAppTranslation();
@@ -140,24 +141,26 @@ export function AppShell({ clinicId, children }: Props) {
         </button>
       </aside>
       <main className="flex-1 min-w-0 flex flex-col">
-        <div className="w-full px-4 md:px-6 py-3 flex items-center justify-end gap-3">
-          <LanguageToggle />
-          <Link
-            to="/settings"
-            search={search}
-            className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-muted transition-colors"
-          >
-            <span className="hidden sm:inline text-sm font-medium text-foreground">
-              {profile.data?.full_name || ""}
-            </span>
-            <Avatar className="w-8 h-8">
-              {profile.data?.avatar_src && (
-                <AvatarImage src={profile.data.avatar_src} alt={profile.data.full_name ?? ""} />
-              )}
-              <AvatarFallback className="text-xs font-semibold">{initials}</AvatarFallback>
-            </Avatar>
-          </Link>
-        </div>
+        {!hideHeader && (
+          <div className="w-full px-4 md:px-6 py-3 flex items-center justify-end gap-3">
+            <LanguageToggle />
+            <Link
+              to="/settings"
+              search={search}
+              className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-muted transition-colors"
+            >
+              <span className="hidden sm:inline text-sm font-medium text-foreground">
+                {profile.data?.full_name || ""}
+              </span>
+              <Avatar className="w-8 h-8">
+                {profile.data?.avatar_src && (
+                  <AvatarImage src={profile.data.avatar_src} alt={profile.data.full_name ?? ""} />
+                )}
+                <AvatarFallback className="text-xs font-semibold">{initials}</AvatarFallback>
+              </Avatar>
+            </Link>
+          </div>
+        )}
         <div className="w-full min-w-0 flex-1">
           {children}
         </div>

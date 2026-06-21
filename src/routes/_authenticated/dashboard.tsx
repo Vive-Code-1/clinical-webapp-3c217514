@@ -30,7 +30,9 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/app/AppShell";
 import { myClinicsQuery, clinicAppointmentsQuery } from "@/lib/clinic-queries";
+import { myProfileQuery } from "@/lib/me-queries";
 import { useAppTranslation } from "@/lib/app-translations";
+import { LanguageToggle } from "@/components/site/LanguageToggle";
 
 const RANGES = ["today", "week", "month", "year"] as const;
 type Range = (typeof RANGES)[number];
@@ -96,19 +98,10 @@ function DashboardPage() {
     clinicAppointmentsQuery(activeClinic.id, from.toISOString(), to.toISOString()),
   );
 
-  const profile = useQuery({
-    queryKey: ["profile", user.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle();
-      return data;
-    },
-  });
+  const profile = useQuery(myProfileQuery(user.id));
 
   const firstName = profile.data?.full_name?.split(" ")[0] ?? "Doctor";
+  const username = profile.data?.full_name ?? user.email?.split("@")[0] ?? "";
 
   // Build a bar chart appropriate to the range
   const dailyStats = useMemo(() => {
@@ -181,7 +174,7 @@ function DashboardPage() {
   const today = new Date();
 
   return (
-    <AppShell clinicId={activeClinic.id}>
+    <AppShell clinicId={activeClinic.id} hideHeader>
       <div className="px-6 py-6 w-full min-w-0">
         {/* Top bar */}
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 mb-6">
@@ -190,8 +183,12 @@ function DashboardPage() {
             <h1 className="text-2xl font-bold tracking-tight truncate">
               {t("app.dashboard.doctor")} {firstName} <span className="inline-block">👋</span>
             </h1>
+            {username && (
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">@{username}</p>
+            )}
           </div>
           <div className="flex items-center gap-3 shrink-0">
+            <LanguageToggle />
             <div className="hidden md:flex items-center gap-2 bg-card rounded-full px-4 h-10 w-72 ring-1 ring-border">
               <Search className="w-4 h-4 text-muted-foreground" />
               <input
@@ -204,14 +201,15 @@ function DashboardPage() {
               <Bell className="w-4 h-4" />
             </button>
             <div className="w-10 h-10 rounded-full overflow-hidden bg-pill-green grid place-items-center text-primary-foreground font-bold text-sm">
-              {profile.data?.avatar_url ? (
-                <img src={profile.data.avatar_url} alt="" className="w-full h-full object-cover" />
+              {profile.data?.avatar_src ? (
+                <img src={profile.data.avatar_src} alt="" className="w-full h-full object-cover" />
               ) : (
                 firstName.charAt(0)
               )}
             </div>
           </div>
         </header>
+
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
