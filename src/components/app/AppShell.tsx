@@ -13,7 +13,6 @@ import {
   Receipt,
   MessageSquare,
   Settings,
-  HelpCircle,
   LogOut,
   Leaf,
   BarChart3,
