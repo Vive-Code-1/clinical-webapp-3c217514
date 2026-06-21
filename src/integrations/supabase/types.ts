@@ -681,6 +681,141 @@ export type Database = {
           },
         ]
       }
+      exercise_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          client_id: string
+          clinic_id: string
+          completed_at: string | null
+          created_at: string
+          duration_seconds: number | null
+          exercise_id: string
+          frequency: string | null
+          id: string
+          notes: string | null
+          reps: number | null
+          sets: number | null
+          status: Database["public"]["Enums"]["assignment_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          client_id: string
+          clinic_id: string
+          completed_at?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          exercise_id: string
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          reps?: number | null
+          sets?: number | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          client_id?: string
+          clinic_id?: string
+          completed_at?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          exercise_id?: string
+          frequency?: string | null
+          id?: string
+          notes?: string | null
+          reps?: number | null
+          sets?: number | null
+          status?: Database["public"]["Enums"]["assignment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercise_assignments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_assignments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "exercise_assignments_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      exercises: {
+        Row: {
+          category: string | null
+          clinic_id: string
+          created_at: string
+          created_by: string | null
+          default_duration_seconds: number | null
+          default_reps: number | null
+          default_sets: number | null
+          description: string | null
+          id: string
+          image_url: string | null
+          instructions: string | null
+          title: string
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          category?: string | null
+          clinic_id: string
+          created_at?: string
+          created_by?: string | null
+          default_duration_seconds?: number | null
+          default_reps?: number | null
+          default_sets?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          instructions?: string | null
+          title: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          category?: string | null
+          clinic_id?: string
+          created_at?: string
+          created_by?: string | null
+          default_duration_seconds?: number | null
+          default_reps?: number | null
+          default_sets?: number | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          instructions?: string | null
+          title?: string
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exercises_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       home_analytics_events: {
         Row: {
           created_at: string
@@ -1444,6 +1579,66 @@ export type Database = {
           },
         ]
       }
+      saved_payment_methods: {
+        Row: {
+          brand: string | null
+          client_id: string
+          clinic_id: string
+          created_at: string
+          exp_month: number | null
+          exp_year: number | null
+          id: string
+          is_default: boolean
+          last4: string | null
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at: string
+        }
+        Insert: {
+          brand?: string | null
+          client_id: string
+          clinic_id: string
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stripe_customer_id: string
+          stripe_payment_method_id: string
+          updated_at?: string
+        }
+        Update: {
+          brand?: string | null
+          client_id?: string
+          clinic_id?: string
+          created_at?: string
+          exp_month?: number | null
+          exp_year?: number | null
+          id?: string
+          is_default?: boolean
+          last4?: string | null
+          stripe_customer_id?: string
+          stripe_payment_method_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_payment_methods_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_payment_methods_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_types: {
         Row: {
           buffer_after_minutes: number
@@ -1614,6 +1809,7 @@ export type Database = {
         | "completed"
         | "no_show"
         | "cancelled"
+      assignment_status: "active" | "completed" | "paused"
       booking_source: "staff" | "client_portal" | "public"
       clinic_role: "owner" | "practitioner" | "receptionist"
       clinical_note_kind: "soap" | "follow_up" | "couple" | "family" | "general"
@@ -1769,6 +1965,7 @@ export const Constants = {
         "no_show",
         "cancelled",
       ],
+      assignment_status: ["active", "completed", "paused"],
       booking_source: ["staff", "client_portal", "public"],
       clinic_role: ["owner", "practitioner", "receptionist"],
       clinical_note_kind: ["soap", "follow_up", "couple", "family", "general"],
