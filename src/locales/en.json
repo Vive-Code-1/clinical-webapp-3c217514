@@ -223,5 +223,51 @@
     "errors": {
       "backendMissing": "Authentication is not yet connected. Connect Supabase to enable sign-in."
     }
+  },
+  "app": {
+    "nav": {
+      "dashboard": "Dashboard",
+      "appointment": "Appointment",
+      "clients": "Clients",
+      "services": "Services",
+      "availability": "Availability",
+      "locations": "Locations",
+      "forms": "Forms",
+      "invoices": "Invoices",
+      "messages": "Messages",
+      "reports": "Reports",
+      "billing": "Billing",
+      "integrations": "Integrations",
+      "settings": "Settings",
+      "logout": "Log out"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Clinic branding, language, profile, and AI tools.",
+      "branding": "Branding",
+      "clinicName": "Clinic name",
+      "logo": "Clinic logo",
+      "uploadLogo": "Upload logo",
+      "replaceLogo": "Replace logo",
+      "removeLogo": "Remove",
+      "brandColor": "Brand color",
+      "typography": "Typography",
+      "livePreview": "Live preview",
+      "save": "Save branding",
+      "saved": "Branding saved",
+      "language": "Language",
+      "languageHelp": "Choose the interface language. The change applies instantly across the app.",
+      "profile": "My profile",
+      "profileHelp": "Your photo appears in the header on every page.",
+      "uploadAvatar": "Upload photo",
+      "replaceAvatar": "Replace photo",
+      "aiScribe": "AI Scribe",
+      "aiScribeBody": "Paste raw session notes or a dictated transcript and get a clean SOAP note in seconds.",
+      "openScribe": "Open AI Scribe",
+      "uploading": "Uploading…",
+      "uploadError": "Upload failed",
+      "imageOnly": "Please pick an image file under 4 MB."
+    }
   }
 }
+
