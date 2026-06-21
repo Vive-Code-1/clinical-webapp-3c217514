@@ -258,6 +258,10 @@ function ServiceDialog({
               Online bookable
             </label>
             <label className="flex items-center gap-2 font-semibold">
+              <input type="checkbox" checked={isTelehealth} onChange={(e) => setIsTelehealth(e.target.checked)} />
+              Telehealth (video)
+            </label>
+            <label className="flex items-center gap-2 font-semibold">
               <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
               Active
             </label>
