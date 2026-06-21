@@ -134,7 +134,29 @@ function InvoiceDetailPage() {
   const [payOpen, setPayOpen] = useState(false);
   const navigate = Route.useNavigate();
   const checkoutStripe = useServerFn(createInvoiceCheckout);
+  const chargeSaved = useServerFn(chargeInvoiceWithSavedCard);
   const [payingStripe, setPayingStripe] = useState(false);
+  const [chargingSaved, setChargingSaved] = useState(false);
+
+  const savedCard = useQuery({
+    queryKey: ["invoice-saved-card", invoiceId],
+    queryFn: async () => {
+      const inv = await (supabase as any)
+        .from("invoices")
+        .select("client_id, clinic_id")
+        .eq("id", invoiceId)
+        .single();
+      if (!inv.data?.client_id) return null;
+      const { data } = await (supabase as any)
+        .from("saved_payment_methods")
+        .select("id, brand, last4, is_default")
+        .eq("clinic_id", inv.data.clinic_id)
+        .eq("client_id", inv.data.client_id)
+        .eq("is_default", true)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   useEffect(() => {
     if (search.checkout === "success") {
