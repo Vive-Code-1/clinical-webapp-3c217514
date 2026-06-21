@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { resolveAssetUrl } from "./storage-uploads";
+import { resolveAssetUrl } from "../utils/storage-uploads";
 
 export const myProfileQuery = (userId: string) =>
   queryOptions({
